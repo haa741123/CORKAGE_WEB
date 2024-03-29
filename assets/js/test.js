@@ -1,10 +1,13 @@
+
+
+
 // 마커를 클릭하면 장소명을 표출할 인포윈도우 입니다
 let infowindow = new kakao.maps.InfoWindow({zIndex:1});
 
 let mapContainer = document.getElementById('map'), // 지도를 표시할 div 
     mapOption = {
         center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
-        level: 3 // 지도의 확대 레벨
+        level: 10 // 지도의 확대 레벨
     };  
 
 // 지도를 생성합니다    
