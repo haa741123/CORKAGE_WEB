@@ -1,3 +1,5 @@
+
+
 /* api 관련 css */
 .map_wrap, .map_wrap * {margin:0;padding:0;font-family:'Malgun Gothic',dotum,'돋움',sans-serif;font-size:12px;}
 .map_wrap a, .map_wrap a:hover, .map_wrap a:active{color:#000;text-decoration: none;}
@@ -8,30 +10,83 @@
 #menu_wrap .option{text-align: center;}
 #menu_wrap .option p {margin:10px 0;}  
 #menu_wrap .option button {margin-left:5px;}
-#placesList li {list-style: none;}
-#placesList .item {position:relative;border-bottom:1px solid #888;overflow: hidden;cursor: pointer;min-height: 65px;}
-#placesList .item span {display: block;margin-top:4px;}
-#placesList .item h5, #placesList .item .info {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
-#placesList .item .info{padding:10px 0 10px 55px;}
-#placesList .info .gray {color:#8a8a8a;}
-#placesList .info .jibun {padding-left:26px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/places_jibun.png) no-repeat;}
-#placesList .info .tel {color:#009900;}
-#placesList .item .markerbg {float:left;position:absolute;width:36px; height:37px;margin:10px 0 0 10px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png) no-repeat;}
-#placesList .item .marker_1 {background-position: 0 -10px;}
-#placesList .item .marker_2 {background-position: 0 -56px;}
-#placesList .item .marker_3 {background-position: 0 -102px}
-#placesList .item .marker_4 {background-position: 0 -148px;}
-#placesList .item .marker_5 {background-position: 0 -194px;}
-#placesList .item .marker_6 {background-position: 0 -240px;}
-#placesList .item .marker_7 {background-position: 0 -286px;}
-#placesList .item .marker_8 {background-position: 0 -332px;}
-#placesList .item .marker_9 {background-position: 0 -378px;}
-#placesList .item .marker_10 {background-position: 0 -423px;}
-#placesList .item .marker_11 {background-position: 0 -470px;}
-#placesList .item .marker_12 {background-position: 0 -516px;}
-#placesList .item .marker_13 {background-position: 0 -562px;}
-#placesList .item .marker_14 {background-position: 0 -608px;}
-#placesList .item .marker_15 {background-position: 0 -654px;}
-#pagination {margin:10px auto;text-align: center;}
-#pagination a {display:inline-block;margin-right:10px;}
-#pagination .on {font-weight: bold; cursor: default;color:#777;}
+
+
+/* 검색 바 */
+.map_wrap .search-bar {
+    position: absolute;
+    top: 10px; /* 위치 조정 필요 시 변경 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5; /* 지도 위에 표시되도록 z-index 설정 */
+    display: flex;
+    justify-content: center;
+    width: 90%; /* 또는 원하는 너비로 조정 */
+    background: white; /* 검색 바의 배경색 */
+    padding: 5px;
+    border-radius: 25px; /* 둥근 모서리 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 그림자 효과 */
+}
+
+.map_wrap .search-bar input {
+    flex-grow: 1;
+    border: none;
+    margin-right: 5px;
+    padding: 10px;
+    border-radius: 25px; /* 입력 필드도 둥근 모서리 */
+}
+
+.map_wrap .search-bar button {
+    padding: 10px;
+    border: none;
+    background-color: #ff5722; /* 버튼 색상 */
+    color: white;
+    border-radius: 25px; /* 버튼도 둥근 모서리 */
+    cursor: pointer;
+}
+
+/* 화면 크기에 따라 스타일 조정 (반응형 디자인) */
+@media (max-width: 768px) {
+    .map_wrap .search-bar {
+        width: 100%;
+        top: 5px; /* 모바일 화면에서의 위치 조정 */
+    }
+}
+
+
+
+/* 스크롤 바를 숨기기 위한 CSS */
+.category-swiper {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    width: calc(100% - 40px);
+    overflow-x: auto;
+    white-space: nowrap;
+    z-index: 1000;
+    
+    /* 스크롤 바 숨기기 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.category-swiper::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.categories {
+    display: inline-block;
+}
+
+.category {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 5px 10px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.category:last-child {
+    margin-right: 0;
+}
