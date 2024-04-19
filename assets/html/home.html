@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 세 개의 칼럼을 가진 그리드 */
+    grid-gap: 10px; /* 그리드 사이의 간격 */
+    padding: 10px; /* 패딩 */
+    max-width: 600px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 가운데 정렬 */
+  }
+  .menu-item {
+    text-align: center; /* 텍스트 가운데 정렬 */
+  }
+  .menu-item img {
+    width: 50px; /* 아이콘 크기 */
+    height: 50px; /* 아이콘 크기 */
+    margin-bottom: 5px; /* 아이콘과 텍스트 사이의 간격 */
+  }
+  @media (min-width: 600px) {
+    .menu-grid {
+      grid-template-columns: repeat(4, 1fr); /* 넓은 화면에서는 네 개의 칼럼 */
+    }
+  }
+</style>
+</head>
+<body>
+    <div class="advertise">
+        <!-- 광고 이미지 -->
+        <img src="advertise.jpg" alt="광고">
+      </div>
+    <div class="menu-grid">
+        <div class="menu-item">
+            <img src="/assets/img/wine.png" alt="와인">
+            <div>와인</div>
+        </div>
+        <!-- <div class="menu-item">
+            <img src="" alt="다른 아이콘">
+            <div>맥주</div>
+        </div> -->
+        <!-- 이하 다른 메뉴 아이템들 -->
+    </div>
+
+</body>
+</html>
