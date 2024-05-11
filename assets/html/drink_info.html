@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>drink_info</title>
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/drink_info.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8d7da; /* 연한 핑크 배경 */
+        }
+        .wine-image img {
+            width: 100%;
+            max-width: 200px; /* 이미지 최대 크기 설정 */
+            display: block;
+            margin: 20px auto; /* 중앙 정렬 */
+        }
+        .rating-bar-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .rating-bar {
+            flex-grow: 1;
+            position: relative;
+            height: 10px;
+            background-color: #ffc107; /* 경고색 배경 */
+        }
+        .rating-bar .text {
+            position: absolute; /* 텍스트 위치 조정 */
+            left: 5px; /* 왼쪽 여백 */
+            top: 50%; /* 상단에서 50% 위치 */
+            transform: translateY(-50%); /* Y축 중앙 정렬 */
+            margin: 0; /* 기본 마진 제거 */
+            color: white; /* 텍스트 색상 흰색 */
+            font-size: 12px; /* 폰트 크기 설정 */
+            z-index: 2; /* 텍스트가 바 위에 오도록 */
+        }
+        .rating-bar > div {
+            height: 100%;
+            background-color: #28a745; /* 성공색 배경 */
+        }
+        .rating-score {
+            min-width: 40px; /* 점수 표시 공간 확보 */
+            text-align: center; /* 점수 중앙 정렬 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-3 p-3 bg-white rounded shadow-sm">
+        <div class="wine-image">
+            <img src="/assets/img/wine_img.png" alt="Wine Bottle Image">
+        </div>
+        <div class="text-center mt-2">
+            <h3>와인 이름</h3>
+            <p>[와인 설명] 이 와인은 바닐라의 은은한 향기에 더 깊게 침투할 수 있습니다.</p>
+        </div>
+        <div class="my-3 p-2">
+            <h5>Ratings & Reviews (273)</h5>
+            <div class="row mt-10">
+                <div class="col-12">
+                    <div class="rating-bar-container">
+                        <div class="rating-bar">
+                            <p class="text"><strong>5</strong></p>
+                            <div style="width: 90%;"></div> <!-- 5성 리뷰의 비율 예시 -->
+                        </div>
+                        
+                    </div>
+                    <div class="rating-bar-container">
+                        <div class="rating-bar">
+                            <p class="text"><strong>4</strong></p>
+                            <div style="width: 70%;"></div> <!-- 4성 리뷰의 비율 예시 -->
+                        </div>
+                        
+                    </div>
+                    <div class="rating-bar-container">
+                        <div class="rating-bar">
+                            <p class="text"><strong>3</strong></p>
+                            <div style="width: 30%;"></div> <!-- 3성 리뷰의 비율 예시 -->
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-center mt-2"><strong>4.5 ★</strong></p>
+        </div>
+    </div>
+</body>
+</html>
