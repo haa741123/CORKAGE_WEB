@@ -1,21 +1,15 @@
-/* 기본 설정 및 환경 고려 */
 body {
-    background-color: #f8d7da; /* 연한 핑크 배경 */
     padding-top: env(safe-area-inset-top); /* 상단 노치를 고려한 패딩 추가 */
     padding-bottom: env(safe-area-inset-bottom); /* 홈 버튼/제스처 바 공간 고려 */
     padding-left: env(safe-area-inset-left); /* 화면 왼쪽 가장자리 공간 고려 */
     padding-right: env(safe-area-inset-right); /* 화면 오른쪽 가장자리 공간 고려 */
 }
-
-/* 컨테이너 설정 */
 .container-fluid {
     min-height: 60vh; /* 전체 화면 높이 사용 */
     display: flex;
     flex-direction: column;
     justify-content: center; /* 내용 중앙 정렬 */
 }
-
-/* 스크롤 래퍼 설정 */
 .scrolling-wrapper {
     display: flex; /* flexbox 레이아웃 적용 */
     overflow-x: auto; /* 수평 스크롤만 허용 */
@@ -24,12 +18,11 @@ body {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
-
 .scrolling-wrapper::-webkit-scrollbar {
     display: none;  /* Chrome, Safari, Opera */
 }
 
-/* 카드 설정 */
+
 .card {
     flex: 0 0 auto; /* 카드가 스크롤 영역 너비에 맞게 축소되지 않도록 설정 */
     width: 200px;
@@ -38,51 +31,11 @@ body {
     background-color: #f8f9fa;
 }
 
+
+
+
 .circular-cards .card {
-    width: 100px; /* 원형 카드 폭 설정 */
-    height: 100px; /* 원형 카드 높이 설정 */
-    border-radius: 50%; /* 원형 카드 모서리 둥글게 */
-}
-
-/* 와인 이미지 설정 */
-.wine-image img {
-    width: 100%;
-    max-width: 200px; /* 이미지 최대 크기 설정 */
-    display: block;
-    margin: 20px auto; /* 중앙 정렬 */
-}
-
-/* 평점 바 컨테이너 */
-.rating-bar-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-.rating-bar {
-    flex-grow: 1;
-    position: relative;
-    height: 10px;
-    background-color: #ffc107; /* 경고색 배경 */
-}
-
-.rating-bar .text {
-    position: absolute; /* 텍스트 위치 조정 */
-    left: 5px; /* 왼쪽 여백 */
-    top: 50%; /* 상단에서 50% 위치 */
-    transform: translateY(-50%); /* Y축 중앙 정렬 */
-    margin: 0; /* 기본 마진 제거 */
-    color: white; /* 텍스트 색상 흰색 */
-    font-size: 12px; /* 폰트 크기 설정 */
-    z-index: 2; /* 텍스트가 바 위에 오도록 */
-}
-
-.rating-bar > div {
-    height: 100%;
-    background-color: #28a745; /* 성공색 배경 */
-}
-
-.rating-score {
-    min-width: 40px; /* 점수 표시 공간 확보 */
-    text-align: center; /* 점수 중앙 정렬 */
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
 }
