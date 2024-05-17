@@ -21,23 +21,25 @@
             border-radius: 4px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
+            flex: none; /* Prevent flex item from stretching */
         }
 
-        .circular-cards .card {
-            border-radius: 50%;
-            height: 150px;
-            width: 150px;
+        .circular-cards .card_r {
+            aspect-ratio: 1; /* 카드의 너비와 높이 비율을 1:1로 유지 */
+            border-radius: 100%; /* 완벽한 원형 모양 */
+            padding: 0;
             display: flex;
-            align-items: center;
             justify-content: center;
-            margin: 10px;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            flex: none; /* Prevent flex item from stretching */
-            padding: 0; /* Remove padding to maintain circular shape */
+            align-items: center;
+            background-color: #f8f9fa; /* 배경색 */
+            border: 1px solid #ddd; /* 테두리 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+            margin: 10px; /* 주변 여백 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+            flex:1;
         }
+
+
 
         /* Hide scrollbar */
         .scrolling-wrapper::-webkit-scrollbar {
@@ -73,10 +75,10 @@
         <div class="row mt-4 circular-cards">
             <div class="col-12">
                 <div class="scrolling-wrapper">
-                    <div class="card">Card A</div>
-                    <div class="card">Card B</div>
-                    <div class="card">Card C</div>
-                    <div class="card">Card D</div>
+                    <div class="card_r">Card A</div>
+                    <div class="card_r">Card B</div>
+                    <div class="card_r">Card C</div>
+                    <div class="card_r">Card D</div>
                 </div>
             </div>
         </div>
