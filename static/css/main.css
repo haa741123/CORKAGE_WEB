@@ -1,8 +1,45 @@
+
 .scrolling-wrapper {
     display: flex;
+    flex-wrap: nowrap;  /* Ensure items do not wrap */
     overflow-x: auto;
-    padding-bottom: 10px; /* Add some padding at the bottom for better visibility */
+    padding-bottom: 10px;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    width: 100%;
 }
+
+
+.btn_title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+.subAttr {
+    color:rgba(160, 159, 159, 0.841) ;
+    font-size: 14px;
+    margin-bottom: 1px;
+}
+
+
+.main_card {
+    display: flex; /* Flexbox를 사용 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    min-width: 90vw;
+    min-height: 35vw;
+    margin: 10px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    flex: none; 
+}
+
+
 
 .card {
     min-width: 200px;
@@ -10,13 +47,13 @@
     padding: 20px;
     background-color: #f8f9fa;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
-    flex: none; /* Prevent flex item from stretching */
+    flex: none; 
 }
 
-.circular-cards .card_r {
+.circular-cards .rad_btn {
     aspect-ratio: 1; /* 카드의 너비와 높이 비율을 1:1로 유지 */
     border-radius: 100%; /* 완벽한 원형 모양 */
     padding: 0;
@@ -38,7 +75,3 @@
     display: none;
 }
 
-.scrolling-wrapper {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
