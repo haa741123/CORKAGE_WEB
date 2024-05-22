@@ -39,7 +39,11 @@
     flex: none; 
 }
 
-
+.btn {
+    background-color: #EE8B9D;
+    font-weight: 500;
+    color: #ffff;
+}
 
 .card {
     min-width: 200px;
