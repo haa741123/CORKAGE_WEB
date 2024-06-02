@@ -40,6 +40,7 @@ body {
   flex: none;
 }
 
+<<<<<<< HEAD
 .post {
   display: flex; /* Flexbox 사용 */
   justify-content: center; /* 수평 중앙 정렬 */
@@ -54,6 +55,12 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
   flex: none; /* Flex-grow 비활성화 */
+=======
+.btn {
+    background-color: #EE8B9D;
+    font-weight: 500;
+    color: #ffff;
+>>>>>>> 3a65a60d3364feece1f0976d6f64aae0e3115785
 }
 
 .card {
