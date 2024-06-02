@@ -1,169 +1,276 @@
-// 마커를 담을 배열
 var markers = [];
+var mapContainer = $("#map")[0];
+var mapOption = {
+  center: new kakao.maps.LatLng(37.606665, 127.027316),
+  level: 3,
+};
 
-var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-    mapOption = {
-        center: new kakao.maps.LatLng(37.606665, 127.027316), // 지도의 중심좌표
-        level: 3 // 지도의 확대 레벨
-    };  
+var map = new kakao.maps.Map(mapContainer, mapOption);
+var ps = new kakao.maps.services.Places();
+var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
 
-// 지도를 생성합니다    
-var map = new kakao.maps.Map(mapContainer, mapOption); 
+ps.keywordSearch("콜키지 무료", placesSearchCB);
 
-// 장소 검색 객체를 생성합니다
-var ps = new kakao.maps.services.Places();  
-
-
-
-// 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
-var infowindow = new kakao.maps.InfoWindow({zIndex:1});
-
-
-// 키워드로 장소를 검색합니다
-ps.keywordSearch('콜키지 무료', placesSearchCB); 
-
-document.addEventListener('DOMContentLoaded', function() {
-    // 모든 카테고리 요소에 대한 참조를 가져옵니다.
-    const categoryElements = document.querySelectorAll('.category');
-
-    // 각 카테고리 요소에 대해 클릭 이벤트 리스너를 추가합니다.
-    categoryElements.forEach(function(element) {
-        element.addEventListener('click', function() {
-            // 클릭된 요소의 data-val 속성 값을 읽어옵니다.
-            const categoryValue = this.getAttribute('data-val');
-
-            // 읽어온 값을 ps.keywordSearch 함수에 전달합니다.
-            ps.keywordSearch(categoryValue, placesSearchCB);
-        });
-    });
+$(document).ready(function () {
+  $(".category").on("click", function () {
+    const categoryValue = $(this).data("val");
+    ps.keywordSearch(categoryValue, placesSearchCB);
+  });
 });
 
-// 키워드 검색 완료 시 호출되는 콜백함수 입니다
-function placesSearchCB (data, status, pagination) {
-    if (status === kakao.maps.services.Status.OK) {
-        
-        // 기존에 생성된 마커 제거
-        removeMarkers();
+// 장소 검색 콜백 함수
+function placesSearchCB(data, status, pagination) {
+  if (status === kakao.maps.services.Status.OK) {
+    removeMarkers();
+    let bounds = new kakao.maps.LatLngBounds();
 
-        // 음식점 정보
-        console.group("음식점 정보");
-        console.log(data);
-        console.groupEnd;
-        // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-        // LatLngBounds 객체에 좌표를 추가합니다
-        let bounds = new kakao.maps.LatLngBounds();
+    var allPlacesInfo = ""; // 모든 장소 정보를 담을 변수
 
-        for (let i=0; i<data.length; i++) {
-            displayMarker(data[i]);    
-            bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
-        }       
-
-        // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-        map.setBounds(bounds);
-    } 
-}
-
-// 지도에 마커를 표시하는 함수입니다
-function displayMarker(place) {
-    
-    
-    // 마커를 생성하고 지도에 표시합니다
-    let marker = new kakao.maps.Marker({
-        map: map,
-        position: new kakao.maps.LatLng(place.y, place.x) 
-    });
-
-    // 마커에 클릭이벤트를 등록합니다
-    kakao.maps.event.addListener(marker, 'click', function() {
-        // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-        infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
-        infowindow.open(map, marker);
-    });
-    // 생성된 마커를 배열에 추가
-    markers.push(marker);
-}
-
-// 지도에서 모든 마커를 제거하는 함수
-function removeMarkers() {
-    for (let i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
+    for (let i = 0; i < data.length; i++) {
+      displayMarker(data[i]);
+      bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+      allPlacesInfo += generatePlaceInfo(data[i]); // 각 장소 정보를 추가
     }
-    // 마커 배열을 비웁니다
-    markers = [];
+
+    map.setBounds(bounds);
+
+    // 모든 장소 정보를 infoContainer에 업데이트
+    $("#restaurantInfo").html(allPlacesInfo);
+    $("#infoContainer").show();
+  }
 }
 
+// 장소 마커 표시 함수
+function displayMarker(place) {
+  let marker = createMarker(place);
+  kakao.maps.event.addListener(marker, "click", function () {
+    infowindow.setContent(
+      '<div style="padding:5px;font-size:12px;">' + place.place_name + "</div>"
+    );
+    infowindow.open(map, marker);
 
+    // Update the restaurant info HTML
+    var placeInfoHTML = generatePlaceInfo(place);
+    $("#restaurantInfo").html(placeInfoHTML);
+    $("#infoContainer").show();
 
+    // Set height and show hidden elements when marker is clicked
+    $("#restaurantInfo .more_info").css("height", "360px");
+    $("#restaurantInfo .res_loc, #restaurantInfo .res_menu").removeAttr(
+      "hidden"
+    );
+  });
 
-// 현재 위치를 저장할 변수
+  markers.push(marker);
+}
+
+// 마커 생성 함수
+function createMarker(place) {
+  let imageSrc = "/static/img/cork_restaurant.jpg";
+  let imageSize = calculateMarkerSize();
+  let imageOption = {
+    offset: new kakao.maps.Point(imageSize.width / 2, imageSize.height),
+  };
+
+  let markerImage = new kakao.maps.MarkerImage(
+    imageSrc,
+    imageSize,
+    imageOption
+  );
+  let markerPosition = new kakao.maps.LatLng(place.y, place.x);
+
+  let marker = new kakao.maps.Marker({
+    map: map,
+    position: markerPosition,
+    image: markerImage,
+  });
+
+  return marker;
+}
+
+// 마커 이미지 크기 계산 함수
+function calculateMarkerSize() {
+  let level = map.getLevel();
+  let minSize = 24; // Increased minimum size for better visibility
+  let maxSize = 48;
+  let size = minSize + ((maxSize - minSize) * (10 - level)) / 9; // Adjust size based on zoom level (assuming level 1-10)
+  return new kakao.maps.Size(size, size * 1.2);
+}
+
+// 장소 정보 HTML 생성 함수
+function generatePlaceInfo(place) {
+  var distance = 0;
+  var walkingTime = "알 수 없음";
+  var drivingTime = "알 수 없음";
+
+  // userPosition이 정의되었는지 확인
+  if (userPosition && userPosition.latitude && userPosition.longitude) {
+    distance = calculateDistance(
+      userPosition.latitude,
+      userPosition.longitude,
+      place.y,
+      place.x
+    );
+    walkingTime = formatTime(calculateTime(distance, 5)); // 보행 속도 5 km/h
+    drivingTime = formatTime(calculateTime(distance, 50)); // 운전 속도 50 km/h
+  }
+
+  var infoHTML = `
+      <div class="more_info" style="padding: 5px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; max-width: 100%; box-sizing: border-box; margin-bottom: 10px;">
+          <p style="margin: 0; font-weight: bold; font-size: 16px;">${
+            place.place_name
+          }</p>
+          <p style="margin: 5px 0; color: #555;"><strong>위치:</strong> ${
+            place.address_name
+          }</p>
+          <p style="margin: 5px 0; color: #555;"><strong>전화번호:</strong> ${
+            place.phone
+          }</p>
+          <p style="margin: 5px 0; color: #555;">
+              <strong>거리:</strong> ${distance.toFixed(2)} km 
+              <span style="font-size: 12px; color: #777;">
+                  ( 도보: ${walkingTime}, 차량: ${drivingTime} )
+              </span>
+          </p>
+          <p class="res_loc" style="margin: 5px 0; color: #555;" hidden><strong>위치:</strong> ${
+            place.category_name
+          }</p>
+          <p class="res_menu" style="margin: 5px 0; color: #555;" hidden><strong>메뉴:</strong> 
+            
+          </p>
+      </div>
+    `;
+
+  return infoHTML;
+}
+
+// Document ready function to attach click event to more_info elements
+$(document).ready(function () {
+  $("#restaurantInfo").on("click", ".more_info", function () {
+    // Hide all other more_info elements
+    $(".more_info").not(this).hide();
+
+    // Set height of the clicked more_info element to 360px
+    $(this).css("height", "360px");
+    $(".res_loc, .res_menu").removeAttr("hidden");
+  });
+});
+
+// 마커 제거 함수
+function removeMarkers() {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
+  markers = [];
+}
+
+// 두 지점 간 거리 계산 함수
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  var R = 6371; // 지구 반경 (km)
+  var dLat = (lat2 - lat1) * (Math.PI / 180); // 위도 차이 (라디안)
+  var dLon = (lon2 - lon1) * (Math.PI / 180); // 경도 차이 (라디안)
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c; // 거리 (km)
+  return d;
+}
+
+// 이동 시간 계산 함수
+function calculateTime(distance, speed) {
+  return distance / speed;
+}
+
+// 시간 포맷 함수
+function formatTime(time) {
+  var hours = Math.floor(time);
+  var minutes = Math.round((time - hours) * 60);
+  if (hours > 0) {
+    return `${hours}시간 ${minutes}분`;
+  } else {
+    return `${minutes}분`;
+  }
+}
+
 let userPosition;
 
-// 위치 정보를 받아오는 함수
+// 사용자 위치 가져오기 함수
 function UserLocation() {
-    // 위치 정보를 받아오는데 성공했을 때 실행될 콜백 함수
-    function success(position) {
-        // 사용자의 현재 위치 정보를 변수에 저장
-        userPosition = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-        };
-        console.log('사용자 위치:', userPosition);
+  function success(position) {
+    userPosition = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+    };
 
-        
-        // 위치에 이미지를 표시
-        showUserPosition();
-        
-        
-    }
+    showUserPosition();
+    ps.keywordSearch("콜키지 무료", placesSearchCB); // 위치가 설정된 후 검색 실행
+  }
 
-    // 위치 정보를 받아오는데 실패했을 때 실행될 콜백 함수
-    function error() {
-        console.error('위치 정보를 받아오는데 실패했습니다.');
-    }
+  function error() {
+    console.error("위치 정보를 받아오는데 실패했습니다.");
+    ps.keywordSearch("콜키지 무료", placesSearchCB); // 위치 가져오기에 실패해도 검색 실행
+  }
 
-    // 위치 정보를 요청
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(success, error);
-    } else {
-        console.error('Geolocation is not supported by this browser');
-    }
-
-
-    
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success, error);
+  } else {
+    console.error("이 브라우저는 지오로케이션을 지원하지 않습니다.");
+    ps.keywordSearch("콜키지 무료", placesSearchCB); // 지오로케이션을 지원하지 않으면 기본 검색 실행
+  }
 }
 
-// 사용자의 위치에 이미지를 표시하는 함수
+// 사용자 위치 마커 표시 함수
 function showUserPosition() {
-    // 사용자의 현재 위치에 이미지를 표시할 변수
-    let imageSrc = '/assets/img/user_icon.png'; // 이미지 경로
-    let imageSize = new kakao.maps.Size(64, 69); // 이미지 크기
-    let imageOption = { offset: new kakao.maps.Point(27, 69) }; // 이미지 옵션
-      
-    // 사용자의 현재 위치에 마커 이미지를 생성
-    let markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-    let markerPosition = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
-    
-    // 마커를 생성하고 지도 위에 표시
-    let marker = new kakao.maps.Marker({
-        position: markerPosition, 
-        image: markerImage
-    });
-    marker.id = "user_icon";
-    marker.setMap(map);
-    
-    console.log(marker.getPosition());
+  let imageSrc = "/static/img/user_icon.png";
+  let imageSize = new kakao.maps.Size(44, 49);
+  let imageOption = { offset: new kakao.maps.Point(27, 69) };
 
-    
-    map.setMaxLevel(12);
+  let markerImage = new kakao.maps.MarkerImage(
+    imageSrc,
+    imageSize,
+    imageOption
+  );
+  let markerPosition = new kakao.maps.LatLng(
+    userPosition.latitude,
+    userPosition.longitude
+  );
+
+  let marker = new kakao.maps.Marker({
+    position: markerPosition,
+    image: markerImage,
+  });
+  marker.id = "user_icon";
+  marker.setMap(map);
+
+  map.setMaxLevel(12);
 }
 
+// 지도의 확대 및 축소 이벤트 리스너 등록
+kakao.maps.event.addListener(map, "zoom_changed", function () {
+  updateMarkerSizes();
+});
+
+// 마커 크기 업데이트 함수
+function updateMarkerSizes() {
+  for (let i = 0; i < markers.length; i++) {
+    let marker = markers[i];
+    let imageSrc = "/static/img/cork_restaurant.jpg";
+    let imageSize = calculateMarkerSize();
+    let imageOption = {
+      offset: new kakao.maps.Point(imageSize.width / 2, imageSize.height),
+    };
+
+    let markerImage = new kakao.maps.MarkerImage(
+      imageSrc,
+      imageSize,
+      imageOption
+    );
+    marker.setImage(markerImage);
+  }
+}
 
 UserLocation();
-
-
-
-
-
-
-
-

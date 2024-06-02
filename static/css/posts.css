@@ -1,0 +1,44 @@
+body {
+  font-family: Arial, sans-serif;
+}
+.community-header {
+  padding: 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.community-header h1 {
+  font-size: 18px;
+  margin: 0;
+}
+.community-tabs {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid #ddd;
+}
+.community-tabs a {
+  padding: 10px;
+  text-decoration: none;
+  color: #000;
+}
+.hot-picks {
+  padding: 15px;
+  background-color: #f8f8f8;
+}
+.hot-picks h2 {
+  font-size: 16px;
+  margin: 0;
+}
+.card {
+  margin: 15px;
+}
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+}
+.bottom-nav a {
+  text-decoration: none;
+  color: #000;
+}
