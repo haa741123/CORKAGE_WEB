@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return render_template('/html/index.html')
+    return render_template('/html/index.html') # render_template에서 이미 template 폴더 주시중이라 경로에 template 폴더 넣을 필요 없음
 
 @app.route("/login")
 def login():
