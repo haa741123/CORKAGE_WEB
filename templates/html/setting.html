@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>설정 화면</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        width: 60%;
+        margin: 0 auto;
+      }
+      .tabs {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ddd;
+      }
+      .tab {
+        padding: 10px;
+        cursor: pointer;
+      }
+      .tab.active {
+        font-weight: bold;
+        border-bottom: 2px solid #000;
+      }
+      .content {
+        display: none;
+      }
+      .content.active {
+        display: block;
+      }
+      .box {
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      button {
+        padding: 10px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="tabs">
+        <div class="tab" data-tab="account">계정 설정</div>
+        <div class="tab" data-tab="notification">알림 설정</div>
+        <div class="tab" data-tab="reservation">예약 설정</div>
+        <!-- 추가 탭 목록 -->
+      </div>
+
+      <div id="account" class="content">
+        <div class="box">
+          <h2>프로필 편집</h2>
+          <p>사용자 이름: <input type="text" /></p>
+          <p>프로필 사진: <input type="file" /></p>
+          <p>소개 글: <input type="text" /></p>
+          <button>저장</button>
+          <button>취소</button>
+        </div>
+        <div class="box">
+          <h2>비밀번호 변경</h2>
+          <p>현재 비밀번호: <input type="password" /></p>
+          <p>새로운 비밀번호: <input type="password" /></p>
+          <button>변경</button>
+          <button>취소</button>
+        </div>
+        <div class="box">
+          <h2>이메일 설정</h2>
+          <p>이메일 주소: <input type="email" /></p>
+          <button>변경</button>
+        </div>
+        <div class="box">
+          <h2>연결된 소셜 계정 관리</h2>
+          <p>카카오톡: <button>연결됨</button> <button>해제</button></p>
+          <p>Google: <button>연결됨</button> <button>해제</button></p>
+        </div>
+      </div>
+
+      <div id="notification" class="content">
+        <div class="box">
+          <h2>푸시 알림 설정</h2>
+          <p>이벤트 알림: <button>켬/끔</button></p>
+          <p>예약 알림: <button>켬/끔</button></p>
+          <p>메시지 알림: <button>켬/끔</button></p>
+        </div>
+        <div class="box">
+          <h2>이메일 알림 설정</h2>
+          <p>예약 확인: <button>켬/끔</button></p>
+          <p>뉴스레터: <button>켬/끔</button></p>
+        </div>
+        <div class="box">
+          <h2>SMS 알림 설정</h2>
+          <p>예약 알림: <button>켬/끔</button></p>
+          <p>기타 알림: <button>켬/끔</button></p>
+        </div>
+      </div>
+
+      <div id="reservation" class="content">
+        <div class="box">
+          <h2>예약 관리</h2>
+          <button>예약 내역 확인</button>
+          <button>예약 변경</button>
+        </div>
+        <div class="box">
+          <h2>예약 알림 설정</h2>
+          <p>예약 일정 알림: <button>켬/끔</button></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((tab) => tab.classList.remove("active"));
+          tab.classList.add("active");
+
+          document
+            .querySelectorAll(".content")
+            .forEach((content) => content.classList.remove("active"));
+          document.getElementById(tab.dataset.tab).classList.add("active");
+        });
+      });
+
+      // 기본 탭 활성화
+      document.querySelector(".tab").click();
+    </script>
+  </body>
+</html>

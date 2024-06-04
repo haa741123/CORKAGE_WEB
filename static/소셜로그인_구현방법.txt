@@ -1,175 +1,95 @@
-위의 주의 사항을 반영하여 Flask 애플리케이션의 카카오 로그인 구현 방법을 정리하고, JavaScript와 HTML을 사용하는 방식으로 수정해보겠습니다.
+Flask와 Supabase를 연결하여 사용하는 것은 매우 유용한 방법입니다. Supabase는 PostgreSQL 데이터베이스를 백엔드로 제공하며, 실시간 데이터베이스와 인증, 스토리지 등 다양한 기능을 제공합니다. Flask는 경량 웹 프레임워크로, Supabase와 함께 사용하면 백엔드와 프론트엔드 간의 상호작용을 쉽게 관리할 수 있습니다.
 
-1. 프로젝트 구조 설정:
+### 예제 프로젝트: Flask와 Supabase를 연동하여 사용자 인증 구현
+
+#### 1. 프로젝트 구조 설정
 ```
 my_flask_app/
 │
-├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── key/
-│   │   └── kakao_client.py
-│   ├── controllers/
-│   │   └── kakao_controller.py
-│   ├── routes/
-│       └── oauth.py
-├── static/
-│   └── js/
-│       └── kakao_login.js
+├── app.py
+├── config.py
 ├── templates/
-│   └── login.html
-├── venv/
-├── requirements.txt
-└── run.py
+│   ├── login.html
+│   └── signup.html
+└── venv/ (optional, if you are using a virtual environment)
 ```
 
-2. `run.py`: Flask 애플리케이션을 실행하는 스크립트입니다.
+#### 2. Flask와 Supabase 설치
+터미널에서 다음 명령어를 실행하여 필요한 패키지를 설치합니다:
+```bash
+pip install Flask supabase
+```
+
+#### 3. Supabase 프로젝트 설정
+1. [Supabase](https://supabase.io/)에 회원가입 후 프로젝트를 생성합니다.
+2. 프로젝트의 URL과 API 키를 기록해둡니다.
+
+#### 4. `config.py` 파일 생성
+Supabase 설정을 관리할 `config.py` 파일을 생성합니다.
+
 ```python
-from app.main import create_app
+import os
 
-app = create_app()
+SUPABASE_URL = os.getenv('SUPABASE_URL', 'your-supabase-url')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY', 'your-supabase-key')
+```
 
-if __name__ == "__main__":
+#### 5. `app.py` 파일 생성
+Flask 애플리케이션과 Supabase 클라이언트를 초기화하는 `app.py` 파일을 생성합니다.
+
+```python
+from flask import Flask, render_template, request, redirect, url_for, session
+from supabase import create_client, Client
+import config
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+
+# Supabase 클라이언트 생성
+supabase: Client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
+
+@app.route('/')
+def index():
+    if 'user' in session:
+        return f"Hello, {session['user']['email']}!"
+    return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        response = supabase.auth.sign_up(email=email, password=password)
+        if response.get('error'):
+            return f"Error: {response['error']['message']}"
+        return redirect(url_for('index'))
+    return render_template('signup.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        response = supabase.auth.sign_in(email=email, password=password)
+        if response.get('error'):
+            return f"Error: {response['error']['message']}"
+        session['user'] = response['user']
+        return redirect(url_for('index'))
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
     app.run(debug=True)
 ```
 
-3. `app/main.py`: Flask 객체를 생성하고 Blueprint를 등록합니다.
-```python
-from flask import Flask
-from app.routes.oauth import kakao
+#### 6. 템플릿 파일 생성
+`templates` 폴더에 `login.html`과 `signup.html` 파일을 생성합니다.
 
-def create_app():
-    app = Flask(__name__)
-    app.secret_key = 'your_secret_key'
-
-    # Register Blueprints
-    app.register_blueprint(kakao, url_prefix='/oauth/kakao')
-
-    return app
-```
-
-4. `app/key/kakao_client.py`: 카카오 API 클라이언트 정보를 저장합니다.
-```python
-CLIENT_ID = 'your_kakao_rest_api_key'
-CLIENT_SECRET = 'your_kakao_client_secret'
-REDIRECT_URI = 'http://localhost:5000/oauth/kakao/callback'
-SIGNOUT_REDIRECT_URI = 'http://localhost:5000/oauth/kakao/signout'
-```
-
-5. `app/controllers/kakao_controller.py`: OAuth 객체를 정의하여 인증 및 사용자 정보를 처리합니다.
-```python
-import requests
-from app.key.kakao_client import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
-
-class Oauth:
-    def __init__(self):
-        self.auth_server = "https://kauth.kakao.com%s"
-        self.api_server = "https://kapi.kakao.com%s"
-        self.default_header = {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Cache-Control": "no-cache",
-        }
-
-    def auth(self, code):
-        return requests.post(
-            url=self.auth_server % "/oauth/token",
-            headers=self.default_header,
-            data={
-                "grant_type": "authorization_code",
-                "client_id": CLIENT_ID,
-                "client_secret": CLIENT_SECRET,
-                "redirect_uri": REDIRECT_URI,
-                "code": code,
-            },
-        ).json()
-    
-    def userinfo(self, bearer_token):
-        return requests.post(
-            url=self.api_server % "/v2/user/me",
-            headers={
-                self.default_header,
-                {"Authorization": bearer_token}
-            },
-            data={}
-        ).json()
-```
-
-6. `app/routes/oauth.py`: 카카오 로그인 및 로그아웃 관련 라우트를 정의합니다.
-```python
-from flask import Blueprint, redirect, request, session
-from app.controllers.kakao_controller import Oauth
-from werkzeug.security import generate_password_hash
-from app.models import db, User  # Assuming you have defined User model and db in models
-
-kakao = Blueprint('kakao', __name__)
-
-@kakao.route('/')
-def kakao_sign_in():
-    kakao_oauth_url = f"https://kauth.kakao.com/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code"
-    return redirect(kakao_oauth_url)
-
-@kakao.route('/callback')
-def callback():
-    code = request.args["code"]
-
-    oauth = Oauth()
-    auth_info = oauth.auth(code)
-
-    if "error" in auth_info:
-        print("에러가 발생했습니다.")
-        return {'message': '인증 실패'}, 404
-
-    user_info = oauth.userinfo("Bearer " + auth_info['access_token'])
-
-    kakao_account = user_info["kakao_account"]
-    profile = kakao_account["profile"]
-    name = profile["nickname"]
-    email = kakao_account.get("email", f"{name}@kakao.com")
-
-    user = User.query.filter_by(name=name).first()
-
-    if user is None:
-        user = User(name=name, email=email, password=generate_password_hash(name))
-        db.session.add(user)
-        db.session.commit()
-
-    session['email'] = user.email
-    session['isKakao'] = True
-
-    return redirect("http://localhost:5000")
-
-@kakao.route('/signout')
-def kakao_sign_out():
-    kakao_oauth_url = f"https://kauth.kakao.com/oauth/logout?client_id={CLIENT_ID}&logout_redirect_uri={SIGNOUT_REDIRECT_URI}"
-
-    if session.get('email'):
-        session.clear()
-        value = {"status": 200, "result": "success"}
-    else:
-        value = {"status": 404, "result": "fail"}
-    print(value)
-    return redirect(kakao_oauth_url)
-```
-
-7. `app/models.py`: User 모델을 정의하고 데이터베이스 설정을 합니다. (여기서는 SQLAlchemy를 사용합니다.)
-```python
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
-
-    def __init__(self, name, email, password):
-        self.name = name
-        self.email = email
-        self.password = password
-```
-
-8. `templates/login.html`: 로그인 버튼이 있는 HTML 페이지입니다.
+#### templates/login.html
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -180,17 +100,50 @@ class User(db.Model):
 </head>
 <body>
     <h1>Login</h1>
-    <a href="/oauth/kakao">카카오톡으로 로그인</a>
+    <form action="{{ url_for('login') }}" method="post">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
+    <p><a href="{{ url_for('signup') }}">Sign up</a></p>
 </body>
 </html>
 ```
 
-9. `requirements.txt`: 필요한 패키지를 명시합니다.
-```
-Flask
-requests
-Flask-SQLAlchemy
-Werkzeug
+#### templates/signup.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <h1>Sign Up</h1>
+    <form action="{{ url_for('signup') }}" method="post">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Sign Up</button>
+    </form>
+    <p><a href="{{ url_for('login') }}">Login</a></p>
+</body>
+</html>
 ```
 
-이제 이 코드를 기반으로 Flask 프로젝트를 설정하고 실행하면 카카오톡 소셜 로그인을 사용할 수 있습니다. 각 파일을 정확히 배치하고 필요에 따라 설정을 조정하십시오. 프론트엔드에서는 AJAX를 사용하지 않고 HTML 링크를 통해 리디렉션을 처리합니다.
+#### 7. 실행 및 테스트
+터미널에서 Flask 애플리케이션을 실행합니다:
+```bash
+python app.py
+```
+
+브라우저에서 `http://127.0.0.1:5000/`로 접속하여 회원가입 및 로그인을 테스트합니다.
+
+### 요약
+- Flask와 Supabase를 사용하여 사용자 인증 시스템 구현
+- Supabase 클라이언트를 생성하여 회원가입, 로그인, 로그아웃 기능 구현
+- HTML 템플릿을 사용하여 사용자 인터페이스 구성

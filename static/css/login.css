@@ -1,60 +1,56 @@
 body {
-    background-color: #f8f9fa;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background-color: #f8f9fa;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .login-container {
-    max-width: 400px;
-    width: 100%;
-    padding: 20px;
-    text-align: center;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 90vh;
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 90vh;
 }
 .login-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/static/img/background.png') no-repeat center center;
-    background-size: cover;
-    z-index: -1;
-    filter: blur(8px); /* Optional: to add a blur effect to the background */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("/static/img/background.png") no-repeat center center;
+  background-size: cover;
+  z-index: -1;
+  filter: blur(8px); /* Optional: to add a blur effect to the background */
 }
 .login-content {
-    position: relative;
-    z-index: 1;
-    flex: 1;
+  position: relative;
+  z-index: 1;
+  flex: 1;
 }
 .login-title {
-    font-weight: bold;
-    margin-bottom: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 .btn-custom {
-    width: 100%;
-    margin-bottom: 10px;
+  width: 100%;
+  margin-bottom: 10px;
 }
 .footer-links {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 .kakao-login-button {
-    display: block;
-    width: 100%;
-    height: auto;
-    margin-bottom: 10px;
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
 }
 .bottom-elements {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-<<<<<<< HEAD
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-=======
-}
->>>>>>> 3a65a60d3364feece1f0976d6f64aae0e3115785
