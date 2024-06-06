@@ -1,4 +1,5 @@
 var markers = [];
+var selectedMarker = null; // 현재 선택된 마커를 추적하기 위한 변수
 var mapContainer = $("#map")[0];
 var mapOption = {
   center: new kakao.maps.LatLng(37.606665, 127.027316),
@@ -43,25 +44,65 @@ function placesSearchCB(data, status, pagination) {
 // 장소 마커 표시 함수
 function displayMarker(place) {
   let marker = createMarker(place);
-  kakao.maps.event.addListener(marker, "click", function () {
-    infowindow.setContent(
-      '<div style="padding:5px;font-size:12px;">' + place.place_name + "</div>"
-    );
-    infowindow.open(map, marker);
 
-    // Update the restaurant info HTML
+  kakao.maps.event.addListener(marker, "click", function () {
     var placeInfoHTML = generatePlaceInfo(place);
     $("#restaurantInfo").html(placeInfoHTML);
     $("#infoContainer").show();
 
-    // Set height and show hidden elements when marker is clicked
     $("#restaurantInfo .more_info").css("height", "360px");
     $("#restaurantInfo .res_loc, #restaurantInfo .res_menu").removeAttr(
       "hidden"
     );
+
+    changeMarkerImage(marker);
   });
 
   markers.push(marker);
+}
+
+// 마커 이미지 변경 함수
+function changeMarkerImage(marker) {
+  let clickedImageSrc = "/static/img/click_mark.jpg";
+  let originalImageSrc = "/static/img/cork_restaurant.jpg";
+
+  // 이전에 선택된 마커가 있으면 원래 이미지로 변경
+  if (selectedMarker) {
+    let imageSize = calculateMarkerSize();
+    let imageOption = {
+      offset: new kakao.maps.Point(imageSize.width / 2, imageSize.height),
+    };
+
+    let markerImage = new kakao.maps.MarkerImage(
+      originalImageSrc,
+      imageSize,
+      imageOption
+    );
+    selectedMarker.setImage(markerImage);
+  }
+
+  // 새로운 마커 이미지를 클릭된 이미지로 변경하고 크기를 살짝 더 크게 설정
+  let imageSize = calculateMarkerSize();
+  let clickedImageSize = new kakao.maps.Size(
+    imageSize.width * 1.2,
+    imageSize.height * 1.2
+  );
+  let imageOption = {
+    offset: new kakao.maps.Point(
+      clickedImageSize.width / 2,
+      clickedImageSize.height
+    ),
+  };
+
+  let markerImage = new kakao.maps.MarkerImage(
+    clickedImageSrc,
+    clickedImageSize,
+    imageOption
+  );
+  marker.setImage(markerImage);
+
+  // 현재 선택된 마커 업데이트
+  selectedMarker = marker;
 }
 
 // 마커 생성 함수
@@ -93,7 +134,7 @@ function calculateMarkerSize() {
   let level = map.getLevel();
   let minSize = 24; // Increased minimum size for better visibility
   let maxSize = 48;
-  let size = minSize + ((maxSize - minSize) * (10 - level)) / 9; // Adjust size based on zoom level (assuming level 1-10)
+  let size = minSize + ((maxSize - minSize) * (10 - level)) / 9; // (assuming level 1-10)
   return new kakao.maps.Size(size, size * 1.2);
 }
 
@@ -111,8 +152,8 @@ function generatePlaceInfo(place) {
       place.y,
       place.x
     );
-    walkingTime = formatTime(calculateTime(distance, 5)); // 보행 속도 5 km/h
-    drivingTime = formatTime(calculateTime(distance, 50)); // 운전 속도 50 km/h
+    walkingTime = formatTime(calculateTime(distance, 4)); // 보행 속도 4 km/h
+    drivingTime = formatTime(calculateTime(distance, 40)); // 운전 속도 40 km/h
   }
 
   var infoHTML = `
@@ -144,13 +185,10 @@ function generatePlaceInfo(place) {
   return infoHTML;
 }
 
-// Document ready function to attach click event to more_info elements
 $(document).ready(function () {
   $("#restaurantInfo").on("click", ".more_info", function () {
-    // Hide all other more_info elements
     $(".more_info").not(this).hide();
 
-    // Set height of the clicked more_info element to 360px
     $(this).css("height", "360px");
     $(".res_loc, .res_menu").removeAttr("hidden");
   });
@@ -162,6 +200,7 @@ function removeMarkers() {
     markers[i].setMap(null);
   }
   markers = [];
+  selectedMarker = null; // 마커를 제거할 때 선택된 마커도 초기화
 }
 
 // 두 지점 간 거리 계산 함수

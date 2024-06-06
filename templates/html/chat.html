@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>챗봇과 대화</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/static/css/chat.css" rel="stylesheet" />
+    <style></style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">챗봇과 대화</div>
+      <div class="chat-messages" id="chat-messages">
+        <!-- Messages will appear here -->
+      </div>
+      <div class="chat-input">
+        <textarea id="user-input" rows="1"></textarea>
+        <button onclick="sendMessage()">전송</button>
+      </div>
+    </div>
+
+    <script>
+      function sendMessage() {
+        const userInput = document.getElementById("user-input");
+        const chatMessages = document.getElementById("chat-messages");
+        const userMessage = userInput.value;
+
+        if (userMessage.trim() === "") return;
+
+        // Add user message to chat
+        const userMessageDiv = document.createElement("div");
+        userMessageDiv.className = "message user";
+        userMessageDiv.textContent = userMessage;
+        chatMessages.appendChild(userMessageDiv);
+
+        // Clear the input field
+        userInput.value = "";
+
+        // Simulate bot response
+        setTimeout(() => {
+          const botMessageDiv = document.createElement("div");
+          botMessageDiv.className = "message bot";
+          botMessageDiv.textContent = "챗봇 응답: " + userMessage;
+          chatMessages.appendChild(botMessageDiv);
+
+          // Scroll to the bottom of the chat
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 500);
+      }
+    </script>
+  </body>
+</html>

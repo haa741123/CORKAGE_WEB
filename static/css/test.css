@@ -182,7 +182,8 @@ body {
   display: inline-block;
   margin-right: 10px;
   padding: 5px 10px;
-  background-color: #f5c8ee;
+  background-color: #ffffff; /* 배경색 흰색 */
+  border: 1px solid #000000; /* 테두리 검정색 */
   border-radius: 5px;
   cursor: pointer;
 }
