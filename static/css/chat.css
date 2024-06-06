@@ -27,6 +27,7 @@ body {
   padding: 15px;
   background-color: #e9ecef;
 }
+
 .chat-input {
   display: flex;
   border-top: 1px solid #dee2e6;
