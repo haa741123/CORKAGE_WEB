@@ -37,16 +37,6 @@ body {
   height: 100svh;
 }
 
-.location-bar {
-  margin-left: 25px;
-  margin-right: 25px;
-  padding-right: 10px; /* 오른쪽 여백 추가 */
-  background-color: white; /* 배경색 추가 */
-  border-radius: 5px; /* 모서리 둥글게 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
-  display: flex;
-  align-items: center;
-}
 
 #menu_wrap {
   position: absolute;
@@ -159,7 +149,7 @@ body {
 /* 카테고리 CSS */
 .category-swiper {
   position: absolute;
-  top: 55px;
+  top: 10px;
   left: 5px;
   width: calc(100% - 40px);
   overflow-x: auto;
