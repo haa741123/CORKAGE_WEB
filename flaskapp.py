@@ -18,6 +18,11 @@ def sch_filter():
     return render_template('html/sch_filter.html')
 
 
+@app.route("/post")
+def post():
+    return render_template('html/Posts.html')
+
+
 if __name__ == '__main__':
     app.debug = True
     app.run(use_reloader=False)
