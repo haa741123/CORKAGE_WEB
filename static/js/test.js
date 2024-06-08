@@ -33,6 +33,12 @@ function placesSearchCB(data, status, pagination) {
       allPlacesInfo += generatePlaceInfo(data[i]); // 각 장소 정보를 추가
     }
 
+    // 사용자 위치가 있는 경우, 사용자 위치도 bounds에 추가
+    if (userPosition && userPosition.latitude && userPosition.longitude) {
+      let userLatLng = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
+      bounds.extend(userLatLng);
+    }
+
     map.setBounds(bounds);
 
     // 모든 장소 정보를 infoContainer에 업데이트
@@ -40,6 +46,7 @@ function placesSearchCB(data, status, pagination) {
     $("#infoContainer").show();
   }
 }
+
 
 // 장소 마커 표시 함수
 function displayMarker(place) {
