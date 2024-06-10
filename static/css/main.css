@@ -1,16 +1,14 @@
-body {
-  font-family: "Pretendard", sans-serif;
-}
 
 .scrolling-wrapper {
   display: flex;
-  flex-wrap: nowrap; /* Ensure items do not wrap */
+  flex-wrap: nowrap;  /* Ensure items do not wrap */
   overflow-x: auto;
   padding-bottom: 10px;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
   width: 100%;
 }
+
 
 .btn_title {
   font-weight: bold;
@@ -19,10 +17,11 @@ body {
 }
 
 .subAttr {
-  color: rgba(160, 159, 159, 0.841);
+  color:rgba(160, 159, 159, 0.841) ;
   font-size: 14px;
   margin-bottom: 1px;
 }
+
 
 .main_card {
   display: flex; /* Flexbox를 사용 */
@@ -37,40 +36,10 @@ body {
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
-  flex: none;
+  flex: none; 
 }
 
-.intro_card {
-  display: flex; /* Flexbox를 사용 */
-  justify-content: center; /* 수평 중앙 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
-  min-width: 90vw;
-  min-height: 65vw;
-  margin: 10px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  flex: none;
-}
 
-.post {
-  display: flex; /* Flexbox 사용 */
-  justify-content: center; /* 수평 중앙 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
-  min-width: 90vw;
-  min-height: 60vw; /* 세로 길이를 늘림 */
-  margin: 10px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  flex: none; /* Flex-grow 비활성화 */
-}
 
 .card {
   min-width: 200px;
@@ -81,7 +50,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
-  flex: none;
+  flex: none; 
 }
 
 .circular-cards .rad_btn {
@@ -96,34 +65,10 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
   margin: 10px; /* 주변 여백 */
   text-align: center; /* 텍스트 중앙 정렬 */
-  flex: 1;
+  flex:1;
 }
 
-.circular-cards .rad_btn_sm {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 10px;
-  text-align: center;
-  flex: none; /* Flex-grow 비활성화 */
-}
 
-.icon-circle {
-  aspect-ratio: 1;
-  width: 60px; /* 적절한 크기로 설정하세요 */
-  border-radius: 100%;
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 8px; /* 원과 텍스트 사이의 간격 */
-}
-
-.rad_btn_sm p {
-  margin: 0;
-}
 
 /* Hide scrollbar */
 .scrolling-wrapper::-webkit-scrollbar {

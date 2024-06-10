@@ -63,6 +63,11 @@ def sch_filter():
 def index():
     return render_template('html/index.html')
 
+@app.route("/post")
+def post():
+    return render_template('html/Posts.html')
+
+
 if __name__ == '__main__':
     app.debug = True
     app.run(use_reloader=False)

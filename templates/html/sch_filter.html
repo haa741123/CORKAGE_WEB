@@ -23,7 +23,9 @@
   <body>
     <div class="container">
       <div class="filter-header">
-        <span class="icon">←</span>
+        <div id="back_btn">
+          <span class="icon">←</span>
+        </div>
         <h4>필터</h4>
         <span id="reset_icon" class="reset_icon">&orarr;</span>
       </div>
@@ -120,7 +122,7 @@
               심야
             </button>
           </div>
-          <h5>가격</h5>
+          <h5>콜키지 비용</h5>
           <div class="filter-buttons" data-category="price">
             <button
               type="button"
@@ -144,10 +146,50 @@
               5만원대 이상
             </button>
           </div>
+          
+          <h5>음식점 평점</h5>
+          <div class="filter-buttons" data-category="score">
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              data-value="1점"
+            >
+              1점
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              data-value="2점"
+            >
+              2점
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              data-value="3점"
+            >
+              3점
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              data-value="4점"
+            >
+              4점
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              data-value="5점"
+            >
+              5점
+            </button>
+          </div>
 
           <input type="hidden" name="food" id="foodInput" />
           <input type="hidden" name="time" id="timeInput" />
           <input type="hidden" name="price" id="priceInput" />
+          <input type="hidden" name="score" id="scoreInput" />
 
           <div class="filter-buttons mt-3">
             <button
@@ -169,6 +211,13 @@
           Math.floor(Math.random() * 10000) +
           '"\><\/script>'
       );
+    </script>
+    <script>
+      $(document).ready(function() {
+            $('#back_btn').on('click', function() {
+                window.location.href = "/";
+            });
+        });
     </script>
   </body>
 </html>
