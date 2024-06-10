@@ -26,6 +26,10 @@ class Post(db.Model):
 with app.app_context():
     db.create_all()
 
+@app.route('/index')
+def index():
+    return render_template('html/index.html')
+
 @app.route('/post/<int:post_id>')
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -33,7 +37,7 @@ def show_post(post_id):
 
 @app.route('/')
 def home():
-    return redirect(url_for('board'))
+    return redirect(url_for('index'))
 
 @app.route('/board')
 def board():
@@ -59,9 +63,6 @@ def login():
 def sch_filter():
     return render_template('html/sch_filter.html')
 
-@app.route('/index')
-def index():
-    return render_template('html/index.html')
 
 @app.route("/post")
 def post():
