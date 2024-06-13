@@ -4,20 +4,16 @@ body {
   padding: 0;
   overflow: hidden;
 }
-
 body {
   -ms-overflow-style: none;
 }
-
 ::-webkit-scrollbar {
   display: none;
 }
 
-/* 특정 부분 스크롤바 없애기 */
 .box {
   -ms-overflow-style: none;
 }
-
 .map_wrap,
 .map_wrap * {
   margin: 0;
@@ -36,8 +32,6 @@ body {
   width: 100%;
   height: 100svh;
 }
-
-
 #menu_wrap {
   position: absolute;
   top: 0;
@@ -69,24 +63,20 @@ body {
 #menu_wrap .option button {
   margin-left: 5px;
 }
-
 #map {
-  width: 800px; /* 고정된 너비 */
-  height: 600px; /* 고정된 높이 */
+  width: 800px;
+  height: 600px;
 }
-
 @media (max-width: 800px) {
   #map {
-    width: 100%; /* 화면 너비가 800px 이하일 때 전체 너비를 사용 */
-    height: 400px; /* 높이 조정 */
+    width: 100%;
+    height: 400px;
   }
 }
-
 .location-bar input[type="text"] {
-  font-size: 16px; /* 모바일 브라우저에서 확대 없이 보기 적합한 크기 */
+  font-size: 16px;
 }
 
-/* 검색 바 */
 .map_wrap .location-bar {
   position: absolute;
   top: 10px;
@@ -102,7 +92,6 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   margin-top: 5px;
 }
-
 .map_wrap .location-bar input {
   flex-grow: 1;
   border: none;
@@ -110,7 +99,6 @@ body {
   padding: 10px;
   border-radius: 25px;
 }
-
 .map_wrap .location-bar button {
   padding: 10px;
   border: none;
@@ -122,31 +110,35 @@ body {
   margin-right: 5px;
 }
 
-/* 화면 크기에 따라 스타일 조정 (반응형 디자인) */
 @media (max-width: 768px) {
   .map_wrap .location-bar {
     width: 100%;
     padding: 2px;
-    top: 5px; /* 모바일 화면에서의 위치 조정 */
+    top: 5px;
   }
-
   .map_wrap .location-bar input {
     padding: 8px;
   }
 
-  /* 카테고리 스와이퍼 */
   .category-swiper {
-    top: 60px; /* 조정된 위치 */
+    top: 60px;
     padding: 0 5px;
   }
-
   .category {
-    padding: 8px 12px; /* 더 큰 터치 타겟 */
-    font-size: 16px; /* 더 큰 글자 크기 */
+    padding: 8px 12px;
+    font-size: 16px;
+  }
+
+  .res_info_swiper {
+    top: 60px;
+    padding: 0 5px;
+  }
+  .res_info {
+    padding: 8px 12px;
+    font-size: 16px;
   }
 }
 
-/* 카테고리 CSS */
 .category-swiper {
   position: absolute;
   top: 55px;
@@ -156,59 +148,56 @@ body {
   white-space: nowrap;
   z-index: 1000;
 
-  /* 스크롤 바 숨기기 */
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
-
 .category-swiper::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
-
 .categories {
   display: inline-block;
 }
-
 .category {
   display: inline-block;
   margin-right: 10px;
   padding: 5px 10px;
-  background-color: #ffffff; /* 배경색 흰색 */
+  background-color: #ffffff;
   border-radius: 5px;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4); /* 더 진한 그림자 효과 */
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
-
-
 .category:last-child {
   margin-right: 0;
 }
 
-#infoContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* 컨테이너 내에서 아이템들을 위에서 아래로 정렬 */
-  align-items: center; /* 컨테이너 내에서 아이템들을 가로로 가운데 정렬 */
-  width: 100%;
-  height: 40vh; /* 초기 높이 설정 */
-  background: white;
-  padding: 10px;
+.res_info_swiper {
   position: absolute;
-  bottom: 0;
-  z-index: 10;
-  overflow: hidden; /* 스크롤바 숨기기 */
-  resize: vertical; /* 사용자가 높이를 조절할 수 있도록 설정 */
-  min-height: 10vh; /* 최소 높이 설정 */
-  max-height: 50vh; /* 최대 높이 설정 */
-  box-sizing: border-box; /* 패딩과 보더를 포함한 크기 계산 */
+  top: 55px;
+  left: 5px;
+  width: calc(100% - 40px);
+  overflow-x: auto;
+  white-space: nowrap;
+  z-index: 1000;
+  scrollbar-width: none;
 }
 
-#toggleImage {
-  width: 15%;
-  height: auto;
-  margin-bottom: 10px; /* 이미지 아래에 마진 추가 */
+.res_info_swiper::-webkit-scrollbar {
+  display: none;
 }
 
-#restaurantInfo {
-  overflow-x: auto; /* 스크롤 가능하도록 설정 */
-  width: 100%; /* 가로 너비를 100%로 설정 */
+.more_info {
+  display: inline-block;
+}
+
+.res_info {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 5px 10px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.res_info:last-child {
+  margin-right: 0;
 }

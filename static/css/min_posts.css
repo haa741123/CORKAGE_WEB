@@ -1,0 +1,135 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow-y: hidden;
+    overflow: auto; 
+    background-color: #fff;
+    color: #333;
+}
+
+
+
+.app-container, .community-container {
+  max-width: 400px;
+  margin: auto;
+  background: white;
+  font-size: 16px;
+  overflow: hidden; 
+}
+
+
+.header, .footer, .btn_title {
+  background: #f8f9fa;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.wine-list, .scrolling-wrapper {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wine-list li { 
+    padding: 10px;
+    border: 1px solid pink;
+    margin-bottom: 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    text-align: left;
+}   
+
+
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#vote_wine::before {
+    content: "🌈";
+    margin-right: 5px;
+}
+
+.vote {
+    margin-left: 110px; /* 필요에 따라 간격 조절 */
+}
+
+
+
+.post {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.wine-list li.selected, .post:hover {
+  background-color: black;
+  color: white;
+}
+
+
+.scrolling-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  width: 100%;
+}
+
+.scrolling-wrapper > .post {
+  flex: 0 0 auto;
+  margin: 15px;
+  width: 370px;
+  height: 250px;
+  background-color: #EDEBED;    
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  margin-right: 10px;
+  text-align: center;
+  line-height: 150px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-y: hidden;
+}
+
+.scrolling-wrapper::-webkit-scrollbar {
+  display: none; 
+}
+
+
+.floating-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.floating-button i {
+  font-size: 24px;
+}

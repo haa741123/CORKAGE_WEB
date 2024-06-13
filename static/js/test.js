@@ -19,18 +19,16 @@ $(document).ready(function () {
   });
 });
 
-// 장소 검색 콜백 함수
+// 장소 검색 콜백 함수  
 function placesSearchCB(data, status, pagination) {
   if (status === kakao.maps.services.Status.OK) {
     removeMarkers();
     let bounds = new kakao.maps.LatLngBounds();
 
-    var allPlacesInfo = ""; // 모든 장소 정보를 담을 변수
-
     for (let i = 0; i < data.length; i++) {
       displayMarker(data[i]);
       bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
-      allPlacesInfo += generatePlaceInfo(data[i]); // 각 장소 정보를 추가
+      
     }
 
     // 사용자 위치가 있는 경우, 사용자 위치도 bounds에 추가
@@ -42,8 +40,8 @@ function placesSearchCB(data, status, pagination) {
     map.setBounds(bounds);
 
     // 모든 장소 정보를 infoContainer에 업데이트
-    $("#restaurantInfo").html(allPlacesInfo);
-    $("#infoContainer").show();
+    
+    
   }
 }
 
@@ -54,13 +52,7 @@ function displayMarker(place) {
 
   kakao.maps.event.addListener(marker, "click", function () {
     var placeInfoHTML = generatePlaceInfo(place);
-    $("#restaurantInfo").html(placeInfoHTML);
-    $("#infoContainer").show();
 
-    $("#restaurantInfo .more_info").css("height", "360px");
-    $("#restaurantInfo .res_loc, #restaurantInfo .res_menu").removeAttr(
-      "hidden"
-    );
 
     changeMarkerImage(marker);
   });
@@ -145,52 +137,7 @@ function calculateMarkerSize() {
   return new kakao.maps.Size(size, size * 1.2);
 }
 
-// 장소 정보 HTML 생성 함수
-function generatePlaceInfo(place) {
-  var distance = 0;
-  var walkingTime = "알 수 없음";
-  var drivingTime = "알 수 없음";
 
-  // userPosition이 정의되었는지 확인
-  if (userPosition && userPosition.latitude && userPosition.longitude) {
-    distance = calculateDistance(
-      userPosition.latitude,
-      userPosition.longitude,
-      place.y,
-      place.x
-    );
-    walkingTime = formatTime(calculateTime(distance, 4)); // 보행 속도 4 km/h
-    drivingTime = formatTime(calculateTime(distance, 40)); // 운전 속도 40 km/h
-  }
-
-  var infoHTML = `
-      <div class="more_info" style="padding: 5px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; max-width: 100%; box-sizing: border-box; margin-bottom: 10px;">
-          <p style="margin: 0; font-weight: bold; font-size: 16px;">${
-            place.place_name
-          }</p>
-          <p style="margin: 5px 0; color: #555;"><strong>위치:</strong> ${
-            place.address_name
-          }</p>
-          <p style="margin: 5px 0; color: #555;"><strong>전화번호:</strong> ${
-            place.phone
-          }</p>
-          <p style="margin: 5px 0; color: #555;">
-              <strong>거리:</strong> ${distance.toFixed(2)} km 
-              <span style="font-size: 12px; color: #777;">
-                  ( 도보: ${walkingTime}, 차량: ${drivingTime} )
-              </span>
-          </p>
-          <p class="res_loc" style="margin: 5px 0; color: #555;" hidden><strong>위치:</strong> ${
-            place.category_name
-          }</p>
-          <p class="res_menu" style="margin: 5px 0; color: #555;" hidden><strong>메뉴:</strong> 
-            
-          </p>
-      </div>
-    `;
-
-  return infoHTML;
-}
 
 $(document).ready(function () {
   $("#restaurantInfo").on("click", ".more_info", function () {
