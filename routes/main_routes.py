@@ -14,6 +14,11 @@ def login():
 def sch_filter():
     return render_template('html/sch_filter.html')
 
+@main_routes.route("/chatbot")
+def chatbot():
+    return render_template('html/chat.html')
+
+
 @main_routes.route("/post")
 def post():
     return render_template('html/Posts.html')
