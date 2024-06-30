@@ -113,7 +113,8 @@ def get_recommendations_for_user(user_data):
                         rec = similar_drink_details.iloc[0]
                         response_list.append(f"{rec['주류이름']} - {rec['주류특징']} ({rec['주류종류']})")
 
-        return f"고객님의 취향을 기반으로한 추천 리스트를 제공하겠습니다. \n\n" + "\n".join(response_list[:10])
+        # 추천 결과 5개 제한
+        return f"고객님의 취향을 기반으로한 추천 리스트를 제공하겠습니다. \n\n" + "\n".join(response_list[:5])
 
     except Exception as e:
         logging.error(f"추천을 생성하는 중 오류가 발생했습니다: {e}")
