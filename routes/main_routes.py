@@ -22,3 +22,5 @@ def chatbot():
 @main_routes.route("/post")
 def post():
     return render_template('html/Posts.html')
+
+

@@ -23,7 +23,7 @@ body {
 }
 .chat-header {
   padding: 15px;
-  background-color: #007bff;
+  background-color: #ba004a;
   color: #ffffff;
   text-align: center;
 }
@@ -49,10 +49,37 @@ body {
   white-space: nowrap; 
   -ms-overflow-style: none; 
   scrollbar-width: none;
+  padding: 4px 3px;
+  border-radius: 8px;
 }
 
 .faq-buttons::-webkit-scrollbar {
   display: none; 
+}
+
+.faq-button {
+  background-color: white;
+  color: #495057;
+  border: 1px solid #ced4da;
+  border-radius: 20px;
+  padding: 8px 16px;
+  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.faq-button:hover, .faq-button:focus {
+  background-color: #e9ecef;
+  color: #212529;
+  border-color: #adb5bd;
+  outline: none;
+}
+
+.faq-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .chat-input {
@@ -70,7 +97,7 @@ body {
 .chat-input button {
   padding: 10px 20px;
   border: none;
-  background-color: #007bff;
+  background-color: #ba004a;
   color: #ffffff;
 }
 .message {

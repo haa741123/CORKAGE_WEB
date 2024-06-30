@@ -7,7 +7,13 @@ let isLoading = false;
 /**
  * 비속어 제한 리스트
  */
-import { limit_BadWords } from '/static/js/limit_BadWord.js';
+import { limit_BadWords } from '/static/js/data/limit_BadWord.js';
+
+
+/**
+ * 미리 정의된 답변
+ */
+import {answers} from '/static/js/data/define_Answer.js';
 
 
 
@@ -48,6 +54,7 @@ $(document).ready(function() {
  */
 function sendMessage() {
     const userInput = $("#user-input").val().trim();
+    
     if (userInput === "") {
         alert("내용을 입력해주세요.");
         return;
@@ -63,14 +70,46 @@ function sendMessage() {
     $("#user-input").val(""); // 입력 필드 초기화
     startLoading(); // 로딩 상태 시작
 
-    // 서버에 메시지를 보내고 응답을 받는 함수
-    sendToServer(userInput).then(response => {
-        displayMessage(response, 'bot');    // 챗봇 메시지 표시
-        finishLoading();                    // 로딩 상태 종료
-    }).catch(error => {
-        alert("메시지 전송에 실패했습니다.");
-        finishLoading();                    // 로딩 상태 종료
-    });
+
+    
+    if (userInput.includes("주류 추천")) {  
+        // 주류 추천 api
+        generateRecommendation(userInput, '2')       
+            .then(recommendation => {
+                sendToServer(userInput).then(response => {
+
+                    console.log(recommendation);
+
+                    displayMessage(recommendation.response, 'bot');
+                    finishLoading();
+                });
+            })
+            .catch(error => {
+                console.error('처리 중 문제가 발생했습니디.:', error);
+                finishLoading(); 
+            });
+
+        
+    } 
+
+    // 미리 정의된 답변을 리턴
+    else if (answers[userInput]) {
+        
+        sendToServer(userInput).then(response => {
+            displayMessage(answers[userInput], 'bot');
+            finishLoading();
+        });
+    }
+    else {
+        // 서버에 메시지를 보내고 응답을 받는 함수
+        sendToServer(userInput).then(response => {
+            displayMessage(response, 'bot');    // 챗봇 메시지 표시
+            finishLoading();                    // 로딩 상태 종료
+        }).catch(error => {
+            displayMessage('메시지 전송에 실패했습니다...', 'bot');
+            finishLoading();                    // 로딩 상태 종료
+        });
+    }
 }
 
 
@@ -101,7 +140,7 @@ function finishLoading() {
  */
 function displayMessage(message, sender) {
     const chatMessages = $("#chat-messages");
-    const messageDiv = $('<div class="message"></div>').addClass(sender).text(`${sender === 'bot' ? '챗봇: ' : ''}${message}`);
+    const messageDiv = $('<div class="message"></div>').addClass(sender).text(`${sender === 'bot' ? '도우미😀: ' : ''}${message}`);
     chatMessages.append(messageDiv);
     chatMessages.scrollTop(chatMessages.prop("scrollHeight"));
 }
@@ -116,5 +155,26 @@ async function sendToServer(message) {
         setTimeout(() => {
             resolve(`${message}`);  // 응답
         }, 500);    // 0.5초
+    });
+}
+
+
+// 주류 추천 결과
+function generateRecommendation(action_type, user_id) {
+    console.log(action_type, user_id)
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/api/v1/recommendations',  // 주류 추천 api
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ message: action_type, user_id: user_id }),  
+            success: function(response) {
+                resolve(response); // 추천 결과
+            },
+            error: function(error) {
+                console.error('Error:', error);
+                reject(error); // 에러 코드
+            }
+        });
     });
 }
