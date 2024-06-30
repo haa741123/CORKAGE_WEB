@@ -41,32 +41,8 @@ usr_info_df, wine_info_df = None, None
 tfidf_vectorizer, wine_features = None, None
 knn, user_item_matrix = None, None
 
-try:
-    # 사용자 정보와 와인 정보 CSV 파일 로드
-    usr_info_df = pd.read_csv(CONFIG['USR_INFO_PATH'])
-    wine_info_df = pd.read_csv(CONFIG['WINE_INFO_PATH'])
-
-    # 데이터 전처리
-    # 주류 이름과 특징에서 특수 문자를 제거하고 소문자로 변환
-    wine_info_df['cleaned_주류이름'] = wine_info_df['주류이름'].str.replace(r'[^\w\s]', '').str.strip().str.lower()
-    wine_info_df['cleaned_주류특징'] = wine_info_df['주류특징'].str.replace(r'[^\w\s]', '').str.strip().str.lower()
-
-    # TF-IDF 벡터화
-    # 주류 특징을 벡터화하여 유사도 계산에 사용
-    tfidf_vectorizer = TfidfVectorizer()
-    wine_features = tfidf_vectorizer.fit_transform(wine_info_df['cleaned_주류특징'])
-
-    # 협업 필터링 준비
-    # 사용자-아이템 행렬을 생성하고 KNN 모델을 학습
-    user_item_matrix = pd.crosstab(index=usr_info_df['유저아이디'], columns=usr_info_df['좋아하는주류이름'])
-    knn = NearestNeighbors(metric='cosine', algorithm='brute')
-    knn.fit(user_item_matrix.values)
-except Exception as e:
-    logging.error(f"시작 시 데이터를 불러오는 중 오류가 발생했습니다: {e}")
-
-# 데이터 전처리 함수
 def preprocess_data():
-    global tfidf_vectorizer, wine_features, knn, user_item_matrix
+    global tfidf_vectorizer, wine_features, knn, user_item_matrix, wine_info_df
     # 주류 이름과 특징 정제
     wine_info_df['cleaned_주류이름'] = wine_info_df['주류이름'].str.replace(r'[^\w\s]', '').str.strip().str.lower()
     wine_info_df['cleaned_주류특징'] = wine_info_df['주류특징'].str.replace(r'[^\w\s]', '').str.strip().str.lower()
@@ -78,20 +54,37 @@ def preprocess_data():
     knn = NearestNeighbors(metric='cosine', algorithm='brute')
     knn.fit(user_item_matrix.values)
 
+def load_data():
+    global usr_info_df, wine_info_df
+    usr_info_df = pd.read_csv(CONFIG['USR_INFO_PATH'])
+    wine_info_df = pd.read_csv(CONFIG['WINE_INFO_PATH'])
+
+try:
+    with ThreadPoolExecutor() as executor:
+        future_load = executor.submit(load_data)
+        future_load.result()  # 데이터 로딩이 완료될 때까지 기다림
+        future_preprocess = executor.submit(preprocess_data)
+        future_preprocess.result()  # 데이터 전처리가 완료될 때까지 기다림
+except Exception as e:
+    logging.error(f"시작 시 데이터를 불러오는 중 오류가 발생했습니다: {e}")
+
+# 데이터가 제대로 로드되고 전처리되었는지 확인
+if wine_info_df is not None and 'cleaned_주류이름' in wine_info_df.columns:
+    logging.info("데이터가 성공적으로 로드되고 전처리되었습니다.")
+else:
+    logging.error("데이터 로드 또는 전처리 과정에서 문제가 발생했습니다.")
+
 # 사용자 데이터 가져오기 함수
 def get_user_data(user_id):
-    # 유저 아이디를 문자열로 변환하여 일치하는 데이터 반환
     usr_info_df['유저아이디'] = usr_info_df['유저아이디'].astype(str)
     return usr_info_df[usr_info_df['유저아이디'] == str(user_id)]
 
 # 사용자 데이터를 기반으로 추천 주류 리스트 생성 함수
 def get_recommendations_for_user(user_data):
     try:
-        # 사용자가 좋아하는 주류와 맛 추출
         favorite_drink = user_data['좋아하는주류이름'].values[0].strip().lower()
         favorite_taste = user_data['좋아하는맛'].values[0].strip().lower()
 
-        # 퍼지 매칭을 사용하여 사용자가 좋아하는 주류와 가장 유사한 주류 찾기
         matched_drink_data = process.extractOne(favorite_drink, wine_info_df['cleaned_주류이름'], scorer=fuzz.token_sort_ratio)
         if matched_drink_data is None or matched_drink_data[1] < 50:
             return CONFIG['DRINK_NOT_FOUND']
@@ -99,17 +92,14 @@ def get_recommendations_for_user(user_data):
         matched_drink = matched_drink_data[0]
         favorite_idx = wine_info_df[wine_info_df['cleaned_주류이름'] == matched_drink].index[0]
         
-        # 코사인 유사도를 사용하여 유사한 주류 찾기
         cosine_similarities = cosine_similarity(wine_features[favorite_idx], wine_features).flatten()
         similar_indices = cosine_similarities.argsort()[:-6:-1]
         content_based_recs = wine_info_df.iloc[similar_indices]
 
-        # 추천 리스트 생성
         response_list = []
         for rec in content_based_recs.to_dict('records'):
             response_list.append(f"{rec['주류이름']} - {rec['주류특징']} ({rec['주류종류']})")
 
-        # 협업 필터링을 통한 추천
         user_idx = usr_info_df[usr_info_df['유저아이디'] == user_data['유저아이디'].values[0]].index[0]
         distances, indices = knn.kneighbors([user_item_matrix.values[user_idx]], n_neighbors=5)
 
@@ -123,35 +113,28 @@ def get_recommendations_for_user(user_data):
                         rec = similar_drink_details.iloc[0]
                         response_list.append(f"{rec['주류이름']} - {rec['주류특징']} ({rec['주류종류']})")
 
-        # 최종 추천 리스트 반환
         return f"고객님의 취향을 기반으로한 추천 리스트를 제공하겠습니다. \n\n" + "\n".join(response_list[:10])
 
     except Exception as e:
         logging.error(f"추천을 생성하는 중 오류가 발생했습니다: {e}")
         return CONFIG['NO_RECOMMENDATIONS']
 
-
 # Flask 라우트: 사용자 요청에 따라 주류 추천 리스트 반환
 @RecommendController.route("/recommendations", methods=['POST'])
 def get_recommendations():
-    # 요청에서 사용자 ID와 메시지 추출
     data = request.get_json()
     user_id = data.get('user_id')
     user_message = data.get('message')
 
-    # 사용자 메시지가 "주류 추천"이 아닌 경우 오류 반환
     if not user_message == "주류 추천":
         return jsonify({"response": CONFIG['UNKNOWN_COMMAND']})
 
-    # 유효하지 않은 사용자 ID인 경우 오류 반환
     if not user_id:
         return jsonify({"response": CONFIG['INVALID_USER_ID']}), 400
 
-    # 사용자 데이터 조회
     user_data = get_user_data(user_id)
     if user_data.empty:
         return jsonify({"response": CONFIG['USER_NOT_FOUND']})
 
-    # 추천 리스트 생성 및 반환
     bot_response = get_recommendations_for_user(user_data)
     return jsonify({"response": bot_response})
