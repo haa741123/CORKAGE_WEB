@@ -1,11 +1,13 @@
 html, body {
-  overflow: hidden;
+  overflow-y: auto;
   height: 100%; /* Ensure the body takes full height */
   margin: 0; /* Remove default margin */
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
 }
 
 .container-fluid {
-    overflow: hidden;
+    
     height: 100%; /* Ensure the container takes full height */
     overflow-y: auto; /* Enable vertical scrolling */
     -ms-overflow-style: none;  /* IE and Edge */

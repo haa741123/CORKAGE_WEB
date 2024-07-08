@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새 게시글 작성</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">새 게시글 작성</h1>
+        <form id="postForm">
+            <div class="form-group">
+                <label for="title">제목</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="content">내용</label>
+                <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">작성</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#postForm').on('submit', function(event) {
+                event.preventDefault(); // 폼의 기본 제출 막기
+
+                const formData = {
+                    title: $('#title').val(),
+                    content: $('#content').val()
+                };
+
+                $.ajax({
+                    url: '/api/v1/SetPost',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        console.log('Response:', response);
+                        alert('게시글이 성공적으로 작성되었습니다.');
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                        alert('게시글 작성 중 오류가 발생했습니다.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
