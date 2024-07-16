@@ -1,3 +1,5 @@
+# 주류 추천api의 성능을 평가하기 위해 작성한 코드 (미완)
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -17,12 +19,13 @@ def load_data():
         usr_info_df = pd.read_csv(CONFIG['USR_INFO_PATH'])
         wine_info_df = pd.read_csv(CONFIG['WINE_INFO_PATH'])
         return usr_info_df, wine_info_df
+    
     except FileNotFoundError as e:
         print(f"Error: 파일을 찾을 수 없습니다. {e}")
         print(f"현재 작업 디렉토리: {os.getcwd()}")
         print(f"usr_info.csv 경로: {CONFIG['USR_INFO_PATH']}")
         print(f"wine_info.csv 경로: {CONFIG['WINE_INFO_PATH']}")
-        raise
+        raise  
 
 def preprocess_data(usr_info_df, wine_info_df):
     wine_info_df['cleaned_주류이름'] = wine_info_df['주류이름'].str.replace(r'[^\w\s]', '').str.strip().str.lower()
