@@ -83,6 +83,7 @@ html, body {
   top: 50%;
   transform: translateY(-50%);
   -webkit-appearance: none;
+  appearance: none;
   background: none;
   pointer-events: none;
 }
