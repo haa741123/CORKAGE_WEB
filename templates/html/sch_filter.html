@@ -1,223 +1,81 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>검색 필터링</title>
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
     <link href="/static/css/filter.css" rel="stylesheet" />
     <style>
-      .btn.active {
-        background-color: #007bff;
-        color: white;
-      }
-      .btn:not(.active) {
-        background-color: white;
-        color: black;
-      }
-      .custom-range {
-        width: 100%; /* Adjust the width as needed */
-      }
+        
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <div class="filter-header">
-        <div id="back_btn">
-          <span class="icon">←</span>
+        <div class="filter-header">
+            <div id="back_btn">
+                <span class="icon">←</span>
+            </div>
+            <h4>필터</h4>
+            <span id="reset_icon" class="reset_icon">&orarr;</span>
         </div>
-        <h4>필터</h4>
-        <span id="reset_icon" class="reset_icon">&orarr;</span>
-      </div>
-      <form id="filterForm" action="/submit_filters" method="POST">
-        <div class="filter-section">
-          <h5>음식종류</h5>
-          <div class="filter-buttons" data-category="food">
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="한식"
-            >
-              한식
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="일식"
-            >
-              일식
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="중식"
-            >
-              중식
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="양식"
-            >
-              양식
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="분식"
-            >
-              분식
-            </button>
-          </div>
-          <h5>반경</h5>
-          <input
-            type="range"
-            class="custom-range"
-            min="100"
-            max="5000"
-            step="100"
-            value="500"
-            id="radiusRange"
-            name="radius"
-          />
-          <div class="d-flex justify-content-between">
-            <span>100m</span>
-            <span>5km</span>
-          </div>
-          <h5>영업시간</h5>
-          <div class="filter-buttons" data-category="time">
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="오전"
-            >
-              오전
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="점심"
-            >
-              점심
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="오후"
-            >
-              오후
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="저녁"
-            >
-              저녁
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="심야"
-            >
-              심야
-            </button>
-          </div>
-          <h5>콜키지 비용</h5>
-          <div class="filter-buttons" data-category="price">
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="1-2만원대"
-            >
-              1-2만원대
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="3-4만원대"
-            >
-              3-4만원대
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="5만원대 이상"
-            >
-              5만원대 이상
-            </button>
-          </div>
-          
-          <h5>음식점 평점</h5>
-          <div class="filter-buttons" data-category="score">
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="1점"
-            >
-              1점
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="2점"
-            >
-              2점
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="3점"
-            >
-              3점
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="4점"
-            >
-              4점
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              data-value="5점"
-            >
-              5점
-            </button>
-          </div>
+        <form id="filterForm" action="/submit_filters" method="POST">
+            <div class="filter-section">
+                <h5>콜키지 가격대</h5>
+                <p class="text-center" id="priceText">콜키지 프리 ~ 2만원</p>
+                <div class="slider-container">
+                    <div class="slider-track"></div>
+                    <div class="slider-range" id="sliderRange"></div>
+                    <input type="range" class="slider" id="minSlider" min="0" max="100000" step="10000" value="0">
+                    <input type="range" class="slider" id="maxSlider" min="0" max="100000" step="10000" value="20000">
+                    <div class="price-labels">
+                        <span style="color: #A6A4A5;">0원</span>
+                        <span style="color: #A6A4A5; padding-left: 6dvh;">5만원</span>
+                        <span style="color: #A6A4A5;">10만원 이상</span>
+                    </div>
+                </div>
 
-          <input type="hidden" name="food" id="foodInput" />
-          <input type="hidden" name="time" id="timeInput" />
-          <input type="hidden" name="price" id="priceInput" />
-          <input type="hidden" name="score" id="scoreInput" />
+                <h5>음식종류</h5>
+                <div class="filter-buttons" data-category="food">
+                    <button type="button" class="btn btn-outline-primary" data-value="한식">한식</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="일식">일식</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="중식">중식</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="양식">양식</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="분식">분식</button>
+                </div>
+                
+                <h5>영업시간</h5>
+                <div class="filter-buttons" data-category="time">
+                    <button type="button" class="btn btn-outline-primary" data-value="오전">오전</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="점심">점심</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="오후">오후</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="저녁">저녁</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="심야">심야</button>
+                </div>
+                
+                <h5>음식점 평점</h5>
+                <div class="filter-buttons" data-category="score">
+                    <button type="button" class="btn btn-outline-primary" data-value="1점">1점</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="2점">2점</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="3점">3점</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="4점">4점</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="5점">5점</button>
+                </div>
 
-          <div class="filter-buttons mt-3">
-            <button
-              type="submit"
-              class="btn btn-outline-primary"
-              style="background-color: #bc0c64; color: white"
-            >
-              필터 적용
-            </button>
-          </div>
-        </div>
-      </form>
+                <input type="hidden" name="price" id="priceInput" />
+                <input type="hidden" name="food" id="foodInput" />
+                <input type="hidden" name="time" id="timeInput" />
+                <input type="hidden" name="score" id="scoreInput" />
+
+                <div class="filter-buttons mt-3">
+                    <button type="button" class="btn btn-close">닫기</button>
+                    <button type="submit" class="btn btn-apply">적용하기</button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script>
-      document.write(
-        '<script src="/static/js/filter.js?v=' +
-          Math.floor(Math.random() * 10000) +
-          '"\><\/script>'
-      );
-    </script>
-    <script>
-      $(document).ready(function() {
-            $('#back_btn').on('click', function() {
-                window.location.href = "/";
-            });
-        });
-    </script>
-  </body>
+    <script src="/static/js/filter.js"></script>
+</body>
 </html>

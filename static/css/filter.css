@@ -1,3 +1,23 @@
+html, body {
+  overflow-y: auto;
+  height: 100%; 
+  margin: 0; 
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+.container {
+    
+    height: 100%; 
+    overflow-y: auto; 
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
+
+
+.container::-webkit-scrollbar {
+    display: none;
+}
 .filter-header {
   display: flex;
   justify-content: space-between;
@@ -21,4 +41,94 @@
 }
 .filter-buttons button {
   margin: 5px;
+}
+
+
+.btn.active {
+  background-color: #2E2B2D !important;
+  color: white  !important;
+  border-color: #2E2B2D  !important;
+}
+.btn:not(.active) {
+  background-color: white !important;
+  color: black !important;  
+}
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 50px; 
+  margin: 30px 0;
+}
+.slider-track {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background: #dddddd;
+  border-radius: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.slider-range {
+  position: absolute;
+  height: 5px;
+  background: #E1707A;
+  border-radius: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.slider {
+  position: absolute;
+  width: 100%;
+  height: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-appearance: none;
+  background: none;
+  pointer-events: none;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 30px;
+  background: white;
+  border: 2px solid #b0b0b0;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: pointer;
+}
+#priceText {
+  background-color: #FFF9FA;
+  font-weight: bold;
+}
+.price-labels {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 5dvh;
+}
+.filter-buttons .btn {
+  border-radius: 20px; 
+  border-color: #d2cfd1;
+  border-width: 2px; /* 원하는 두께로 변경 */
+  border-style: solid; /* border-style을 지정해야 border-width가 적용됨 */
+}
+.filter-buttons .btn-close {
+  padding-top: 10px !important; 
+  padding-bottom: 10px !important; 
+  border-radius: 10px !important; 
+  background-color: #ffffff !important;
+  color: #858284 !important;
+  width: 25% !important;
+  margin-right: 10px !important;
+}
+.filter-buttons .btn-apply {
+  padding-top: 10px !important; 
+  padding-bottom: 10px !important; 
+  border-radius: 10px !important; 
+  background-color: #D0273B !important; 
+  color: white !important;
+  width: 65% !important;
+}
+.filter-buttons {
+  display: flex; 
+  justify-content: space-between; 
 }
