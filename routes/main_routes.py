@@ -31,3 +31,8 @@ def post():
 @main_routes.route("/edit_post")
 def edit_post():
     return render_template('html/edit_post.html')
+
+# 에러 페이지
+@main_routes.errorhandler(404)
+def page_not_found(e):
+    return render_template('html/error.html'), 404

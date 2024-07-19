@@ -9,8 +9,6 @@ body {
   align-items: center;
   height: 100vh;
   background-color: #f8f9fa;
-  
-  
 }
 .chat-container {
   display: flex;
