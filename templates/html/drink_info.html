@@ -1,59 +1,238 @@
 <!DOCTYPE html>
-<html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>와인 정보</title>
-    <link rel="stylesheet" href="/static/css/drink_info.css" />
-  </head>
-  <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Pretendard&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=JejuMyeongjo&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-size: 14px;
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            width: 390px;
+            height: 844px;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        .header {
+            width: 100%;
+            height: 47px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .header .title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4b494a;
+        }
+        .header .icon {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            width: 25px;
+            height: 25px;
+        }
+        .section-title {
+            font-family: 'JejuMyeongjo', serif;
+            font-size: 32px;
+            color: #0d090c;
+            margin: 10px 0 0 20px;
+        }
+        .tag {
+            background-color: #e1707a;
+            color: white;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 2px;
+            margin: 20px 0 0 20px;
+            display: inline-block;
+        }
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #2e2b2d;
+            margin: 0 20px;
+        }
+        .rating .score {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .rating .reviews {
+            font-size: 12px;
+            font-weight: 500;
+            color: #5e5b5d;
+        }
+        .attributes {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin: 20px;
+        }
+        .attribute {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .attribute-icon {
+            width: 20px;
+            height: 20px;
+        }
+        .attribute-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 11px;
+            color: #858284;
+        }
+        .attribute-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0d090c;
+        }
+        .description {
+            margin: 20px;
+            color: #fff;
+            text-align: left;
+        }
+        .description-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;  
+        }
+        .description-text {
+            font-size: 12px;
+            font-weight: 300;
+        }
+        .product-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 20px;
+        }
+        .product-image {
+            width: 150px;
+            height: auto;
+        }
+        .main-section {
+            width: 100%;
+            height: 377px;
+            background-color: #2e2b2d;
+            position: absolute;
+            bottom: 0;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .buy-button {
+            width: 248px;
+            height: 48px;
+            background-color: #d0273b;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 20px 0 0;
+            align-self: flex-start;
+        }
+        .price {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            margin-top: 20px;
+            align-self: flex-start;
+        }
+        .price .amount {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .price .currency {
+            font-size: 12px;
+            font-weight: 400;
+        }
+    </style>
+    <title>Wine Detail</title>
+</head>
+<body>
     <div class="container">
-      <div class="wine-image">
-        <img src="/static/img/wine_G7.png" alt="Wine Bottle Image" />
-      </div>
-      <h3>Chateau Rorneau</h3>
-      <p>이 와인은 바닐라의 은은한 향기에 더 깊게 침투할 수 있습니다.</p>
-      <h3>평가 및 리뷰 (100)</h3>
-      <div class="rating-container">
-        <div class="rating-bar-container">
-          <div class="rating-bar">
-            <div class="rating-fill" style="width: 70%"></div>
-            <p class="text"><strong>5</strong></p>
-          </div>
+        <div class="header">
+            <div class="title">와인 상세</div>
+            <img src="image-icon-path.png" alt="Icon" class="icon">
         </div>
-        <div class="rating-bar-container">
-          <div class="rating-bar">
-            <div class="rating-fill" style="width: 50%"></div>
-            <p class="text"><strong>4</strong></p>
-          </div>
+        <div class="tag">네비올로</div>
+        <div class="section-title">Gaja<br>Barbaresco</div>
+        <div class="rating">
+            <span class="score">4.7</span>
+            <span class="reviews">(1,234)</span>
         </div>
-        <div class="rating-bar-container">
-          <div class="rating-bar">
-            <div class="rating-fill" style="width: 30%"></div>
-            <p class="text"><strong>3</strong></p>
-          </div>
+        <div class="product-details">
+            <div class="attributes">
+                <div class="attribute">
+                    <img src="/mnt/data/image.png" alt="Body icon" class="attribute-icon">
+                    <div class="attribute-info">
+                        <span>바디감</span>
+                        <span class="attribute-value">Medium</span>
+                    </div>
+                </div>
+                <div class="attribute">
+                    <img src="/mnt/data/image.png" alt="Sweetness icon" class="attribute-icon">
+                    <div class="attribute-info">
+                        <span>당도</span>
+                        <span class="attribute-value">Dry</span>
+                    </div>
+                </div>
+                <div class="attribute">
+                    <img src="/mnt/data/image.png" alt="Alcohol icon" class="attribute-icon">
+                    <div class="attribute-info">
+                        <span>알코올</span>
+                        <span class="attribute-value">14.5%</span>
+                    </div>
+                </div>
+            </div>
+            <img src="/mnt/data/image.png" alt="Wine bottle" class="product-image">
         </div>
-        <div class="rating-bar-container">
-          <div class="rating-bar">
-            <div class="rating-fill" style="width: 20%"></div>
-            <p class="text"><strong>2</strong></p>
-          </div>
+        <div class="main-section">
+            <div class="description">
+                <div class="description-title">설명</div>
+                <div class="description-text">
+                    이탈리아 피에몬테 지역의 바르바레스코 와인은 복합적인 아로마와 강한 탄닌, 높은 산미가 특징입니다.
+                    <br /><br />
+                    풍부한 맛과 향이 다양한 오마카세 요리와 잘 어우러지며, 특히 진한 소스나 육류 요리와 훌륭한 조화를 이룹니다.
+                </div>
+            </div>
+            <div class="price">
+                <span class="amount">173,400</span><span class="currency">원</span>
+            </div>
+            <div class="buy-button">최저가 구매하기</div>
         </div>
-        <div class="rating-bar-container">
-          <div class="rating-bar">
-            <div class="rating-fill" style="width: 10%"></div>
-            <p class="text"><strong>1</strong></p>
-          </div>
-        </div>
-        <div class="rating-avg">
-          <p><strong>4.5 ★</strong></p>
-        </div>
-      </div>
-      <h3>리뷰</h3>
-      <div class="review-section" id="review-section">
-        <!-- 리뷰 데이터가 이곳에 추가됩니다 -->
-      </div>
     </div>
-    <script src="/static/js/review_data.js"></script>
-  </body>
+</body>
 </html>
