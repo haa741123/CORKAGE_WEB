@@ -127,7 +127,7 @@ html, body {
   border-radius: 10px !important; 
   background-color: #D0273B !important; 
   color: white !important;
-  width: 65% !important;
+  width: 50% !important;
 }
 .filter-buttons {
   display: flex; 

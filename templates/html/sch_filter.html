@@ -3,11 +3,23 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>검색 필터링</title>
+    <title>검색 필터링 페이지</title>
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
     <link href="/static/css/filter.css" rel="stylesheet" />
     <style>
-        
+        .horizontal-scroll {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .horizontal-scroll button {
+            flex: 0 0 auto;
+        }
+
+        .price-labels span {
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -30,36 +42,36 @@
                     <input type="range" class="slider" id="maxSlider" min="0" max="100000" step="10000" value="20000">
                     <div class="price-labels">
                         <span style="color: #A6A4A5;">0원</span>
-                        <span style="color: #A6A4A5; padding-left: 6dvh;">5만원</span>
+                        <span style="color: #A6A4A5; padding-left: 7dvh;">5만원</span>
                         <span style="color: #A6A4A5;">10만원 이상</span>
                     </div>
                 </div>
 
                 <h5>음식종류</h5>
-                <div class="filter-buttons" data-category="food">
-                    <button type="button" class="btn btn-outline-primary" data-value="한식">한식</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="일식">일식</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="중식">중식</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="양식">양식</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="분식">분식</button>
+                <div class="filter-buttons horizontal-scroll" data-category="food">
+                    <button type="button" class="btn" data-value="한식">한식</button>
+                    <button type="button" class="btn" data-value="일식">일식</button>
+                    <button type="button" class="btn" data-value="중식">중식</button>
+                    <button type="button" class="btn" data-value="양식">양식</button>
+                    <button type="button" class="btn" data-value="분식">분식</button>
                 </div>
                 
                 <h5>영업시간</h5>
-                <div class="filter-buttons" data-category="time">
-                    <button type="button" class="btn btn-outline-primary" data-value="오전">오전</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="점심">점심</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="오후">오후</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="저녁">저녁</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="심야">심야</button>
+                <div class="filter-buttons horizontal-scroll" data-category="time">
+                    <button type="button" class="btn" data-value="오전">오전</button>
+                    <button type="button" class="btn" data-value="점심">점심</button>
+                    <button type="button" class="btn" data-value="오후">오후</button>
+                    <button type="button" class="btn" data-value="저녁">저녁</button>
+                    <button type="button" class="btn" data-value="심야">심야</button>
                 </div>
                 
                 <h5>음식점 평점</h5>
-                <div class="filter-buttons" data-category="score">
-                    <button type="button" class="btn btn-outline-primary" data-value="1점">1점</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="2점">2점</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="3점">3점</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="4점">4점</button>
-                    <button type="button" class="btn btn-outline-primary" data-value="5점">5점</button>
+                <div class="filter-buttons horizontal-scroll" data-category="score">
+                    <button type="button" class="btn" data-value="1점">1점</button>
+                    <button type="button" class="btn" data-value="2점">2점</button>
+                    <button type="button" class="btn" data-value="3점">3점</button>
+                    <button type="button" class="btn" data-value="4점">4점</button>
+                    <button type="button" class="btn" data-value="5점">5점</button>
                 </div>
 
                 <input type="hidden" name="price" id="priceInput" />
