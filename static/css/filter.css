@@ -6,18 +6,22 @@ html, body {
   -ms-overflow-style: none; 
 }
 
-.container {
-    
-    height: 100%; 
-    overflow-y: auto; 
-    -ms-overflow-style: none;  
-    scrollbar-width: none;  
+#filterModal {
+  padding-top: 10dvh;  
 }
 
+.container {
+  height: 100%; 
+  overflow-y: auto; 
+  -ms-overflow-style: none;  
+  scrollbar-width: none;
+  
+}
 
 .container::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
+
 .filter-header {
   display: flex;
   justify-content: space-between;
@@ -25,40 +29,55 @@ html, body {
   padding: 10px;
   border-bottom: 1px solid #ddd;
 }
+
 .filter-header .icon {
   font-size: 24px;
 }
+
 .filter-section {
   padding: 10px;
 }
+
 .filter-section h5 {
   margin-top: 20px;
   margin-bottom: 10px;
 }
+
+/* Scrollable Filter Buttons */
 .filter-buttons {
   display: flex;
-  flex-wrap: wrap;
-}
-.filter-buttons button {
-  margin: 5px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
 }
 
+.filter-buttons button {
+  flex: 0 0 auto;
+  margin: 5px;
+  border-radius: 20px; 
+  border-color: #d2cfd1;
+  border-width: 2px;
+  border-style: solid;
+}
 
 .btn.active {
   background-color: #2E2B2D !important;
-  color: white  !important;
-  border-color: #2E2B2D  !important;
+  color: white !important;
+  border-color: #2E2B2D !important;
 }
+
 .btn:not(.active) {
   background-color: white !important;
   color: black !important;  
 }
+
 .slider-container {
   position: relative;
   width: 100%;
   height: 50px; 
   margin: 30px 0;
 }
+
 .slider-track {
   position: absolute;
   width: 100%;
@@ -68,6 +87,7 @@ html, body {
   top: 50%;
   transform: translateY(-50%);
 }
+
 .slider-range {
   position: absolute;
   height: 5px;
@@ -76,6 +96,7 @@ html, body {
   top: 50%;
   transform: translateY(-50%);
 }
+
 .slider {
   position: absolute;
   width: 100%;
@@ -87,6 +108,7 @@ html, body {
   background: none;
   pointer-events: none;
 }
+
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 30px;
@@ -97,21 +119,25 @@ html, body {
   pointer-events: auto;
   cursor: pointer;
 }
+
 #priceText {
   background-color: #FFF9FA;
   font-weight: bold;
 }
+
 .price-labels {
   display: flex;
   justify-content: space-between;
   padding-top: 5dvh;
 }
+
 .filter-buttons .btn {
   border-radius: 20px; 
   border-color: #d2cfd1;
-  border-width: 2px; /* 원하는 두께로 변경 */
-  border-style: solid; /* border-style을 지정해야 border-width가 적용됨 */
+  border-width: 2px;
+  border-style: solid;
 }
+
 .filter-buttons .btn-close {
   padding-top: 10px !important; 
   padding-bottom: 10px !important; 
@@ -121,6 +147,7 @@ html, body {
   width: 25% !important;
   margin-right: 10px !important;
 }
+
 .filter-buttons .btn-apply {
   padding-top: 10px !important; 
   padding-bottom: 10px !important; 
@@ -129,7 +156,43 @@ html, body {
   color: white !important;
   width: 50% !important;
 }
-.filter-buttons {
-  display: flex; 
-  justify-content: space-between; 
+
+
+::placeholder {
+  color: gray; 
+}
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 10000; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; 
+  background-color: rgb(0,0,0); 
+  background-color: rgba(0,0,0,0.4); 
+}
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; 
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; 
+  z-index: 1001;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+.blur-background {
+  filter: blur(5px);
 }
