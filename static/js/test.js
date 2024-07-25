@@ -231,6 +231,7 @@ function getUserLocation() {
     });
   } else {
     console.error("이 브라우저는 지오로케이션을 지원하지 않습니다.");
+    console.log("User position: ", window.userPosition);
     searchPlaces("돈까스");
   }
 }
