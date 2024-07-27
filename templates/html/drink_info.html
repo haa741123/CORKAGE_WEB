@@ -26,9 +26,9 @@
             width: 390px;
             height: 844px;
             background-color: white;
-            position: relative;
-            overflow: hidden;
             border: 1px solid #ddd;
+            overflow: hidden;
+            position: relative;
         }
         .header {
             width: 100%;
@@ -37,8 +37,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
+            margin-top: 10px;
         }
         .header .title {
             font-size: 14px;
@@ -49,11 +49,12 @@
             position: absolute;
             right: 20px;
             top: 10px;
-            width: 25px;
-            height: 25px;
+            width: 40px;
+            height: 40px;
         }
         .section-title {
             font-family: 'JejuMyeongjo', serif;
+            font-weight: 500;
             font-size: 32px;
             color: #0d090c;
             margin: 10px 0 0 20px;
@@ -65,7 +66,7 @@
             font-weight: 500;
             padding: 2px 6px;
             border-radius: 2px;
-            margin: 20px 0 0 20px;
+            margin: 40px 0 0 20px;
             display: inline-block;
         }
         .rating {
@@ -73,7 +74,7 @@
             align-items: center;
             gap: 6px;
             color: #2e2b2d;
-            margin: 0 20px;
+            margin: 20px 20px 0 20px;
         }
         .rating .score {
             font-size: 16px;
@@ -87,17 +88,17 @@
         .attributes {
             display: flex;
             flex-direction: column;
-            gap: 18px;
-            margin: 20px;
+            gap: 25px;
+            margin: 10px 0 20px 0;
         }
         .attribute {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 10px;
         }
         .attribute-icon {
-            width: 20px;
-            height: 20px;
+            width: 50px;
+            height: 50px;
         }
         .attribute-info {
             display: flex;
@@ -112,18 +113,21 @@
             color: #0d090c;
         }
         .description {
-            margin: 20px;
+            width: 100%;
             color: #fff;
             text-align: left;
+            margin: 50px 0;
         }
         .description-title {
-            font-size: 12px;
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 10px;  
+            margin: -10px 0 10px 0;
+            padding-bottom: 15px;
         }
         .description-text {
-            font-size: 12px;
-            font-weight: 300;
+            font-size: 15px;
+            font-weight: 100;
+            word-break: keep-all;
         }
         .product-details {
             display: flex;
@@ -132,21 +136,24 @@
             margin: 20px;
         }
         .product-image {
-            width: 150px;
-            height: auto;
+            width: auto;
+            height: 450px;
+            margin-top: -150px;
+            z-index: 10;
         }
         .main-section {
-            width: 100%;
-            height: 377px;
-            background-color: #2e2b2d;
-            position: absolute;
-            bottom: 0;
-            color: white;
-            padding: 20px;
-            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            align-items: flex-start;
+            background-color: #2e2b2d;
+            color: white;
+            padding: 0 20px 20px 20px;
+            box-sizing: border-box;
+            width: 100%;
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            right: 0;
         }
         .buy-button {
             width: 248px;
@@ -159,7 +166,7 @@
             color: white;
             font-weight: 600;
             font-size: 14px;
-            margin: 20px 0 0;
+            margin: 20px 0 20px;
             align-self: flex-start;
         }
         .price {
@@ -167,7 +174,7 @@
             align-items: center;
             gap: 6px;
             color: white;
-            margin-top: 20px;
+            padding-top: 40px;
             align-self: flex-start;
         }
         .price .amount {
@@ -185,12 +192,12 @@
     <div class="container">
         <div class="header">
             <div class="title">와인 상세</div>
-            <img src="image-icon-path.png" alt="Icon" class="icon">
+            <img src="/static/img/camera_icon.svg" alt="Icon" class="icon">
         </div>
         <div class="tag">네비올로</div>
         <div class="section-title">Gaja<br>Barbaresco</div>
         <div class="rating">
-            <span class="score">4.7</span>
+            <span class="score">★4.7</span>
             <span class="reviews">(1,234)</span>
         </div>
         <div class="product-details">
@@ -217,22 +224,22 @@
                     </div>
                 </div>
             </div>
-            <img src="/static/img/wine_G7.png" alt="Wine bottle" class="product-image">
+            <img src="/static/img/Wine_Bottle_PNG_Clip_Art_Image-1699521608.png" alt="Wine bottle" class="product-image">
         </div>
         <div class="main-section">
             <div class="description">
                 <div class="description-title">설명</div>
                 <div class="description-text">
                     이탈리아 피에몬테 지역의 바르바레스코 와인은 복합적인 아로마와 강한 탄닌, 높은 산미가 특징입니다.
-                    <br /><br />
+                    <br/><br/>
                     풍부한 맛과 향이 다양한 오마카세 요리와 잘 어우러지며, 특히 진한 소스나 육류 요리와 훌륭한 조화를 이룹니다.
                 </div>
+                <div class="price">
+                    <span class="amount">173,400</span><span class="currency">원</span>
+                </div>
+                <div class="buy-button">최저가 구매하기</div>
             </div>
-            <div class="price">
-                <span class="amount">173,400</span><span class="currency">원</span>
-            </div>
-            <div class="buy-button">최저가 구매하기</div>
-        </div>
-    </div>
+        </div> 
+    </div>        
 </body>
 </html>
