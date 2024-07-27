@@ -152,7 +152,7 @@ function generatePlaceInfo(place, index) {
         data-driving_time="${drivingTime}"
         data-category_name="${place.category_name}">
         <div class="row">
-            <div class="col-4">
+            <div class="col-4" style="padding-right: 1px;">
                 <div class="image-container">
                     <img src="${place.image_url}" alt="${place.place_name}" class="cover-image">
                 </div>
@@ -250,3 +250,38 @@ kakao.maps.event.addListener(map, "zoom_changed", updateMarkerSizes);
 function updateMarkerSizes() {
   markers.forEach(marker => setMarkerImage(marker, marker.originalImageSrc));
 }
+
+
+// 지도 위에 띄워줄 모달창 (검색 조건)
+let $modal = $("#filterModal");
+let $btn = $("#col_kitchen");
+let $span = $(".close").first();
+let $closeButton = $(".btn-close");
+let $backgroundElements = $('.map_wrap, .search-bar, .category-swiper, .res_info_swiper');
+
+function loadScript(url, callback) {
+    $.getScript(url, callback);
+}
+function removeScript(url) {
+    
+}
+ 
+$btn.on("click", function() {
+    $modal.show();
+    $backgroundElements.addClass('blur-background');
+    loadScript("/static/js/filter.js");
+});
+function closeModal() {
+    $modal.hide();
+    $backgroundElements.removeClass('blur-background');
+
+    $("script[src='/static/js/filter.js']").remove();
+}
+
+$span.on("click", closeModal);
+$closeButton.on("click", closeModal);
+$(window).on("click", function(event) {
+    if ($(event.target).is($modal)) {
+        closeModal();
+    }
+});

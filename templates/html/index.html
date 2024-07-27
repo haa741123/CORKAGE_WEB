@@ -120,54 +120,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/static/js/test.js"></script>
     <script>
-        $(document).ready(function() {
-            // Get the modal
-            let $modal = $("#filterModal");
-
-            // Get the button that opens the modal
-            let $btn = $("#col_kitchen");
-
-            // Get the <span> element that closes the modal
-            let $span = $(".close").first();
-            let $closeButton = $(".btn-close");
-
-            // Get background elements to blur
-            let $backgroundElements = $('.map_wrap, .search-bar, .category-swiper, .res_info_swiper');
-
-            // Function to load external script
-            function loadScript(url, callback) {
-                $.getScript(url, callback);
-            }
-
-            // Function to remove external script
-            function removeScript(url) {
-                $("script[src='" + url + "']").remove();
-            }
-
-            // When the user clicks the button, open the modal 
-            $btn.on("click", function() {
-                $modal.show();
-                $backgroundElements.addClass('blur-background');
-                loadScript("/static/js/filter.js");
-            });
-
-            // When the user clicks on <span> (x) or close button, close the modal
-            function closeModal() {
-                $modal.hide();
-                $backgroundElements.removeClass('blur-background');
-                removeScript("/static/js/filter.js");
-            }
-
-            $span.on("click", closeModal);
-            $closeButton.on("click", closeModal);
-
-            // When the user clicks anywhere outside of the modal, close it
-            $(window).on("click", function(event) {
-                if ($(event.target).is($modal)) {
-                    closeModal();
-                }
-            });
-        });
+        
 
     </script>
 </body>

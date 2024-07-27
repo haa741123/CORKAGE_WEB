@@ -1,0 +1,27 @@
+body {
+    font-family: 'Pretendard Variable', sans-serif;
+}
+.container {
+    max-width: 500px;
+    margin: auto;
+    padding-top: 20px;
+}
+.image-container {
+    position: relative;
+}
+.image-container img {
+    width: 100%;
+    border-radius: 10px;
+}
+.image-container .image-number {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.reservation-times button {
+    margin-bottom: 10px;
+}
