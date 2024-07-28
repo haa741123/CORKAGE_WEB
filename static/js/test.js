@@ -263,9 +263,6 @@ let $backgroundElements = $('.map_wrap, .search-bar, .category-swiper, .res_info
 function loadScript(url, callback) {
     $.getScript(url, callback);
 }
-function removeScript(url) {
-    
-}
  
 $btn.on("click", function() {
     $modal.show();

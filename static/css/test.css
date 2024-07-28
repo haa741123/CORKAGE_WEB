@@ -299,3 +299,9 @@ body {
 .rating {
   font-weight: bold;
 }
+
+
+/* 좌우 스크롤만 허용하고 확대 및 축소를 비활성화 */
+#infoContainer {
+  touch-action: pan-x; 
+}

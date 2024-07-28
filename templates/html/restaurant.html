@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -15,34 +15,54 @@
             <img src="/static/img/res_sample_img.jpg" alt="Dish Image">
             <div class="image-number">1 / 5</div>
         </div>
-        <p class="mt-3 mb-1" style="color: #858284;">한식</p>
-        <h4 class="">더나인클럽</h4>
+        <p class="mt-3 mb-1 dish-type">한식</p>
+        <h4 class="restaurant-name">더나인클럽</h4>
         <div class="d-flex align-items-center">
             <i class="bi bi-star-fill text-warning"></i>
-            <span class="ml-2" style="margin-right: 10px;">4.9</span>
+            <span class="ml-2 rating">4.9</span>
             <span class="ml-2 text-muted">848개 리뷰</span>
         </div>
-        <p class="mt-2">맛과 멋을 중시하는 고객 중심의 스시 오마카세 콜키지 가능합니다 10시 이후 단품만 가능합니다.</p>
-        <div class="d-flex justify-content-around my-3">
-            <a href="tel:05012345678910" class="btn btn-outline-secondary">전화</a>
+        <p class="mt-2 description">맛과 멋을 중시하는 고객 중심의 스시 오마카세 콜키지 가능합니다 10시 이후 단품만 가능합니다.</p>
+        <div class="btn-separator">
+            <a href="tel:05012345678910" class="btn">전화</a>
+            <div class="vertical-line"></div>
             <button class="btn">위치</button>
         </div>
-        <h5>예약 일정</h5>
-        <div class="d-flex align-items-center mb-3">
+        <hr class="separator">
+        <h5 class="reservation-heading">예약 일정</h5>
+        <div class="d-flex align-items-center mb-3" id="dateInfo">
             <i class="bi bi-calendar-event"></i>
-            <span class="ml-2">오늘(토) / 2명</span>
+            <span class="ml-2 date-details">오늘(토) / 2명</span>
         </div>
+        
         <div class="reservation-times d-flex flex-wrap justify-content-between">
-            <button class="btn btn-outline-danger">오후 6:00</button>
-            <button class="btn btn-outline-danger">오후 6:30</button>
-            <button class="btn btn-outline-danger">오후 7:00</button>
-            <button class="btn btn-outline-danger">오후 7:30</button>
+            <button class="custom-outline-danger">오후 6:00</button>
+            <button class="custom-outline-danger">오후 6:30</button>
+            <button class="custom-outline-danger">오후 7:00</button>
+            <button class="custom-outline-danger">오후 7:30</button>
         </div>
-        <button class="btn btn-danger btn-block mt-3">예약하기</button>
+
+        <div class="row mt-5">
+            <div class="col-1">
+                <span class="bookmark-icon">
+                    <img src="/static/img/Bookmark.png" alt="즐겨찾기 아이콘">
+                </span>
+            </div>
+            
+            <div class="col-11 btn-container">
+                <button class="custom-danger btn-block">예약하기</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('dateInfo').addEventListener('click', function() {
+            window.location.href = '테스트';
+        });
+    </script>
+    
 </body>
 </html>
