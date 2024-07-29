@@ -1,5 +1,6 @@
 body {
     font-family: 'Pretendard Variable', sans-serif;
+    margin-bottom: 80px; /* footer 공간 확보 */
 }
 .container {
     max-width: 500px;
@@ -45,11 +46,13 @@ body {
     border-radius: 5px;
 }
 .separator {
-    height: 5px;
     margin-top: 20px;
+    color: #ECECEC;
+    border-width: 5px;
 }
 .reservation-heading {
     font-weight: bold;
+    margin-top: 30px;
 }
 .date-details {
     font-size: large;
@@ -61,11 +64,11 @@ body {
     border-radius: 8px; 
     padding: 10px; 
     padding-left: 20px;
+    margin-top: 20px;
 }
 .reservation-times button {
     margin-bottom: 10px;
 }
-
 .custom-outline-danger {
     color: #dc3545;
     border: 1px solid #dc3545;
@@ -76,13 +79,11 @@ body {
     border-radius: 0.25rem;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
-
 .custom-outline-danger:hover {
     color: #fff;
     background-color: #dc3545;
     border-color: #dc3545;
 }
-
 .custom-danger {
     color: #fff;
     background-color: #dc3545;
@@ -93,24 +94,45 @@ body {
     border-radius: 0.25rem;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
-
 .custom-danger:hover {
     background-color: #c82333;
     border-color: #bd2130;
 }
-
 .btn-block {
     display: block;
     width: 100%;
 }
-
 .bookmark-icon img {
     width: 40px;
     height: 40px;
+    margin-left: 10px;
 }
-
 .btn-container {
     display: flex;
-    align-items:center;
-    padding-left: 40px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+}
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+    text-align: center;
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+footer .row {
+    width: 100%;
+    max-width: 500px;
+}
+footer .btn {
+    width: 100%;
+    max-width: calc(100% - 20px);
+    margin: 0 auto;
 }

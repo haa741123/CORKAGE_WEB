@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="/static/css/res_info.css">
     <title>음식점 정보</title>
 </head>
@@ -29,40 +30,37 @@
             <button class="btn">위치</button>
         </div>
         <hr class="separator">
-        <h5 class="reservation-heading">예약 일정</h5>
+        <h5 class="reservation-heading">날짜</h5>
         <div class="d-flex align-items-center mb-3" id="dateInfo">
             <i class="bi bi-calendar-event"></i>
-            <span class="ml-2 date-details">오늘(토) / 2명</span>
+            <span class="ml-2 date-details">오늘(토) / <span id="peopleCount">2</span>명</span>
+            <input type="text" id="datepicker" class="ml-3" style="display:none;">
         </div>
-        
         <div class="reservation-times d-flex flex-wrap justify-content-between">
             <button class="custom-outline-danger">오후 6:00</button>
             <button class="custom-outline-danger">오후 6:30</button>
             <button class="custom-outline-danger">오후 7:00</button>
             <button class="custom-outline-danger">오후 7:30</button>
         </div>
+    </div>
 
-        <div class="row mt-5">
+    <footer>
+        <div class="row mt-3">
             <div class="col-1">
                 <span class="bookmark-icon">
                     <img src="/static/img/Bookmark.png" alt="즐겨찾기 아이콘">
                 </span>
             </div>
-            
-            <div class="col-11 btn-container">
-                <button class="custom-danger btn-block">예약하기</button>
+            <div class="col-10 btn-container">
+                <button class="custom-danger btn btn-block">예약하기</button>
             </div>
         </div>
-    </div>
+    </footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        document.getElementById('dateInfo').addEventListener('click', function() {
-            window.location.href = '테스트';
-        });
-    </script>
-    
+    <script src="/static/js/reservation.js"></script>
 </body>
 </html>
