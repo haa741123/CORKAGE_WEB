@@ -82,7 +82,7 @@ body {
   width: 80%;
   max-width: 500px;
   z-index: 1000;
-  margin-top: 30px;
+  margin-top: 70px;
 }
 
 .search-bar .search-icon {
@@ -163,7 +163,7 @@ body {
 
 .category-swiper {
   position: absolute;
-  top: 85px;
+  top: 120px;
   left: 20px;
   width: calc(100% - 40px);
   overflow-x: auto;
