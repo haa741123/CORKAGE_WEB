@@ -308,36 +308,102 @@ body {
   font-weight: bold;
 }
 
-/* 좌우 스크롤만 허용하고 확대 및 축소를 비활성화 */
-#infoContainer {
-  touch-action: pan-x;
-}
-
 .modal {
   display: none;
   position: fixed;
   z-index: 1000;
   left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
+  bottom: 0; /* 하단에 고정 */
+  width: 100%; /* 창 가득 너비 */
+  height: auto;
+  max-height: 70%;
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.5);
+  transition: max-height 0.3s ease-out;
 }
 
 .modal-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 600px;
-  padding: 20px;
+  width: 100%; /* 너비 100% */
+  max-width: 100%; /* 최대 너비 100% */
+  border-radius: 20px 20px 0 0;
   background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  height: auto;
+  max-height: 65%;
+  margin: 0; /* 콘텐츠를 왼쪽으로 붙이기 */
+}
+
+.modal-content h5 {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.filter-section {
+  margin-bottom: 15px;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* 버튼 사이 간격 추가 */
+}
+
+.filter-buttons .btn {
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  padding: 8px 15px;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  flex: 1; /* 버튼이 가능한 공간을 채우도록 */
+  text-align: center;
+  white-space: nowrap;
+}
+
+.filter-buttons .btn-active {
+  background-color: #000;
+  color: #fff;
+}
+
+.filter-buttons .btn-close {
+  background-color: #ddd;
+}
+
+.filter-buttons .btn-apply {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+.slider-container {
+  position: relative;
+  margin: 10px 0;
+}
+
+.slider-container input[type="range"] {
+  width: 100%;
 }
 
 .blur-background {
   filter: blur(5px);
+}
+
+.drag-handle {
+  width: 100%;
+  height: 20px;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f1f1f1; /* 배경 색상 설정 */
+  border-radius: 10px 10px 0 0;
+}
+
+.drag-handle::before {
+  content: "";
+  width: 40px; /* 선의 너비 */
+  height: 4px; /* 선의 높이 */
+  background-color: #ccc; /* 선의 색상 */
+  border-radius: 2px; /* 선의 모서리를 둥글게 */
+  display: block; /* 요소를 블록으로 설정하여 표시 */
 }

@@ -298,25 +298,49 @@ function updateMarkerSizes() {
 let $modal = $("#filterModal");
 let $btn = $("#col_kitchen");
 let $span = $(".close").first();
-let $closeButton = $(".btn-close");
+let $dragHandle = $(".drag-handle"); // 드래그 핸들 요소 선택자 추가
 let $backgroundElements = $(
   ".map_wrap, .search-bar, .category-swiper, .res_info_swiper"
 );
 
+function loadScript(url, callback) {
+  $.getScript(url, callback);
+}
+
 $btn.on("click", function () {
-  $modal.show();
-  $backgroundElements.addClass("blur-background");
+  $modal.show(); // 모달 보이기
+  $backgroundElements.addClass("blur-background"); // 배경 블러 처리
+  loadScript("/static/js/filter.js");
+
+  // 모달의 max-height를 설정하고 overflow를 auto로 변경
+  setTimeout(() => {
+    $modal.find(".modal-content").css("max-height", "65%");
+    $modal.css("overflow", "auto");
+  }, 10);
 });
 
 function closeModal() {
-  $modal.hide();
-  $backgroundElements.removeClass("blur-background");
+  // 모달 닫기 애니메이션
+  $modal.find(".modal-content").css("max-height", "0");
+  $modal.css("overflow", "hidden");
+  setTimeout(() => {
+    $modal.hide();
+    $backgroundElements.removeClass("blur-background");
+    $("script[src='/static/js/filter.js']").remove(); // 스크립트 제거
+  }, 300); // 모달 닫기 애니메이션 시간
 }
 
-$span.on("click", closeModal);
-$closeButton.on("click", closeModal);
-$(window).on("click", function (event) {
-  if ($(event.target).is($modal)) {
-    closeModal();
-  }
+// 드래그 핸들 요소에서 아래로 드래그 시 모달 닫기 기능
+$dragHandle.on("touchstart", function (event) {
+  let startY = event.touches[0].pageY;
+  $modal.on("touchmove", function (event) {
+    let moveY = event.touches[0].pageY;
+    if (moveY - startY > 50) {
+      // 50px 이상 아래로 드래그 시 닫힘
+      closeModal();
+    }
+  });
+  $modal.on("touchend", function () {
+    $modal.off("touchmove touchend");
+  });
 });
