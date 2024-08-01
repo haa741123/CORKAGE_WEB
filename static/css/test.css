@@ -30,7 +30,7 @@ body {
 .map_wrap {
   position: relative;
   width: 100%;
-  height: 100vh; 
+  height: 100vh;
 }
 #menu_wrap {
   position: absolute;
@@ -64,8 +64,8 @@ body {
   margin-left: 5px;
 }
 #map {
-  width: 100%; 
-  height: 100%; 
+  width: 100%;
+  height: 100%;
 }
 
 .search-bar {
@@ -82,7 +82,7 @@ body {
   width: 80%;
   max-width: 500px;
   z-index: 1000;
-  margin-top: 18px;
+  margin-top: 30px;
 }
 
 .search-bar .search-icon {
@@ -96,8 +96,8 @@ body {
   outline: none;
   width: 100%;
   font-size: 13px;
-  font-weight: 550; 
-  color: #CCC9CB;
+  font-weight: 550;
+  color: #ccc9cb;
 }
 
 .map_wrap .SearchBar {
@@ -152,7 +152,7 @@ body {
   }
 
   .res_info_swiper {
-    bottom: 10px !important;  
+    bottom: 10px !important;
     padding: 0 5px;
   }
   .res_info {
@@ -163,7 +163,7 @@ body {
 
 .category-swiper {
   position: absolute;
-  top: 65px;
+  top: 85px;
   left: 20px;
   width: calc(100% - 40px);
   overflow-x: auto;
@@ -184,7 +184,7 @@ body {
   background-color: #ffffff;
   border-radius: 20px;
   cursor: pointer;
-  border: 1px solid #cccccc; 
+  border: 1px solid #cccccc;
 }
 
 .category:last-child {
@@ -192,16 +192,16 @@ body {
 }
 
 .res_info_swiper {
-  position: fixed !important;  
-  bottom: 10px !important; 
+  position: fixed !important;
+  bottom: 10px !important;
   left: 5px !important;
   right: 5px !important;
   overflow-x: auto;
   white-space: nowrap;
-  z-index: 10000 !important; 
+  z-index: 10000 !important;
   border-radius: 10px;
   padding: 13px;
-  background-color: rgba(0, 0, 0, 0);  
+  background-color: rgba(0, 0, 0, 0);
 }
 
 .res_info_swiper::-webkit-scrollbar {
@@ -217,13 +217,13 @@ body {
   width: 40vh;
   box-sizing: border-box;
   padding: 10px;
-  border: 1px solid #ddd; 
-  margin-bottom: 10px; 
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
   max-width: 100%;
 }
 
 .res_info:hover {
-  background-color: #f1f1f1; 
+  background-color: #f1f1f1;
 }
 
 .image-container {
@@ -258,7 +258,8 @@ body {
   align-items: center;
 }
 
-.category-icon, .bookmark-icon img {
+.category-icon,
+.bookmark-icon img {
   width: 25px;
   height: 25px;
   margin-right: 5px;
@@ -283,25 +284,25 @@ body {
 }
 
 .tag.red {
-  background-color: #E1707A;
+  background-color: #e1707a;
 }
 
 .tag.black {
-  background-color: #2E2B2D;
+  background-color: #2e2b2d;
 }
 
-.description, .rating {
+.description,
+.rating {
   font-size: 11px;
   padding-top: 5px;
-  color: #4B494A;
+  color: #4b494a;
 }
 
 .rating {
   font-weight: bold;
 }
 
-
 /* 좌우 스크롤만 허용하고 확대 및 축소를 비활성화 */
 #infoContainer {
-  touch-action: pan-x; 
+  touch-action: pan-x;
 }

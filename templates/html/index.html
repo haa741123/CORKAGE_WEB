@@ -1,127 +1,192 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>지도 페이지</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
     <link rel="stylesheet" href="/static/css/test.css" type="text/css" />
     <link rel="stylesheet" href="/static/css/filter.css" type="text/css" />
-    
-    <style>
-        body {
-            font-family: 'Pretendard Variable', sans-serif;
-        }
-        
-    </style>
-</head>
-<body>
-    <div class="map_wrap">
-        <div id="map" style="width: 100%; height: 100%; position: relative"></div>
-        
-        <div class="search-bar">
-            <img src="/static/img/magnify.png" alt="Search Icon" class="search-icon">
-            <input type="text" placeholder="핫플 압구정 콜키지 맛집 검색하기">
-        </div>
 
-        <div class="category-swiper">
-            <div class="categories">
-                <div id="col_kitchen" class="category" data-val="콜키지">
-                    <img src="/static/img/Filter.png" alt="검색 필터링 아이콘" style="width: 15px; height: 15px;" />
-                    <span id="openFilter">검색 필터</span>
-                </div>
-                
-                <div id="local_drink_rec" class="category" data-val="콜키지 비용">
-                    <img src="/static/img/money.png" alt="콜키지 비용 아이콘" style="width: 15px; height: 15px;" />
-                    콜키지 프리
-                </div>
-                
-                <div id="today_drink_rec" class="category">
-                    <img src="/static/img/good.png" alt="높은 평점 아이콘" style="width: 15px; height: 15px;" />
-                    높은 평점
-                </div>
-            </div>
+    <style>
+      body {
+        font-family: "Pretendard Variable", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="map_wrap">
+      <div
+        id="map"
+        style="width: 100%; height: 100%; position: relative;"
+      ></div>
+
+      <div class="search-bar">
+        <img
+          src="/static/img/magnify.png"
+          alt="Search Icon"
+          class="search-icon"
+        />
+        <input type="text" placeholder="핫플 압구정 콜키지 맛집 검색하기" />
+      </div>
+
+      <div class="category-swiper">
+        <div class="categories">
+          <div id="col_kitchen" class="category" data-val="콜키지">
+            <img
+              src="/static/img/Filter.png"
+              alt="검색 필터링 아이콘"
+              style="width: 15px; height: 15px;"
+            />
+            <span id="openFilter">검색 필터</span>
+          </div>
+
+          <div id="local_drink_rec" class="category" data-val="콜키지 비용">
+            <img
+              src="/static/img/money.png"
+              alt="콜키지 비용 아이콘"
+              style="width: 15px; height: 15px;"
+            />
+            콜키지 프리
+          </div>
+
+          <div id="today_drink_rec" class="category">
+            <img
+              src="/static/img/good.png"
+              alt="높은 평점 아이콘"
+              style="width: 15px; height: 15px;"
+            />
+            높은 평점
+          </div>
         </div>
+      </div>
     </div>
 
     <div id="infoContainer" class="res_info_swiper">
-        <div id="restaurantInfo">
-            <!-- Add more .res_info elements as needed -->
-        </div>
+      <div id="restaurantInfo">
+        <!-- Add more .res_info elements as needed -->
+      </div>
     </div>
 
     <!-- Modal Structure -->
     <div id="filterModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="container">
-                <form id="filterForm" action="/submit_filters" method="POST">
-                    <div class="filter-section">
-                        
-                      <h5>콜키지 가격대</h5>
-                        <p class="text-center" id="priceText">콜키지 프리 ~ 2만원</p>
-                        <div class="slider-container">
-                            <div class="slider-track"></div>
-                            <div class="slider-range" id="sliderRange"></div>
-                            <input type="range" class="slider" id="minSlider" min="0" max="100000" step="10000" value="0">
-                            <input type="range" class="slider" id="maxSlider" min="0" max="100000" step="10000" value="20000">
-                            <div class="price-labels">
-                                <span style="color: #A6A4A5;">0원</span>
-                                <span style="color: #A6A4A5; padding-left: 7dvh;">5만원</span>
-                                <span style="color: #A6A4A5;">10만원 이상</span>
-                            </div>
-                        </div>
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="container">
+          <form id="filterForm" action="/submit_filters" method="POST">
+            <div class="filter-section">
+              <h5>콜키지 가격대</h5>
+              <p class="text-center" id="priceText">콜키지 프리 ~ 2만원</p>
+              <div class="slider-container">
+                <div class="slider-track"></div>
+                <div class="slider-range" id="sliderRange"></div>
+                <input
+                  type="range"
+                  class="slider"
+                  id="minSlider"
+                  min="0"
+                  max="100000"
+                  step="10000"
+                  value="0"
+                />
+                <input
+                  type="range"
+                  class="slider"
+                  id="maxSlider"
+                  min="0"
+                  max="100000"
+                  step="10000"
+                  value="20000"
+                />
+                <div class="price-labels">
+                  <span style="color: #a6a4a5;">0원</span>
+                  <span style="color: #a6a4a5; padding-left: 7dvh;">5만원</span>
+                  <span style="color: #a6a4a5;">10만원 이상</span>
+                </div>
+              </div>
 
-                        <h5>음식종류</h5>
-                        <div class="filter-buttons" data-category="food">
-                            <button type="button" class="btn" data-value="한식">한식</button>
-                            <button type="button" class="btn" data-value="일식">일식</button>
-                            <button type="button" class="btn" data-value="중식">중식</button>
-                            <button type="button" class="btn" data-value="양식">양식</button>
-                            <button type="button" class="btn" data-value="분식">분식</button>
-                        </div>
+              <h5>음식종류</h5>
+              <div class="filter-buttons" data-category="food">
+                <button type="button" class="btn" data-value="한식">
+                  한식
+                </button>
+                <button type="button" class="btn" data-value="일식">
+                  일식
+                </button>
+                <button type="button" class="btn" data-value="중식">
+                  중식
+                </button>
+                <button type="button" class="btn" data-value="양식">
+                  양식
+                </button>
+                <button type="button" class="btn" data-value="분식">
+                  분식
+                </button>
+              </div>
 
-                        <h5>영업시간</h5>
-                        <div class="filter-buttons" data-category="time">
-                            <button type="button" class="btn" data-value="오전">오전</button>
-                            <button type="button" class="btn" data-value="점심">점심</button>
-                            <button type="button" class="btn" data-value="오후">오후</button>
-                            <button type="button" class="btn" data-value="저녁">저녁</button>
-                            <button type="button" class="btn" data-value="심야">심야</button>
-                        </div>
+              <h5>영업시간</h5>
+              <div class="filter-buttons" data-category="time">
+                <button type="button" class="btn" data-value="오전">
+                  오전
+                </button>
+                <button type="button" class="btn" data-value="점심">
+                  점심
+                </button>
+                <button type="button" class="btn" data-value="오후">
+                  오후
+                </button>
+                <button type="button" class="btn" data-value="저녁">
+                  저녁
+                </button>
+                <button type="button" class="btn" data-value="심야">
+                  심야
+                </button>
+              </div>
 
-                        <h5>음식점 평점</h5>
-                        <div class="filter-buttons" data-category="score">
-                            <button type="button" class="btn" data-value="1점">1점</button>
-                            <button type="button" class="btn" data-value="2점">2점</button>
-                            <button type="button" class="btn" data-value="3점">3점</button>
-                            <button type="button" class="btn" data-value="4점">4점</button>
-                            <button type="button" class="btn" data-value="5점">5점</button>
-                        </div>
+              <h5>음식점 평점</h5>
+              <div class="filter-buttons" data-category="score">
+                <button type="button" class="btn" data-value="1점">1점</button>
+                <button type="button" class="btn" data-value="2점">2점</button>
+                <button type="button" class="btn" data-value="3점">3점</button>
+                <button type="button" class="btn" data-value="4점">4점</button>
+                <button type="button" class="btn" data-value="5점">5점</button>
+              </div>
 
-                        <input type="hidden" name="price" id="priceInput" />
-                        <input type="hidden" name="food" id="foodInput" />
-                        <input type="hidden" name="time" id="timeInput" />
-                        <input type="hidden" name="score" id="scoreInput" />
+              <input type="hidden" name="price" id="priceInput" />
+              <input type="hidden" name="food" id="foodInput" />
+              <input type="hidden" name="time" id="timeInput" />
+              <input type="hidden" name="score" id="scoreInput" />
 
-                        <div class="filter-buttons mt-3">
-                            <button type="button" class="btn btn-close">닫기</button>
-                            <button type="submit" class="btn btn-apply">적용하기</button>
-                        </div>
-                    </div>
-                </form>
+              <div class="filter-buttons mt-3">
+                <button type="button" class="btn btn-close">닫기</button>
+                <button type="submit" class="btn btn-apply">적용하기</button>
+              </div>
             </div>
+          </form>
         </div>
+      </div>
     </div>
 
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=212301aed0cac29616f97d494d63e9b0&libraries=services"></script>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=212301aed0cac29616f97d494d63e9b0&libraries=services"
+    ></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/static/js/test.js"></script>
-    <script>
-        
-
-    </script>
-</body>
+    <script></script>
+  </body>
 </html>
