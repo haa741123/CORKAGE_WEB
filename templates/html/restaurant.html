@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="/static/css/res_info.css">
     <title>음식점 정보</title>
+    <!-- Kakao Maps API -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=212301aed0cac29616f97d494d63e9b0&libraries=services"></script>
 </head>
 <body>
     <div class="container">
@@ -27,7 +29,7 @@
         <div class="btn-separator">
             <a href="tel:05012345678910" class="btn">전화</a>
             <div class="vertical-line"></div>
-            <button class="btn">위치</button>
+            <button class="btn" data-toggle="modal" data-target="#locationModal">위치</button>
         </div>
         <hr class="separator">
         <h5 class="reservation-heading">날짜</h5>
@@ -44,15 +46,32 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="locationModal" tabindex="-1" role="dialog" aria-labelledby="locationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body p-0">
+                    <div class="modal-header-info">
+                        <h5 class="modal-title">더나인클럽</h5>
+                        <p class="modal-address">서울 강남구 양재천로42길 23 1층 더나인클럽</p>
+                    </div>
+                    <div id="map-container" style="height: 300px; margin: 20px;"> <!-- 새로 추가한 부분 -->
+                        <div id="map" style="height: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
-        <div class="row mt-3">
+        <div class="row">
             <div class="col-1">
                 <span class="bookmark-icon">
                     <img src="/static/img/Bookmark.png" alt="즐겨찾기 아이콘">
                 </span>
             </div>
             <div class="col-10 btn-container">
-                <button class="custom-danger btn btn-block">예약하기</button>
+                <button class="custom-danger btn btn-block" style="color: #fff; padding: 10px; margin-right: 1px;">예약하기</button>
             </div>
         </div>
     </footer>
@@ -62,5 +81,30 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/static/js/reservation.js"></script>
+    <script>
+        $('#locationModal').on('shown.bs.modal', function () {
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+                mapOption = {
+                    center: new kakao.maps.LatLng(37.5665, 126.9780), // 지도의 중심좌표
+                    level: 3 // 지도의 확대 레벨
+                };
+            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+            // 마커가 표시될 위치입니다
+            var markerPosition  = new kakao.maps.LatLng(37.5665, 126.9780);
+
+            // 마커를 생성합니다
+            var marker = new kakao.maps.Marker({
+                position: markerPosition
+            });
+
+            // 마커가 지도 위에 표시되도록 설정합니다
+            marker.setMap(map);
+
+            // 지도 중심을 재조정합니다
+            map.relayout();
+            map.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
+        });
+    </script>
 </body>
 </html>
