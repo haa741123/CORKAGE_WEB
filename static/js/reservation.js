@@ -1,41 +1,28 @@
+function initializeMap() {
+    let mapOption = {
+        center: new kakao.maps.LatLng(37.5665, 126.9780),
+        level: 3
+    };
+    let map = new kakao.maps.Map(document.getElementById('map'), mapOption);
+
+    let marker = new kakao.maps.Marker({
+        position: mapOption.center
+    });
+    marker.setMap(map);
+
+    map.relayout();
+    map.setCenter(mapOption.center);
+}
+
+function redirectToKakaoMap(address) {
+    let webUrl = 'https://map.kakao.com/link/search/' + encodeURIComponent(address);
+    window.location = webUrl;
+}
+
 $(document).ready(function() {
-    let peopleCount = 2;
+    $('#locationModal').on('shown.bs.modal', initializeMap);
 
-    $("#dateInfo").on('click', function() {
-        $("<div>").datepicker({
-            dateFormat: 'yy-mm-dd',
-            onSelect: function(dateText) {
-                $(".date-details").text(dateText + " / " + peopleCount + "명");
-                $(this).datepicker("destroy").remove();
-            },
-            onClose: function() {
-                $(this).datepicker("destroy").remove();
-            }
-        }).appendTo("body").position({
-            my: "center top",
-            at: "center bottom",
-            of: "#dateInfo"
-        }).datepicker("show");
+    document.querySelector('.custom-map-button').addEventListener('click', function() {
+        redirectToKakaoMap(document.getElementById('modalAddress').textContent);
     });
-
-    $("#decreasePeople").on('click', function() {
-        if (peopleCount > 1) {
-            peopleCount--;
-            $("#peopleCount").text(peopleCount);
-            $("#peopleCountDisplay").text(peopleCount);
-            updateDateDetails();
-        }
-    });
-
-    $("#increasePeople").on('click', function() {
-        peopleCount++;
-        $("#peopleCount").text(peopleCount);
-        $("#peopleCountDisplay").text(peopleCount);
-        updateDateDetails();
-    });
-
-    function updateDateDetails() {
-        let dateText = $(".date-details").text().split(" / ")[0];
-        $(".date-details").text(dateText + " / " + peopleCount + "명");
-    }
 });

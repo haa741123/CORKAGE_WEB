@@ -11,6 +11,25 @@
     <title>음식점 정보</title>
     <!-- Kakao Maps API -->
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=212301aed0cac29616f97d494d63e9b0&libraries=services"></script>
+    <style>
+        .custom-map-button {
+            display: block;
+            width: 85%;
+            background-color: red;
+            color: white;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            margin: 20px auto 0 auto; /* 가운데 정렬 및 상단 여백 */
+        }
+
+        .custom-map-button:hover {
+            background-color: darkred;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -53,11 +72,12 @@
                 <div class="modal-body p-0">
                     <div class="modal-header-info">
                         <h5 class="modal-title">더나인클럽</h5>
-                        <p class="modal-address">서울 강남구 양재천로42길 23 1층 더나인클럽</p>
+                        <p class="modal-address" id="modalAddress">서울 강남구 양재천로42길 23 1층 더나인클럽</p>
                     </div>
-                    <div id="map-container" style="height: 300px; margin: 20px;"> <!-- 새로 추가한 부분 -->
+                    <div id="map-container" style="height: 300px; margin: 20px;">
                         <div id="map" style="height: 100%;"></div>
                     </div>
+                    <button class="custom-map-button mb-4 mt-1">카카오 맵으로 확인하기</button> 
                 </div>
             </div>
         </div>
@@ -77,34 +97,11 @@
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/static/js/reservation.js"></script>
     <script>
-        $('#locationModal').on('shown.bs.modal', function () {
-            var mapContainer = document.getElementById('map'), // 지도를 표시할 div
-                mapOption = {
-                    center: new kakao.maps.LatLng(37.5665, 126.9780), // 지도의 중심좌표
-                    level: 3 // 지도의 확대 레벨
-                };
-            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
-            // 마커가 표시될 위치입니다
-            var markerPosition  = new kakao.maps.LatLng(37.5665, 126.9780);
-
-            // 마커를 생성합니다
-            var marker = new kakao.maps.Marker({
-                position: markerPosition
-            });
-
-            // 마커가 지도 위에 표시되도록 설정합니다
-            marker.setMap(map);
-
-            // 지도 중심을 재조정합니다
-            map.relayout();
-            map.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
-        });
+        
     </script>
 </body>
 </html>
