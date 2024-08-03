@@ -1,11 +1,6 @@
 let markers = [];
 let selectedMarker = null;
-<<<<<<< HEAD
-let mapContainer = document.getElementById('map');
-
-=======
 let mapContainer = document.getElementById("map");
->>>>>>> c0a129d5121626f9176c861858b8c467b6ceec6c
 let mapOption = {
   center: new kakao.maps.LatLng(37.606665, 127.027316),
   level: 12,
@@ -16,27 +11,20 @@ let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
 let isSearchInProgress = false;
 let userPosition;
 
-<<<<<<< HEAD
 // 문서가 로드된 후 실행되는 함수
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.category').forEach(category => {
     category.addEventListener('click', function () {
       searchPlaces(this.getAttribute('data-val'));
-=======
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".category").forEach((category) => {
-    category.addEventListener("click", function () {
-      searchPlaces(this.getAttribute("data-val"));
->>>>>>> c0a129d5121626f9176c861858b8c467b6ceec6c
+    });
+    getUserLocation();
+    setTimeout(moveMyloc, 100); // 이렇게 구현하면 안되지만 도저히 해결방법이 생각나지 않아 긴급 보수로 넣어둔 코드.... 
+
+    $('#my_loc_img').on('click', function() {
+        moveMyloc();  
     });
   });
-  getUserLocation();
-  setTimeout(moveMyloc, 100); // 이렇게 구현하면 안되지만 도저히 해결방법이 생각나지 않아 긴급 보수로 넣어둔 코드.... 
-
-  $('#my_loc_img').on('click', function() {
-      moveMyloc();  
-  });
-});
+})
 
 /** 사용자의 현재 위치로 지도를 이동시키는 함수 */
 let moveMyloc = function() {
@@ -232,14 +220,10 @@ let generatePlaceInfo = function(place, index) {
   `;
 }
 
-<<<<<<< HEAD
 // 장소 정보 클릭 시 상세 페이지로 이동하는 함수
 document.addEventListener('click', function (event) {
   let target = event.target.closest('.res_info');
-=======
-document.addEventListener("click", function (event) {
-  let target = event.target.closest(".res_info");
->>>>>>> c0a129d5121626f9176c861858b8c467b6ceec6c
+
   if (target) {
     let placeName = target.getAttribute("data-place_name");
     let addressName = target.getAttribute("data-address_name");
@@ -262,14 +246,9 @@ document.addEventListener("click", function (event) {
   }
 });
 
-<<<<<<< HEAD
 /** 지도에서 마커를 제거하는 함수 */
 let removeMarkers = function() {
   markers.forEach(marker => marker.setMap(null));
-=======
-function removeMarkers() {
-  markers.forEach((marker) => marker.setMap(null));
->>>>>>> c0a129d5121626f9176c861858b8c467b6ceec6c
   markers = [];
   selectedMarker = null;
 }
@@ -346,25 +325,15 @@ let showUserPosition = function() {
 // 지도의 줌 레벨이 변경될 때 마커 크기를 업데이트하는 함수
 kakao.maps.event.addListener(map, "zoom_changed", updateMarkerSizes);
 
-<<<<<<< HEAD
-// 마커 크기를 업데이트하는 함수
-let updateMarkerSizes = function() {
-  markers.forEach(marker => setMarkerImage(marker, marker.originalImageSrc));
-}
-
-
-
 
 /**
  *  모달 JS 코드입니다!!!!
  *  (검색 필터)
  */
-=======
 function updateMarkerSizes() {
   markers.forEach((marker) => setMarkerImage(marker, marker.originalImageSrc));
 }
 
->>>>>>> c0a129d5121626f9176c861858b8c467b6ceec6c
 // 지도 위에 띄워줄 모달창 (검색 조건)
 let $modal = $("#filterModal");
 let $btn = $("#col_kitchen");
@@ -379,55 +348,17 @@ function loadScript(url, callback) {
   $.getScript(url, callback);
 }
 
-<<<<<<< HEAD
+
 // 모달창을 여는 버튼 이벤트 리스너
 $btn.on("click", function() {
-    $modal.show();
-    $backgroundElements.addClass('blur-background');
-    loadScript("/static/js/filter.js");
+  $modal.show();
+  $backgroundElements.addClass('blur-background');
+  loadScript("/static/js/filter.js");
 });
 
 // 모달창을 닫는 함수
 function closeModal() {
-    $modal.hide();
-    $backgroundElements.removeClass('blur-background');
-    $("script[src='/static/js/filter.js']").remove();
-=======
-$btn.on("click", function () {
-  $modal.show(); // 모달 보이기
-  $backgroundElements.addClass("blur-background"); // 배경 블러 처리
-  loadScript("/static/js/filter.js");
-
-  // 모달의 max-height를 설정하고 overflow를 auto로 변경
-  setTimeout(() => {
-    $modal.find(".modal-content").css("max-height", "65%");
-    $modal.css("overflow", "auto");
-  }, 10);
-});
-
-function closeModal() {
-  // 모달 닫기 애니메이션
-  $modal.find(".modal-content").css("max-height", "0");
-  $modal.css("overflow", "hidden");
-  setTimeout(() => {
-    $modal.hide();
-    $backgroundElements.removeClass("blur-background");
-    $("script[src='/static/js/filter.js']").remove(); // 스크립트 제거
-  }, 300); // 모달 닫기 애니메이션 시간
->>>>>>> c0a129d5121626f9176c861858b8c467b6ceec6c
+  $modal.hide();
+  $backgroundElements.removeClass('blur-background');
+  $("script[src='/static/js/filter.js']").remove();
 }
-
-// 드래그 핸들 요소에서 아래로 드래그 시 모달 닫기 기능
-$dragHandle.on("touchstart", function (event) {
-  let startY = event.touches[0].pageY;
-  $modal.on("touchmove", function (event) {
-    let moveY = event.touches[0].pageY;
-    if (moveY - startY > 50) {
-      // 50px 이상 아래로 드래그 시 닫힘
-      closeModal();
-    }
-  });
-  $modal.on("touchend", function () {
-    $modal.off("touchmove touchend");
-  });
-});
