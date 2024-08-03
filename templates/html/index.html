@@ -14,6 +14,32 @@
         body {
             font-family: 'Pretendard Variable', sans-serif;
         }
+
+        #my_loc {
+            position: absolute;
+            bottom: 10vh;  
+            right: 39vh;    
+            z-index: 10;   
+        }
+
+        /* 내 위치 이미지 크기 조정 */
+        #my_loc_img {
+            width: 45px !important;   
+            height: 45px !important;  
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+        }
+
+        /* 모바일 화면에서의 위치 조정 */
+        @media (max-width: 767px) {
+            #my_loc {
+                bottom: 21dvh;  
+            }
+            #my_loc_img {
+                width: 55px !important;   
+                height: 55px !important;  
+            }
+        }
         
     </style>
 </head>
@@ -46,13 +72,17 @@
         </div>
     </div>
 
+    <div id="my_loc">
+        <img src="/static/img/my_loc.svg" alt="내 위치" id="my_loc_img" style="cursor: pointer;" />
+    </div>
+
     <div id="infoContainer" class="res_info_swiper">
         <div id="restaurantInfo">
-            <!-- Add more .res_info elements as needed -->
+            <!-- 음식점 요약 정보 -->
         </div>
     </div>
 
-    <!-- Modal Structure -->
+    <!-- 모달 구간 -->
     <div id="filterModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
