@@ -30,7 +30,7 @@ body {
 .map_wrap {
   position: relative;
   width: 100%;
-  height: 100vh; 
+  height: 100vh;
 }
 #menu_wrap {
   position: absolute;
@@ -64,8 +64,8 @@ body {
   margin-left: 5px;
 }
 #map {
-  width: 100%; 
-  height: 100%; 
+  width: 100%;
+  height: 100%;
 }
 
 .search-bar {
@@ -82,7 +82,7 @@ body {
   width: 80%;
   max-width: 500px;
   z-index: 1000;
-  margin-top: 18px;
+  margin-top: 70px;
 }
 
 .search-bar .search-icon {
@@ -96,8 +96,8 @@ body {
   outline: none;
   width: 100%;
   font-size: 13px;
-  font-weight: 550; 
-  color: #CCC9CB;
+  font-weight: 550;
+  color: #ccc9cb;
 }
 
 .map_wrap .SearchBar {
@@ -143,27 +143,33 @@ body {
   }
 
   .category-swiper {
+    position: absolute;
     top: 60px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
     padding: 0 5px;
+    width: fit-content;
   }
+
   .category {
     padding: 8px 12px;
-    font-size: 16px;
+    font-size: 12px;
   }
 
   .res_info_swiper {
-    bottom: 10px !important;  
+    bottom: 10px !important;
     padding: 0 5px;
   }
   .res_info {
     padding: 8px 12px;
-    font-size: 16px;
+    font-size: 12px;
   }
 }
 
 .category-swiper {
   position: absolute;
-  top: 65px;
+  top: 120px;
   left: 20px;
   width: calc(100% - 40px);
   overflow-x: auto;
@@ -184,7 +190,7 @@ body {
   background-color: #ffffff;
   border-radius: 20px;
   cursor: pointer;
-  border: 1px solid #cccccc; 
+  border: 1px solid #cccccc;
 }
 
 .category:last-child {
@@ -192,16 +198,16 @@ body {
 }
 
 .res_info_swiper {
-  position: fixed !important;  
-  bottom: 10px !important; 
+  position: fixed !important;
+  bottom: 10px !important;
   left: 5px !important;
   right: 5px !important;
   overflow-x: auto;
   white-space: nowrap;
-  z-index: 10000 !important; 
+  z-index: 10000 !important;
   border-radius: 10px;
   padding: 13px;
-  background-color: rgba(0, 0, 0, 0);  
+  background-color: rgba(0, 0, 0, 0);
 }
 
 .res_info_swiper::-webkit-scrollbar {
@@ -217,13 +223,13 @@ body {
   width: 40vh;
   box-sizing: border-box;
   padding: 10px;
-  border: 1px solid #ddd; 
-  margin-bottom: 10px; 
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
   max-width: 100%;
 }
 
 .res_info:hover {
-  background-color: #f1f1f1; 
+  background-color: #f1f1f1;
 }
 
 .image-container {
@@ -258,7 +264,8 @@ body {
   align-items: center;
 }
 
-.category-icon, .bookmark-icon img {
+.category-icon,
+.bookmark-icon img {
   width: 25px;
   height: 25px;
   margin-right: 5px;
@@ -283,25 +290,120 @@ body {
 }
 
 .tag.red {
-  background-color: #E1707A;
+  background-color: #e1707a;
 }
 
 .tag.black {
-  background-color: #2E2B2D;
+  background-color: #2e2b2d;
 }
 
-.description, .rating {
+.description,
+.rating {
   font-size: 11px;
   padding-top: 5px;
-  color: #4B494A;
+  color: #4b494a;
 }
 
 .rating {
   font-weight: bold;
 }
 
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  bottom: 0; /* 하단에 고정 */
+  width: 100%; /* 창 가득 너비 */
+  height: auto;
+  max-height: 70%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: max-height 0.3s ease-out;
+}
 
-/* 좌우 스크롤만 허용하고 확대 및 축소를 비활성화 */
-#infoContainer {
-  touch-action: pan-x; 
+.modal-content {
+  width: 100%; /* 너비 100% */
+  max-width: 100%; /* 최대 너비 100% */
+  border-radius: 20px 20px 0 0;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  height: auto;
+  max-height: 65%;
+  margin: 0; /* 콘텐츠를 왼쪽으로 붙이기 */
+}
+
+.modal-content h5 {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.filter-section {
+  margin-bottom: 15px;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* 버튼 사이 간격 추가 */
+}
+
+.filter-buttons .btn {
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  padding: 8px 15px;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  flex: 1; /* 버튼이 가능한 공간을 채우도록 */
+  text-align: center;
+  white-space: nowrap;
+}
+
+.filter-buttons .btn-active {
+  background-color: #000;
+  color: #fff;
+}
+
+.filter-buttons .btn-close {
+  background-color: #ddd;
+}
+
+.filter-buttons .btn-apply {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+.slider-container {
+  position: relative;
+  margin: 10px 0;
+}
+
+.slider-container input[type="range"] {
+  width: 100%;
+}
+
+.blur-background {
+  filter: blur(5px);
+}
+
+.drag-handle {
+  width: 100%;
+  height: 20px;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f1f1f1; /* 배경 색상 설정 */
+  border-radius: 10px 10px 0 0;
+}
+
+.drag-handle::before {
+  content: "";
+  width: 40px; /* 선의 너비 */
+  height: 4px; /* 선의 높이 */
+  background-color: #ccc; /* 선의 색상 */
+  border-radius: 2px; /* 선의 모서리를 둥글게 */
+  display: block; /* 요소를 블록으로 설정하여 표시 */
 }
