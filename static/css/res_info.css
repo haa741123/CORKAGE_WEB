@@ -201,15 +201,80 @@ footer .btn {
 }
 
 #map-container {
-    max-height: 300px; /* 지도의 높이를 제한 */
-    padding: 10px; /* 내부 여백 추가 */
-    overflow: hidden; /* 내용이 넘칠 경우 숨김 */
-    border-radius: 8px; /* 테두리 둥글게 */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+    max-height: 300px; 
+    padding: 10px; 
+    overflow: hidden; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); 
 }
 
 #map {
     flex: 1 1 auto; 
     height: 300px; 
     width: 100%; 
+}
+
+.custom-map-button {
+    display: block;
+    width: 85%;
+    background-color: red;
+    color: white;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    margin: 20px auto 0 auto; 
+}
+
+.custom-map-button:hover {
+    background-color: darkred;
+}
+
+.tab-button {
+    flex: 1; 
+    padding: 15px;
+    text-align: center;
+    background-color: #f9f9f9; 
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-bottom: 2px solid transparent; 
+}
+
+.tab-button.active {
+    background-color: white; 
+    border-bottom: 2px solid #FF6600; 
+    color: #FF6600; 
+}
+
+.tab-navigation {
+    display: flex;
+    border-bottom: 2px solid #ddd; 
+    margin-bottom: 15px;
+}
+
+
+.tab-content {
+    display: none;
+    padding: 20px; 
+    background-color: #fff; 
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px; 
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); 
+}
+
+
+.tab-content h5 {
+    color: #333;
+    margin-bottom: 10px;
 }
