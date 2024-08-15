@@ -278,3 +278,56 @@ footer .btn {
     color: #333;
     margin-bottom: 10px;
 }
+
+.slider-container {
+    width: 100%;
+    overflow: hidden; 
+    position: relative;
+    margin-top: 20px;
+}
+
+.image-slider {
+    display: flex;
+    transition: transform 0.5s ease-out;
+}
+
+.slide {
+    width: 100%;
+    flex: 0 0 100%;
+}
+
+.slide img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Add navigation buttons on the slider */
+.navigation-manual {
+    position: absolute;
+    width: 100%;
+    bottom: 10px;
+    text-align: center;
+}
+
+.manual-btn {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #fff;
+    margin: 0 2px;
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"]:checked + .slide {
+    display: block;
+}
+
+#nav-1:checked ~ .image-slider { transform: translateX(0%); }
+#nav-2:checked ~ .image-slider { transform: translateX(-100%); }
+#nav-3:checked ~ .image-slider { transform: translateX(-200%); }
