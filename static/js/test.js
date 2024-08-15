@@ -13,45 +13,31 @@ let userPosition;
 
 // 문서가 로드된 후 실행되는 함수
 document.addEventListener('DOMContentLoaded', function () {
+  if (window.userPosition) {
+    userPosition = window.userPosition;
+    console.log(`Received user position: ${userPosition.latitude}, ${userPosition.longitude}`);
+    moveMyloc(); // 위치를 지도에서 반영하는 함수 호출
+  }
+  
   document.querySelectorAll('.category').forEach(category => {
     category.addEventListener('click', function () {
       searchPlaces(this.getAttribute('data-val'));
     });
-    getUserLocation();
-    setTimeout(moveMyloc, 100); // 이렇게 구현하면 안되지만 도저히 해결방법이 생각나지 않아 긴급 보수로 넣어둔 코드.... 
 
     $('#my_loc_img').on('click', function() {
         moveMyloc();  
     });
   });
-})
+});
 
-/** 사용자의 현재 위치로 지도를 이동시키는 함수 */
-let moveMyloc = function() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      userPosition = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      };
-      let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
-      map.panTo(moveLatLon);  // 부드럽게
-    }, () => {
-      console.error("위치 정보를 받아오는데 실패했습니다.");
-    });
+/** 사용자 위치를 지도에서 반영하는 함수 */
+function moveMyloc() {
+  if (userPosition) {
+    let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
+    map.panTo(moveLatLon);  // 부드럽게 지도를 이동
   } else {
-    console.error("이 기기는 지오로케이션을 지원하지 않습니다.");
+    console.error("User position is not available.");
   }
-}
-
-/** 카테고리 이름에 따라 이미지 경로를 반환하는 함수 */
-let getImageSrc = function(categoryName) {
-  if (categoryName.includes("한식")) return "/static/img/kor_food.png";
-  if (categoryName.includes("회") || categoryName.includes("돈까스"))
-    return "/static/img/cutlet_sashimi.png";
-  if (categoryName.includes("중식")) return "/static/img/ch_food.png";
-  if (categoryName.includes("양식")) return "/static/img/fast_food.png";
-  return "/static/img/cork_restaurant.jpg";
 }
 
 /** 키워드를 사용하여 장소를 검색하는 함수 */
@@ -122,8 +108,6 @@ let displayMarker = function(place, index) {
 
   markers.push(marker);
 }
-
-
 
 /** 마커 이미지를 설정하는 함수 */
 let setMarkerImage = function(marker, imageSrc, scale = 1) {
@@ -280,30 +264,6 @@ let formatTime = function(time) {
   return hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
 }
 
-/** 사용자 위치를 가져오는 함수 */
-let getUserLocation = function() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        userPosition = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
-        showUserPosition();
-        searchPlaces("돈까스");
-      },
-      () => {
-        console.error("위치 정보를 받아오는데 실패했습니다.");
-        searchPlaces("돈까스");
-      }
-    );
-  } else {
-    console.error("이 브라우저는 지오로케이션을 지원하지 않습니다.");
-    console.log("User position: ", window.userPosition);
-    searchPlaces("돈까스");
-  }
-}
-
 /** 사용자 위치를 지도에 표시하는 함수 */
 let showUserPosition = function() {
   let marker = new kakao.maps.Marker({
@@ -325,11 +285,7 @@ let showUserPosition = function() {
 // 지도의 줌 레벨이 변경될 때 마커 크기를 업데이트하는 함수
 kakao.maps.event.addListener(map, "zoom_changed", updateMarkerSizes);
 
-
-/**
- *  모달 JS 코드입니다!!!!
- *  (검색 필터)
- */
+/** 마커 크기 업데이트 함수 */
 function updateMarkerSizes() {
   markers.forEach((marker) => setMarkerImage(marker, marker.originalImageSrc));
 }
@@ -347,7 +303,6 @@ let $backgroundElements = $(
 function loadScript(url, callback) {
   $.getScript(url, callback);
 }
-
 
 // 모달창을 여는 버튼 이벤트 리스너
 $btn.on("click", function() {
