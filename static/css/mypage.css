@@ -1,0 +1,133 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.settings-icon {
+    font-size: 24px;
+}
+
+.profile-section {
+    display: flex;
+    padding: 20px;
+    background-color: #ffffff;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    margin-top: -30px;
+}
+
+.profile-picture {
+    width: 60px;
+    height: 60px;
+    background-color: #d8d8d8;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: 15px;
+    justify-content: flex-start;
+}
+
+.nickname {
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+    margin-top: 50px; /* 이름만 아래로 이동시킴 */
+}
+
+.account-management {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #888888;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.menu-item {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.club-info {
+    padding: 20px;
+    background-color: #ffffff;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.highlight {
+    color: #0095f6;
+    font-weight: bold;
+}
+
+.club-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.club-actions div {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px;
+    width: 45%;
+    text-align: center;
+    font-size: 14px;
+    color: #0095f6;
+}
+
+.promo-banner {
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.promo-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.coupon-section {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: #ffffff;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.coupon-item {
+    text-align: center;
+}
