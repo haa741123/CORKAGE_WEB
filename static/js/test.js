@@ -9,35 +9,44 @@ let map = new kakao.maps.Map(mapContainer, mapOption);
 let ps = new kakao.maps.services.Places();
 let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
 let isSearchInProgress = false;
-let userPosition;
+let userPosition = null;  // 초기에는 null로 설정
 
 // 문서가 로드된 후 실행되는 함수
 document.addEventListener('DOMContentLoaded', function () {
-  if (window.userPosition) {
-    userPosition = window.userPosition;
-    console.log(`Received user position: ${userPosition.latitude}, ${userPosition.longitude}`);
-    moveMyloc(); // 위치를 지도에서 반영하는 함수 호출
-  }
-  
   document.querySelectorAll('.category').forEach(category => {
     category.addEventListener('click', function () {
       searchPlaces(this.getAttribute('data-val'));
     });
+    getUserLocation();
 
     $('#my_loc_img').on('click', function() {
-        moveMyloc();  
+        if (userPosition) {  // userPosition이 설정된 경우에만 moveMyloc 호출
+            moveMyloc();  
+        } else {
+            console.error("User position is not available yet.");
+        }
     });
   });
 });
 
-/** 사용자 위치를 지도에서 반영하는 함수 */
-function moveMyloc() {
+/** 사용자의 현재 위치로 지도를 이동시키는 함수 */
+let moveMyloc = function() {
   if (userPosition) {
     let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
-    map.panTo(moveLatLon);  // 부드럽게 지도를 이동
+    map.panTo(moveLatLon);  // 부드럽게 지도 이동
   } else {
     console.error("User position is not available.");
   }
+}
+
+/** 카테고리 이름에 따라 이미지 경로를 반환하는 함수 */
+let getImageSrc = function(categoryName) {
+  if (categoryName.includes("한식")) return "/static/img/kor_food.png";
+  if (categoryName.includes("회") || categoryName.includes("돈까스"))
+    return "/static/img/cutlet_sashimi.png";
+  if (categoryName.includes("중식")) return "/static/img/ch_food.png";
+  if (categoryName.includes("양식")) return "/static/img/fast_food.png";
+  return "/static/img/cork_restaurant.jpg";
 }
 
 /** 키워드를 사용하여 장소를 검색하는 함수 */
@@ -264,8 +273,47 @@ let formatTime = function(time) {
   return hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
 }
 
+/** 사용자 위치를 가져오는 함수 */
+let getUserLocation = function() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        userPosition = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+        console.log("User position set:", userPosition);
+        showUserPosition();  // 위치가 설정된 후 마커 표시
+        moveMyloc();  // 위치가 설정된 후 지도를 이동
+        searchPlaces("돈까스");
+      },
+      (error) => {
+        console.error("위치 정보를 받아오는데 실패했습니다.", error);
+        searchPlaces("돈까스");
+      }
+    );
+  } else {
+    console.log("Cannot access browser geolocation. Waiting for Flutter location...");
+  }
+}
+
+// 플러터에서 전달된 위치 정보를 처리하는 함수
+function handleFlutterLocation(latitude, longitude) {
+  userPosition = {
+    latitude: latitude,
+    longitude: longitude,
+  };
+  console.log("Flutter provided user position:", userPosition);
+  showUserPosition();  // 위치가 설정된 후 마커 표시
+  moveMyloc();  // 위치가 설정된 후 지도를 이동
+  searchPlaces("돈까스");
+}
+
+
 /** 사용자 위치를 지도에 표시하는 함수 */
 let showUserPosition = function() {
+  if (!userPosition) return;
+
   let marker = new kakao.maps.Marker({
     position: new kakao.maps.LatLng(
       userPosition.latitude,
@@ -285,7 +333,7 @@ let showUserPosition = function() {
 // 지도의 줌 레벨이 변경될 때 마커 크기를 업데이트하는 함수
 kakao.maps.event.addListener(map, "zoom_changed", updateMarkerSizes);
 
-/** 마커 크기 업데이트 함수 */
+/** 마커 크기를 업데이트하는 함수 */
 function updateMarkerSizes() {
   markers.forEach((marker) => setMarkerImage(marker, marker.originalImageSrc));
 }
