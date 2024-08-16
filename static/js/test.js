@@ -57,7 +57,7 @@ let searchPlaces = function(keyword) {
   }
 }
 
-/** 장소 검색 결과를 처리하는 콜백 함수 */
+/** 장소 검색 결과를 처리하는 콜백 함수 - 수정하지마 제발 */
 let placesSearchCB = function(data, status) {
   isSearchInProgress = false;
   if (status === kakao.maps.services.Status.OK) {
@@ -87,7 +87,7 @@ let placesSearchCB = function(data, status) {
   }
 }
 
-/** 장소에 마커를 표시하는 함수 */
+/** 장소에 마커를 표시하는 함수 - 수정하지마 제발*/
 let displayMarker = function(place, index) {
   let marker = createMarker(place);
   kakao.maps.event.addListener(marker, "click", function () {
