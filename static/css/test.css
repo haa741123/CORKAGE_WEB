@@ -313,8 +313,8 @@ body {
   position: fixed;
   z-index: 1000;
   left: 0;
-  bottom: 0; /* 하단에 고정 */
-  width: 100%; /* 창 가득 너비 */
+  bottom: 0; 
+  width: 100%; 
   height: auto;
   max-height: 70%;
   overflow: hidden;
@@ -323,8 +323,8 @@ body {
 }
 
 .modal-content {
-  width: 100%; /* 너비 100% */
-  max-width: 100%; /* 최대 너비 100% */
+  width: 100%; 
+  max-width: 100%; 
   border-radius: 20px 20px 0 0;
   background-color: #fff;
   padding: 20px;
@@ -332,7 +332,7 @@ body {
   overflow-y: auto;
   height: auto;
   max-height: 65%;
-  margin: 0; /* 콘텐츠를 왼쪽으로 붙이기 */
+  margin: 0; 
 }
 
 .modal-content h5 {
@@ -347,7 +347,7 @@ body {
 .filter-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px; /* 버튼 사이 간격 추가 */
+  gap: 10px; 
 }
 
 .filter-buttons .btn {
@@ -356,7 +356,7 @@ body {
   padding: 8px 15px;
   background-color: #f1f1f1;
   cursor: pointer;
-  flex: 1; /* 버튼이 가능한 공간을 채우도록 */
+  flex: 1; 
   text-align: center;
   white-space: nowrap;
 }
@@ -395,15 +395,48 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f1f1f1; /* 배경 색상 설정 */
+  background-color: #f1f1f1; 
   border-radius: 10px 10px 0 0;
 }
 
 .drag-handle::before {
   content: "";
-  width: 40px; /* 선의 너비 */
-  height: 4px; /* 선의 높이 */
-  background-color: #ccc; /* 선의 색상 */
-  border-radius: 2px; /* 선의 모서리를 둥글게 */
-  display: block; /* 요소를 블록으로 설정하여 표시 */
+  width: 40px; 
+  height: 4px; 
+  background-color: #ccc; 
+  border-radius: 2px; 
+  display: block; 
+}
+
+
+
+
+
+body {
+  font-family: 'Pretendard Variable', sans-serif;
+}
+
+#my_loc {
+  position: absolute;
+  bottom: 10vh;
+  right: 39vh;
+  z-index: 10;
+}
+
+#my_loc_img {
+  width: 45px !important;
+  height: 45px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}
+
+@media (max-width: 767px) {
+  #my_loc {
+      bottom: 21dvh;
+  }
+
+  #my_loc_img {
+      width: 55px !important;
+      height: 55px !important;
+  }
 }
