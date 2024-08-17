@@ -32,6 +32,10 @@ def post():
 def edit_post():
     return render_template('html/edit_post.html')
 
+# 마이페이지
+@main_routes.route("/mypage")
+def edit_post():
+    return render_template('html/mypage.html')
 
 
 # 에러 페이지
