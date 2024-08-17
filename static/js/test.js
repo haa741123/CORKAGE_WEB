@@ -62,7 +62,6 @@ let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
 let isSearchInProgress = false;
 let userPosition = null;  // 초기에는 null로 설정
 
-
 // 문서가 로드된 후 실행되는 함수
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -87,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-})
+});
 
 
 
@@ -95,19 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
  * 사용자의 현재 위치로 지도를 이동시키는 함수
  */
 let moveMyloc = function() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      userPosition = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      };
-      let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
-      map.panTo(moveLatLon);  // 부드럽게
-    }, () => {
-      console.error("위치 정보를 받아오는데 실패했습니다.");
-    });
+  if (userPosition) {
+    let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
+    map.panTo(moveLatLon);  // 부드럽게 지도 이동
   } else {
-    console.error("이 기기는 지오로케이션을 지원하지 않습니다.");
+    console.error("User position is not available.");
   }
 }
 
