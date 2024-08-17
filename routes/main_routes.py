@@ -34,7 +34,7 @@ def edit_post():
 
 # 마이페이지
 @main_routes.route("/mypage")
-def edit_post():
+def mypage():
     return render_template('html/mypage.html')
 
 
