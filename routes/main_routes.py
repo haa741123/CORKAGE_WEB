@@ -37,6 +37,12 @@ def edit_post():
 def mypage():
     return render_template('html/mypage.html')
 
+# 와인 정보 페이지
+@main_routes.route("/drink_info")
+def mypage():
+    return render_template('html/drink_infos.html')
+
+
 
 # 에러 페이지
 @main_routes.errorhandler(404)
