@@ -39,7 +39,7 @@ def mypage():
 
 # 와인 정보 페이지
 @main_routes.route("/drink_info")
-def mypage():
+def drink_info():
     return render_template('html/drink_info.html')
 
 
