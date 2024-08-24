@@ -1,113 +1,254 @@
-/* 기본 설정 및 환경 고려 */
 body {
-  background-color: #f8d7da; /* 연한 핑크 배경 */
-  font-family: "Arial", sans-serif; /* 글꼴 설정 */
-  padding: env(safe-area-inset);
+  font-family: 'Pretendard', sans-serif;
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
 }
 
-/* 컨테이너 설정 */
 .container {
-  width: 80%;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #fff; /* 배경색 */
-  border-radius: 8px; /* 모서리 둥글게 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
-  text-align: center; /* 텍스트 중앙 정렬 */
-}
-
-/* 와인 이미지 설정 */
-.wine-image img {
   width: 100%;
-  max-width: 200px; /* 이미지 최대 크기 설정 */
-  display: block;
-  margin: 20px auto; /* 중앙 정렬 */
+  max-width: 390px; /* Limit the maximum width */
+  height: 100%;
+  max-height: 844px; /* Limit the maximum height */
+  background-color: white;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  position: relative;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
-/* 텍스트 스타일 */
-h3,
-p {
-  color: #333; /* 글자 색상 */
-  margin: 10px 0;
+.header {
+  width: 100%;
+  height: auto;
+  padding: 10px 0;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
-/* 평점 바 컨테이너 */
-.rating-container {
-  margin: 20px 0;
+.header .title {
+  font-size: 1.5rem; /* Responsive font size */
+  font-weight: 500;
+  color: #4b494a;
 }
 
-.rating-bar-container {
+.header .icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+}
+
+.section-title {
+  font-family: 'JejuMyeongjo', serif;
+  font-weight: 500;
+  font-size: 2rem; /* Responsive font size */
+  color: #0d090c;
+  margin: 16px 0;
+}
+
+.tag {
+  background-color: #e1707a;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.rating {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
-  padding: 0 20px;
+  gap: 8px;
+  color: #2e2b2d;
+  margin: 16px 0;
 }
 
-.rating-bar {
-  flex-grow: 1;
+.rating .score {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.rating .reviews {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #5e5b5d;
+}
+
+.attributes {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Gap between each attribute */
+  margin: 16px 0;
+}
+
+.attribute {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.attribute-icon {
+  width: 48px;
+  height: auto;
+}
+
+.attribute-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: #858284;
+}
+
+.attribute-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0d090c;
+}
+
+.description {
+  width: 100%;
+  color: #fff;
+  text-align: left;
+  margin: 16px 0;
+  padding: 0; /* Remove padding to prevent unintended gaps */
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.description-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.description-text {
+  font-size: 0.875rem;
+  font-weight: 100;
+  word-break: keep-all;
+}
+
+.product-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 16px 0;
   position: relative;
-  height: 20px;
-  background-color: #e0e0e0; /* 배경색 */
-  border-radius: 10px; /* 모서리 둥글게 */
-  overflow: hidden;
-  margin-right: 10px;
+  z-index: 1;
 }
 
-.rating-fill {
-  height: 100%;
-  background-color: #ffc107; /* 성공색 배경 */
-  border-radius: 10px; /* 내부 막대 모서리 둥글게 */
+.product-image {
+  width: auto;
+  height: 200px;
+  margin-top: -20px;
+  z-index: 10;
+  position: absolute; /* Absolute positioning to avoid overlapping other content */
+  right: 0;
+  top: 50%; /* Center the image vertically */
+  transform: translateY(-50%);
+  max-width: 50%;
+  object-fit: contain;
 }
 
-.rating-bar .text {
-  position: absolute; /* 텍스트 위치 조정 */
-  left: 10px; /* 왼쪽 여백 */
-  top: 50%; /* 상단에서 50% 위치 */
-  transform: translateY(-50%); /* Y축 중앙 정렬 */
-  margin: 0; /* 기본 마진 제거 */
-  color: #333; /* 텍스트 색상 */
-  font-size: 14px; /* 폰트 크기 설정 */
-  z-index: 2; /* 텍스트가 바 위에 오도록 */
+.main-section {
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+background-color: #2e2b2d;
+color: white;
+width: 100%;
+padding: 16px; /* Add padding if you want some space inside */
+box-sizing: border-box; /* Ensures padding is included in the width */
+position: relative;
+bottom: 0;
+left: 0;
+right: 0;
+margin-top: 20px;
+z-index: 0; /* Ensure the description is behind the image */
 }
 
-.rating-avg {
-  margin-top: 20px;
-  font-size: 24px;
-  color: #333;
+
+.buy-button {
+  width: 100%;
+  max-width: 250px;
+  height: 40px;
+  background-color: #d0273b;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 16px 0;
 }
 
-.rating-avg p {
-  margin: 0;
+.price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  padding-top: 16px;
 }
 
-/* 리뷰 섹션 */
-.review-section {
-  max-height: 200px; /* 최대 높이 설정 */
-  overflow-y: scroll; /* 수직 스크롤 허용 */
-  padding: 10px;
-  background-color: #f9f9f9; /* 연한 배경색 */
-  border: 1px solid #e0e0e0; /* 테두리 */
-  border-radius: 8px; /* 모서리 둥글게 */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* 내부 그림자 */
+.price .amount {
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
-/* 스크롤 바 숨기기 */
-.review-section::-webkit-scrollbar {
-  width: 0; /* 웹킷 브라우저에서 스크롤바 숨기기 */
-  height: 0;
+.price .currency {
+  font-size: 1rem;
+  font-weight: 400;
 }
 
-.review-section {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-.review {
-  margin-bottom: 10px; /* 리뷰 간 간격 */
-  text-align: left; /* 리뷰 텍스트 정렬 */
-}
-
-.review p {
-  margin: 0; /* 기본 마진 제거 */
-  color: #555; /* 텍스트 색상 */
+/* Media queries for larger screens */
+@media screen and (min-width: 600px) {
+  .container {
+      width: 50vw;
+      height: 70vh;
+      max-width: none;
+      max-height: none;
+      padding: 32px;
+  }
+  .header .title {
+      font-size: 2rem; /* Larger font size for desktops */
+  }
+  .section-title {
+      font-size: 2.5rem;
+  }
+  .rating .score {
+      font-size: 1.5rem;
+  }
+  .rating .reviews {
+      font-size: 1.125rem;
+  }
+  .description-title {
+      font-size: 1.5rem;
+  }
+  .description-text {
+      font-size: 1.125rem;
+  }
+  .product-image {
+      height: 300px;
+  }
+  .buy-button {
+      height: 50px;
+      font-size: 1.25rem;
+  }
+  .price .amount {
+      font-size: 1.5rem;
+  }
+  .price .currency {
+      font-size: 1.25rem;
+  }
 }
