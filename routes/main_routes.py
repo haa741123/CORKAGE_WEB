@@ -32,6 +32,11 @@ def post():
 def edit_post():
     return render_template('html/edit_post.html')
 
+# 음식점 페이지 경로 추가
+@main_routes.route("/restaurant")
+def restaurant():
+    return render_template('html/restaurant.html')
+
 
 
 # 에러 페이지

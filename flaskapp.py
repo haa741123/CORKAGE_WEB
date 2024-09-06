@@ -1,25 +1,10 @@
 from flask import Flask, render_template
 from routes.main_routes import main_routes
 from modules.RecommendController import RecommendController
-# from modules.DBController import DBController
 
 app = Flask(__name__)
 app.register_blueprint(main_routes)
 app.register_blueprint(RecommendController, url_prefix='/api/v1')  # 주류 추천 api
-# app.register_blueprint(DBController, url_prefix='/api/v1')  # 게시물 api
-
-# # 전역 에러 핸들러 추가
-# @app.errorhandler(404)
-# def page_not_found(e):
-#     return render_template('html/404.html'), 404
-
-# @app.errorhandler(501)
-# def internal_server_error(e):
-#     return render_template('html/404.html'), 501
-
-# @app.errorhandler(503)
-# def bad_gateway(e):
-#     return render_template('html/404.html'), 503
 
 
 if __name__ == '__main__':
