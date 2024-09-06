@@ -37,6 +37,17 @@ def edit_post():
 def restaurant():
     return render_template('html/restaurant.html')
 
+# 마이페이지
+@main_routes.route("/mypage")
+def mypage():
+    return render_template('html/mypage.html')
+
+# 와인 정보 페이지
+@main_routes.route("/drink_info")
+def drink_info():
+    return render_template('html/drink_info.html')
+
+
 
 
 # 에러 페이지
