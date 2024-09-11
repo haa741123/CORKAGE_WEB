@@ -1,3 +1,13 @@
+# 작성자: [전지훈], [이하민]
+# 수정한 날짜: [2024-09-12]
+# 코드 용도: 와인 라벨을 감지 -> Google Vision API로 라벨의 텍스트를 추출 -> 이미지 처리
+
+# 주요 기능:
+# 1. 와인 라벨 감지 : Roboflow의 YOLO 모델
+# 2. 텍스트 추출    : Google Cloud Vision API
+# 3. 호출 제한 관리 : 수익화 
+# 4. 이미지 자르는 로직
+
 from flask import Blueprint, request, jsonify, session
 from roboflow import Roboflow
 import os
