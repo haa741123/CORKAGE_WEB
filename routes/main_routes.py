@@ -42,7 +42,6 @@ def mypage():
 def drink_info():
     return render_template('html/drink_info.html')  # 와인 정보 페이지
 
-<<<<<<< HEAD
 # 허용된 파일 확장자 정의
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
@@ -75,9 +74,6 @@ def upload_file():
         return jsonify({'error': 'Internal server error'}), 500
 
 # 404 에러 처리
-=======
-# 에러 페이지
->>>>>>> e8552dce911d32af4ba7dc643652e3f6a5b18b52
 @main_routes.errorhandler(404)
 def page_not_found(e):
     return render_template('html/error.html'), 404
