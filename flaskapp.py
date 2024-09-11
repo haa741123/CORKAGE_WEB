@@ -2,17 +2,22 @@ from flask import Flask, render_template
 from flask_cors import CORS
 from routes.main_routes import main_routes
 from modules.RecommendController import RecommendController
+from modules.WineDetectionController import WineDetectionController
 
 app = Flask(__name__)
 CORS(app)  # CORS 설정 추가
 app.config['UPLOAD_FOLDER'] = '/home/hamin/flask/images'  # 실제 업로드 폴더 경로로 변경해야 합니다
+
+
 app.register_blueprint(main_routes)
-app.register_blueprint(RecommendController, url_prefix='/api/v1')  # 주류 추천 api
+app.register_blueprint(RecommendController, url_prefix='/api/v1')  # 주류 추천 
+app.register_blueprint(WineDetectionController, url_prefix='/api/v1')  # 플러터에서 제공받은 사진 분석
 
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=5000, use_reloader=False)
 
+<<<<<<< HEAD
 # 주요 설명:
 # 1. Flask 애플리케이션을 생성하고 필요한 모듈을 임포트합니다.
 # 2. CORS 설정을 추가하여 크로스 오리진 리소스 공유를 허용합니다.
@@ -41,3 +46,6 @@ if __name__ == '__main__':
 #    - "확인" 버튼을 눌러 모든 창을 닫고 설정을 저장합니다.
 #    - 명령 프롬프트를 열고 echo %DB_HOST%를 입력하여 환경 변수가 제대로 설정되었는지 확인합니다.
 
+=======
+    
+>>>>>>> e8552dce911d32af4ba7dc643652e3f6a5b18b52
