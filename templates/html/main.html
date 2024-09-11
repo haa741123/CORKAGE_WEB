@@ -3,175 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="/static/css/main.css">
     <title>콜키지 커뮤니티</title>
-    <style>
-        /* 모든 스크롤바가 보이지 않도록 설정 */
-        * {
-            scrollbar-width: none; /* Firefox */
-        }
-
-        *::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
-        body {
-            font-family: 'Pretendard Variable', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            background-color: #f9f9f9;
-        }
-
-        .container {
-            padding: 20px;
-        }
-
-        .wine-recommendation {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #000000;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            color: #fff;
-        }
-
-        .wine-info {
-            max-width: 60%;
-        }
-
-        .wine-info h2 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .wine-info p {
-            margin: 5px 0;
-        }
-
-        .wine-image {
-            max-width: 30%;
-        }
-
-        .wine-image img {
-            width: 150%;
-            height: auto;
-            border-radius: 8px;
-            filter: drop-shadow(0 6px 10px rgba(255, 255, 255, 0.555)); 
-        }
-
-
-        .popular-restaurants {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .popular-restaurants h2 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .restaurant-list {
-            display: flex;
-            overflow-x: scroll;
-            scrollbar-width: none; 
-        }
-
-        .restaurant-list::-webkit-scrollbar {
-            display: none; 
-        }
-
-        .restaurant-item {
-            min-width: 150px;
-            margin-right: 15px;
-        }
-
-        .restaurant-item img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 5px;
-        }
-
-        .restaurant-item p {
-            text-align: center;
-            font-size: 0.9em;
-            color: #333;
-        }
-    </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Wine Recommendation Section -->
-    <p style="font-weight: bolder; color: #5E5B5D;">정현 님, 모처럼의 주말인 오늘</p>
-    <p style="color: #000000;font-weight: bold; font-size: 20px;">이 와인 어때요?</p>
+    <!-- 사용자 이름 섹션 -->
+    <div class="container">
+        <p class="user-greeting">정현 님, 모처럼의 주말인 오늘</p>
+        <p class="wine-prompt">이 와인 어때요?</p>
+    </div>
+    
+    <!-- 와인 추천 섹션 -->
     <div class="wine-recommendation">
         <div class="wine-info">
-            
             <p>Joseph Drouhin Cote de Nuits Villages</p>
             <p>⭐ <strong>4.7</strong> (1,234)</p>
             <p>173,400 원</p>
-            <button style="padding: 10px 20px; background-color: #ff4b4b; color: white; border: none; border-radius: 5px;">최저가 구매하기</button>
+            <button>최저가 구매하기</button>
         </div>
         <div class="wine-image">
             <img src="/static/img/wine_img.png" alt="Wine Image">
         </div>
     </div>
 
-    <!-- 인기 맛집 리스트 -->
-    <div class="popular-restaurants">
-        <h2>콜키지 가능한 인기 맛집 10선</h2>
-        <div class="restaurant-list">
-            <div class="restaurant-item">
-                <img src="/static/img/res_sample_img.jpg" alt="Restaurant 1">
-                <p style="font-weight: bold;">리앤슈 램그릴</p>
+    <div class="container">
+        <!-- 인기 맛집 리스트 -->
+        <div class="popular-restaurants">
+            <h3>콜키지 가능한 인기 맛집 10선</h3>
+            <div class="restaurant-list">
+                <div class="restaurant-item">
+                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 1">
+                    <p class="restaurant-name">리앤슈 램그릴</p>
+                    <div class="restaurant-tags">
+                        <span class="tag red">콜키지 프리</span>
+                    </div>
+                </div>
+                <div class="restaurant-item">
+                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 2">
+                    <p class="restaurant-name">면대원 블루스</p>
+                    <div class="restaurant-tags">
+                        <span class="tag red">콜키지 프리</span>
+                    </div>
+                </div>
+                <div class="restaurant-item">
+                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 3">
+                    <p class="restaurant-name">돈블랑</p>
+                    <div class="restaurant-tags">
+                        <span class="tag red">콜키지 프리</span>
+                    </div>
+                </div>
+                <div class="restaurant-item">
+                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 4">
+                    <p class="restaurant-name">스시진</p>
+                    <div class="restaurant-tags">
+                        <span class="tag red">콜키지 프리</span>
+                    </div>
+                </div>
             </div>
-            <div class="restaurant-item">
-                <img src="/static/img/res_sample_img.jpg" alt="Restaurant 2">
-                <p style="font-weight: bold;">면대원 블루스</p>
-            </div>
-            <div class="restaurant-item">
-                <img src="/static/img/res_sample_img.jpg" alt="Restaurant 3">
-                <p style="font-weight: bold;">돈블랑</p>
-            </div>
-            <div class="restaurant-item">
-                <img src="/static/img/res_sample_img.jpg" alt="Restaurant 4">
-                <p style="font-weight: bold;">스시진</p>
-            </div>        
         </div>
-    </div>
 
-    <!-- 인기 맛집 리스트 -->
-    <div class="popular-restaurants">
-        <h2>유저들의 BEST픽</h2>
-        <p style="font-size: 14px;">가장 추천을 많이 받은 게시물을 구경해보세요!</p>
-        <div class="restaurant-list">
-            <div class="restaurant-item">
-                <img src="/static/img/res_sample_img.jpg" alt="Restaurant 1">
-                <p style="font-weight: bold;">리앤슈 램그릴</p>
+        <!-- 유저들의 BEST픽 -->
+        <div class="popular-restaurants">
+            <h3>유저들의 BEST픽</h3>
+            <p class="best-prompt">가장 추천을 많이 받은 게시물을 구경해보세요!</p>
+            <div class="restaurant-list">
+                <div class="restaurant-item">
+                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 1">
+                    <p class="restaurant-name">리앤슈 램그릴</p>
+                    <div class="restaurant-tags">
+                        <span class="tag red">콜키지 프리</span>
+                    </div>
+                </div>
+                <div class="restaurant-item">
+                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 2">
+                    <p class="restaurant-name">면대원 블루스</p>
+                </div>
+                <div class="restaurant-item">
+                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 3">
+                    <p class="restaurant-name">돈블랑</p>
+                </div>
+                <div class="restaurant-item">
+                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 4">
+                    <p class="restaurant-name">스시진</p>
+                </div>
             </div>
-            <div class="restaurant-item">
-                <img src="/static/img/res_sample_img.jpg" alt="Restaurant 2">
-                <p style="font-weight: bold;">면대원 블루스</p>
-            </div>
-            <div class="restaurant-item">
-                <img src="/static/img/res_sample_img.jpg" alt="Restaurant 3">
-                <p style="font-weight: bold;">돈블랑</p>
-            </div>
-            <div class="restaurant-item">
-                <img src="/static/img/res_sample_img.jpg" alt="Restaurant 4">
-                <p style="font-weight: bold;">스시진</p>
-            </div>        
         </div>
     </div>
-</div>
 
 </body>
 </html>
