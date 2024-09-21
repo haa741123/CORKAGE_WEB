@@ -1,76 +1,149 @@
-
-.scrolling-wrapper {
-  display: flex;
-  flex-wrap: nowrap;  /* Ensure items do not wrap */
-  overflow-x: auto;
-  padding-bottom: 10px;
-  -ms-overflow-style: none; /* IE and Edge */
+/* 모든 스크롤바가 보이지 않도록 설정 */
+* {
   scrollbar-width: none; /* Firefox */
-  width: 100%;
 }
 
-
-.btn_title {
-  font-weight: bold;
-  font-size: 18px;
-  margin-bottom: 0;
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
-.subAttr {
-  color:rgba(160, 159, 159, 0.841) ;
-  font-size: 14px;
-  margin-bottom: 1px;
-}
-
-
-.main_card {
-  display: flex; /* Flexbox를 사용 */
-  justify-content: center; /* 수평 중앙 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
-  min-width: 90vw;
-  min-height: 35vw;
-  margin: 10px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  flex: none; 
-}
-
-
-
-.card {
-  min-width: 200px;
-  margin: 10px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  flex: none; 
-}
-
-.circular-cards .rad_btn {
-  aspect-ratio: 1; /* 카드의 너비와 높이 비율을 1:1로 유지 */
-  border-radius: 100%; /* 완벽한 원형 모양 */
+body {
+  font-family: 'Pretendard Variable', sans-serif;
+  margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f8f9fa; /* 배경색 */
-  border: 1px solid #ddd; /* 테두리 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
-  margin: 10px; /* 주변 여백 */
-  text-align: center; /* 텍스트 중앙 정렬 */
-  flex:1;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #333;
 }
 
+.container {
+  padding-left: 2vw;
+  padding-right: 2vw;
+}
 
+.user-greeting {
+  font-weight: bolder;
+  color: #5E5B5D;
+}
 
-/* Hide scrollbar */
-.scrolling-wrapper::-webkit-scrollbar {
-  display: none;
+.wine-prompt {
+  color: #000000;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.wine-recommendation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1c1c1c;
+  padding: 30px;
+  border-top-right-radius: 45px; 
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  color: #fff;
+}
+
+.wine-info {
+  max-width: 60%;
+  text-align: left;
+}
+
+.wine-image {
+  max-width: 30%;
+}
+
+.wine-image img {
+  width: 150%;
+  height: auto;
+  border-radius: 8px;
+  filter: drop-shadow(0 6px 15px rgba(255, 255, 255, 0.4)); 
+  margin-left: -35%;
+}
+
+.popular-restaurants {
+  background-color: #ffffff;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  border-radius: 12px;
+  margin-bottom: 12vw;
+}
+
+.popular-restaurants h3 {
+  font-size: 1.4em;
+  margin-bottom: 3vw;
+  color: #333;
+}
+
+.restaurant-list {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.restaurant-item {
+  min-width: 100px;
+  margin-right: 5vw;
+  text-align: center;
+}
+
+.restaurant-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.restaurant-name {
+  font-size: 10px;
+  text-align: left;
+  margin-top: 3px;
+}
+
+.restaurant-tags {
+  text-align: left;
+}
+
+.tag {
+  margin-top: 2px;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 5px;
+  color: white;
+}
+
+.tag.red {
+  background-color: #e1707a;
+}
+
+button {
+  padding: 12px 25px;
+  background-color: #ff3b3b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #ff6565;
+}
+
+/* 반응형 미디어 쿼리 */
+@media (max-width: 768px) {
+  .wine-recommendation {
+    flex-direction: row;
+  }
+
+  .wine-info {
+    text-align: left;
+    max-width: 60%;
+  }
+
+  .wine-image {
+    max-width: 30%;
+  }
 }

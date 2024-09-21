@@ -18,7 +18,7 @@ let get_res_info =function() {
       image_url, 
       category_name, 
       coordinates
-    `)
+    `)  
     .neq('category_name', '') // category_name이 빈 문자열이 아닌 데이터를 필터링
     .limit(20) // 상위 20개 데이터만 가져옴
     .then(response => {
@@ -64,35 +64,23 @@ let userPosition = null;  // 초기에는 null로 설정
 
 // 문서가 로드된 후 실행되는 함수
 document.addEventListener('DOMContentLoaded', function () {
-
-  kakao.maps.event.addListener(map, 'zoom_changed', function() {
-    // 현재 확대 레벨을 콘솔에 출력
-    console.log("현재 지도 확대 레벨:", map.getLevel());
-  });
-
   document.querySelectorAll('.category').forEach(category => {
     category.addEventListener('click', function () {
       searchPlaces(this.getAttribute('data-val'));
     });
+    getUserLocation();
 
-    getUserLocation();  // 사용자 위치 
-    setTimeout(moveMyloc, 100); // 이렇게 구현하면 안되지만 도저히 해결방법이 생각나지 않아 긴급 보수로 넣어둔 코드.... 
-    
     $('#my_loc_img').on('click', function() {
-      if (userPosition) {  // userPosition이 설정된 경우에만 moveMyloc 호출
-          moveMyloc();  
-      } else {
-          console.error("사용자 위치를 아직 사용할 수 없습니다.");
-      }
+        if (userPosition) {  // userPosition이 설정된 경우에만 moveMyloc 호출
+            moveMyloc();  
+        } else {
+            console.error("User position is not available yet.");
+        }
     });
   });
 });
 
-
-
-/**
- * 사용자의 현재 위치로 지도를 이동시키는 함수
- */
+/** 사용자의 현재 위치로 지도를 이동시키는 함수 */
 let moveMyloc = function() {
   if (userPosition) {
     let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
@@ -102,12 +90,7 @@ let moveMyloc = function() {
   }
 }
 
-
-/**
- * 카테고리 이름에 따라 이미지 경로를 반환하는 함수
- * @param {*} categoryName 
- * @returns 
- */
+/** 카테고리 이름에 따라 이미지 경로를 반환하는 함수 */
 let getImageSrc = function(categoryName) {
   if (categoryName.includes("한식")) return "/static/img/kor_food.png";
   if (categoryName.includes("회") || categoryName.includes("돈까스"))
@@ -117,11 +100,7 @@ let getImageSrc = function(categoryName) {
   return "/static/img/cork_restaurant.jpg";
 }
 
-
-
-/** 
- * 키워드를 사용하여 장소를 검색하는 함수
- */
+/** 키워드를 사용하여 장소를 검색하는 함수 */
 let searchPlaces = function(keyword) {
   if (!isSearchInProgress) {
     isSearchInProgress = true;
@@ -129,11 +108,7 @@ let searchPlaces = function(keyword) {
   }
 }
 
-
-
-/** 
- * 장소 검색 결과를 처리하는 콜백 함수
- */
+/** 장소 검색 결과를 처리하는 콜백 함수 - 수정하지마 제발 */
 let placesSearchCB = function(data, status) {
   isSearchInProgress = false;
 
@@ -149,6 +124,7 @@ let placesSearchCB = function(data, status) {
         return generatePlaceInfo(place, index);
       })
       .join("");
+
 
     // 비동기적으로 추가적인 장소 정보를 가져와 결합
     get_res_info().then(resData => {
@@ -193,11 +169,7 @@ let placesSearchCB = function(data, status) {
   }
 }
 
-
-
-/** 
- * 장소에 마커를 표시하는 함수
- */
+/** 장소에 마커를 표시하는 함수 - 수정하지마 제발*/
 let displayMarker = function(place, index) {
   let marker = createMarker(place);
   kakao.maps.event.addListener(marker, "click", function () {
@@ -228,11 +200,7 @@ let displayMarker = function(place, index) {
   markers.push(marker);
 }
 
-
-
-/** 
- * 마커 이미지를 설정하는 함수
- */
+/** 마커 이미지를 설정하는 함수 */
 let setMarkerImage = function(marker, imageSrc, scale = 1) {
   let imageSize = calculateMarkerSize(scale);
   let markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, {
@@ -241,11 +209,7 @@ let setMarkerImage = function(marker, imageSrc, scale = 1) {
   marker.setImage(markerImage);
 }
 
-
-
-/** 
- * 장소 정보를 바탕으로 마커를 생성하는 함수
- */
+/** 장소 정보를 바탕으로 마커를 생성하는 함수 */
 let createMarker = function(place) {
   let imageSrc = getImageSrc(place.category_name);
   let imageSize = calculateMarkerSize();
@@ -264,23 +228,14 @@ let createMarker = function(place) {
   return marker;
 }
 
-
-
-/** 
- * 지도 레벨에 따라 마커 크기를 계산하는 함수
- */
+/** 지도 레벨에 따라 마커 크기를 계산하는 함수 */
 let calculateMarkerSize = function(scale = 1) {
   let level = map.getLevel();
   let size = 24 + (((48 - 24) * (10 - level)) / 9) * scale;
   return new kakao.maps.Size(size, size * 1.2);
 }
 
-
-
-
-/** 
- * 장소 정보를 HTML 형식으로 생성하는 함수
- */
+/** 장소 정보를 HTML 형식으로 생성하는 함수 */
 let generatePlaceInfo = function(place, index) {
   let distance = 0;
   let walkingTime = "알 수 없음";
@@ -301,8 +256,6 @@ let generatePlaceInfo = function(place, index) {
 
   let categoryImageSrc = getImageSrc(place.category_name);
 
-  
-
   return `
     <div id="res_info_${index}" class="res_info" 
         data-place_name="${place.place_name}"
@@ -313,14 +266,14 @@ let generatePlaceInfo = function(place, index) {
         data-driving_time="${drivingTime}"
         data-category_name="${place.category_name}">
         <div class="row">
-            <div class="col-4" style="padding-right: 5px;"> <!-- 이미지와 정보 사이 간격 증가 -->
+            <div class="col-4" style="padding-right: 1px;">
                 <div class="image-container">
                     <img src="${place.image_url}" alt="${
     place.place_name
   }" class="cover-image">
                 </div>
             </div>
-            <div class="col-8 info-container" style="padding-left: 5px;"> <!-- 이미지와 정보 사이 간격 증가 -->
+            <div class="col-8 info-container">
                 <p class="place-name">
                     <img src="${categoryImageSrc}" alt="${
     place.category_name
@@ -342,12 +295,7 @@ let generatePlaceInfo = function(place, index) {
   `;
 }
 
-
-
-
-/**
- * 장소 정보 클릭 시 상세 페이지로 이동하는 함수
- */
+// 장소 정보 클릭 시 상세 페이지로 이동하는 함수
 document.addEventListener('click', function (event) {
   let target = event.target.closest('.res_info');
 
@@ -373,22 +321,14 @@ document.addEventListener('click', function (event) {
   }
 });
 
-
-
-/** 
- * 지도에서 마커를 제거하는 함수
- */
+/** 지도에서 마커를 제거하는 함수 */
 let removeMarkers = function() {
   markers.forEach(marker => marker.setMap(null));
   markers = [];
   selectedMarker = null;
 }
 
-
-
-/** 
- * 두 지점 간의 거리를 계산하는 함수
- */
+/** 두 지점 간의 거리를 계산하는 함수 */
 let calculateDistance = function(lat1, lon1, lat2, lon2) {
   let R = 6371;
   let dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -403,29 +343,19 @@ let calculateDistance = function(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-
-
-/** 
- * 거리와 속도를 사용해 시간을 계산하는 함수
- */
+/** 거리와 속도를 사용해 시간을 계산하는 함수 */
 let calculateTime = function(distance, speed) {
   return distance / speed;
 }
 
-
-/** 
- * 시간을 형식에 맞게 포맷하는 함수
- */
+/** 시간을 형식에 맞게 포맷하는 함수 */
 let formatTime = function(time) {
   let hours = Math.floor(time);
   let minutes = Math.round((time - hours) * 60);
   return hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
 }
 
-
-/** 
- * 사용자 위치를 가져오는 함수
- */
+/** 사용자 위치를 가져오는 함수 */
 let getUserLocation = function() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -434,11 +364,14 @@ let getUserLocation = function() {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         };
-        showUserPosition();
+        console.log("유저 위치:", userPosition);
+        showUserPosition();  // 위치가 설정된 후 마커 표시
+        moveMyloc();  // 위치가 설정된 후 지도를 이동
         searchPlaces("콜키지 프리");
       },
-      () => {
-        console.error("위치 정보를 받아오는데 실패했습니다.");
+      (error) => {
+        console.log("브라우저에서 위치 정보를 받아올 수 없음", error);
+        console.log("플러터에서 받아올거임");
         searchPlaces("콜키지 프리");
       }
     );
@@ -447,26 +380,21 @@ let getUserLocation = function() {
   }
 }
 
-
-
 // 플러터에서 전달된 위치 정보를 처리하는 함수
-let handleFlutterLocation = function (latitude, longitude) {
+window.handleFlutterLocation = function(latitude, longitude) {
   userPosition = {
     latitude: latitude,
     longitude: longitude,
   };
-  console.log("Flutter provided user position:", userPosition);
+  console.log("플러터에서 제공한 사용자 위치:", userPosition);
   showUserPosition();  // 위치가 설정된 후 마커 표시
   moveMyloc();  // 위치가 설정된 후 지도를 이동
   searchPlaces("콜키지 프리");
 }
 
 
-/** 
- * 사용자 위치를 지도에 표시하는 함수
- */
+/** 사용자 위치를 지도에 표시하는 함수 */
 let showUserPosition = function() {
-
   if (!userPosition) return;
 
   let marker = new kakao.maps.Marker({
@@ -485,17 +413,13 @@ let showUserPosition = function() {
   map.setMaxLevel(12);
 }
 
+// 지도의 줌 레벨이 변경될 때 마커 크기를 업데이트하는 함수
+kakao.maps.event.addListener(map, "zoom_changed", updateMarkerSizes);
 
-
-
-/**
- *  모달 JS 코드입니다!!!!
- *  (검색 필터)
- */
-let updateMarkerSizes = function () {
+/** 마커 크기를 업데이트하는 함수 */
+function updateMarkerSizes() {
   markers.forEach((marker) => setMarkerImage(marker, marker.originalImageSrc));
 }
-
 
 // 지도 위에 띄워줄 모달창 (검색 조건)
 let $modal = $("#filterModal");
@@ -506,32 +430,20 @@ let $backgroundElements = $(
   ".map_wrap, .search-bar, .category-swiper, .res_info_swiper"
 );
 
-
-/**
- * 스크립트를 로드하는 함수
- * @param {*} url 
- * @param {*} callback 
- */
-let loadScript = function (url, callback) {
+// 스크립트를 로드하는 함수
+function loadScript(url, callback) {
   $.getScript(url, callback);
 }
 
-
-/**
- * 모달창을 여는 버튼 이벤트 리스너
- */
+// 모달창을 여는 버튼 이벤트 리스너
 $btn.on("click", function() {
   $modal.show();
   $backgroundElements.addClass('blur-background');
   loadScript("/static/js/filter.js");
 });
 
-
-
-/**
- * 모달창을 닫는 함수
- */
-let closeModal = function () {
+// 모달창을 닫는 함수
+function closeModal() {
   $modal.hide();
   $backgroundElements.removeClass('blur-background');
   $("script[src='/static/js/filter.js']").remove();

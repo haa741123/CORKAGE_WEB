@@ -1,42 +1,42 @@
 html, body {
   overflow-y: auto;
-  height: 100%; /* Ensure the body takes full height */
-  margin: 0; /* Remove default margin */
+  height: 100%; 
+  margin: 0; 
   scrollbar-width: none; 
   -ms-overflow-style: none; 
 }
 
 .container-fluid {
     
-    height: 100%; /* Ensure the container takes full height */
-    overflow-y: auto; /* Enable vertical scrolling */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    height: 100%; 
+    overflow-y: auto; 
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
 }
 
-/* Hide vertical scrollbar for webkit browsers */
+
 .container-fluid::-webkit-scrollbar {
     display: none;
 }
 
 .scrolling-wrapper {
   display: flex;
-  flex-wrap: nowrap;  /* Ensure items do not wrap */
+  flex-wrap: nowrap;  
   overflow-x: auto;
   padding-bottom: 10px;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
   width: 100%;
 }
 
-/* Hide horizontal scrollbar */
+
 .scrolling-wrapper::-webkit-scrollbar {
     display: none;
 }
 
 .scrolling-wrapper > .post {
-    flex: 0 0 auto; /* Ensure posts do not shrink */
-    min-width: 200px; /* Ensure posts have a minimum width */
+    flex: 0 0 auto; 
+    min-width: 200px; 
 }
 
 .post {
@@ -63,9 +63,9 @@ html, body {
 }
 
 .main_card {
-  display: flex; /* Flexbox 사용 */
-  justify-content: center; /* 수평 중앙 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
   min-width: 90vw;
   min-height: 35vw;
   margin: 10px;
@@ -94,26 +94,26 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10px; /* 주변 여백 */
-  text-align: center; /* 텍스트 중앙 정렬 */
+  margin: 10px; 
+  text-align: center; 
   flex: 1;
 }
 
 .circular-cards .icon-circle {
-  width: 50px; /* 원하는 너비로 설정 */
-  height: 50px; /* 원하는 높이로 설정 */
-  border-radius: 50%; /* 완벽한 원형 모양 */
-  background-color: #f8f9fa; /* 배경색 */
-  border: 1px solid #ddd; /* 테두리 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+  width: 50px; 
+  height: 50px; 
+  border-radius: 50%; 
+  background-color: #f8f9fa; 
+  border: 1px solid #ddd; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 5px; /* 원과 텍스트 사이의 간격 */
+  margin-bottom: 5px; 
 }
 
 .circular-cards p {
-  margin: 0; /* 텍스트 주위의 여백 제거 */
+  margin: 0; 
 }
 
 .floating-button {
@@ -134,4 +134,32 @@ html, body {
 }
 .floating-button i {
   font-size: 24px;
+}
+
+.rad_btn_sm, .post {
+  cursor: pointer;
+}
+
+.wine-image {
+  width: 100%;
+  height: auto;
+  background: url('path_to_your_image.jpg') no-repeat center center;
+  background-size: contain;
+}
+.description {
+  text-align: center;
+  margin: 20px;
+}
+.rating, .price {
+  margin: 10px;
+}
+.gallery {
+  display: flex;
+  width: 100%;
+  overflow-x: scroll;
+}
+.gallery img {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
 }
