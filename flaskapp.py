@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 from flask_cors import CORS
 from routes.main_routes import main_routes
 from modules.RecommendController import RecommendController
@@ -8,7 +8,8 @@ from datetime import timedelta
 app = Flask(__name__)
 CORS(app)  # CORS 설정 추가
 app.config['UPLOAD_FOLDER'] = '/home/hamin/flask/images'  # 실제 업로드 폴더 경로로 변경해야 합니다
-
+app.config['SECRET_KEY'] = 'your_secret_key_here'  # 안전한 비밀 키로 변경하세요
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
 app.register_blueprint(main_routes)
 
