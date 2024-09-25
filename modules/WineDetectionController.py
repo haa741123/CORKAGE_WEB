@@ -4,9 +4,10 @@
 
 # 주요 기능:
 # 1. 와인 라벨 감지 : Roboflow의 YOLO 모델
-# 2. 텍스트 추출    : Google Cloud Vision API
-# 3. 호출 제한 관리 : 수익화 
-# 4. 이미지 자르는 로직
+# 2. 이미지 자르는 로직
+# 3. 텍스트 추출    : Google Cloud Vision API
+# 4. 호출 제한 관리 : 수익화 
+ 
 
 from flask import Blueprint, request, jsonify, session
 from roboflow import Roboflow
@@ -33,8 +34,8 @@ rf = Roboflow(api_key=os.getenv("IsMyX0wK7LxgCLxaXcvQ"))
 project = rf.workspace("vin-c1flf").project("vin2")
 model = project.version(1).model
 
-# 허용되는 이미지 파일 확장자 목록 정의
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+# 허용되는 이미지 파일 확장자
+ALLOWED_EXTENSIONS = {'jpeg'}
 
 # 하루에 허용되는 최대 API 호출 수와 광고 시청 후 추가되는 호출 수 정의
 MAX_CALLS_PER_DAY = 10
