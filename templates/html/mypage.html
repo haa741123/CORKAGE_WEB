@@ -1,107 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Page</title>
-    <link
-      href="https://fonts.googleapis.com/css?family=Pretendard&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css?family=JejuMyeongjo&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/static/css/mypage.css" />
+    <link href="/static/css/mypage.css" rel="stylesheet" />
+    <title>마이페이지</title>
   </head>
   <body>
     <div class="container">
-      <header class="header">
-        <span class="notification-icon">🔔</span>
+      <header>
+        <img
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9'/%3E%3C/svg%3E"
+          alt="알림"
+          class="icon"
+        />
         <h1>마이페이지</h1>
-        <span class="settings-icon">⚙️</span>
+        <img />
       </header>
 
-      <div class="profile-section">
-        <span class="nickname">이정현님</span>
-        <span class="arrow_my"
-          ><a href="#" style="text-decoration-line: none;">></a></span
-        >
-      </div>
+      <main>
+        <section class="user-info">
+          <h2>이정현님</h2>
+        </section>
 
-      <div class="reservations">
-        <div class="reservation-header">
-          <span class="icon">📊</span>
-          <h2>나의 예약</h2>
-          <span class="arrow">></span>
-        </div>
-        <div class="reservation-item">
-          <div class="left">
-            <span class="title">스시쥬고야</span>
-            <span class="details">스시오마카세 · 가로수길</span>
+        <section class="card">
+          <div class="card-header">
+            <h3>나의 예약</h3>
+            <img
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'/%3E%3C/svg%3E"
+              alt="더보기"
+              class="icon"
+            />
           </div>
-          <div class="right">
-            <span class="date">2024.09.13 (금) 오후 1:00 2명</span>
-            <span class="policy"
-              >결제 취소 및 환불까지 평균 7일이 걸립니다.</span
-            >
-          </div>
-        </div>
-        <div class="reservation-item">
-          <div class="left">
-            <span class="title">바이우</span>
-            <span class="details">스시오마카세 · 양재</span>
-          </div>
-          <div class="right">
-            <span class="date">2024.09.22 (토) 오후 7:00 2명</span>
-            <span class="policy"
-              >결제 취소 및 환불까지 평균 7일이 걸립니다.</span
-            >
-          </div>
-        </div>
-      </div>
-
-      <nav class="menu">
-        <div class="menu-item">저장 목록</div>
-        <div class="menu-item">리뷰 관리</div>
-      </nav>
-
-      <div class="coupon-section">
-        <div class="coupon-item">
-          <span>쿠폰함</span>
-          <span>0장</span>
-        </div>
-        <div class="coupon-item">
-          <span>포인트</span>
-          <span>0원</span>
-        </div>
-      </div>
-
-      <div class="info-contact-container">
-        <div class="info-section">
-          <h2>혜택 정보</h2>
-          <div class="info-items">
-            <div class="info-item"><a href="#">포인트 모으기</a></div>
-            <div class="info-item"><a href="#">진행 중인 이벤트</a></div>
-          </div>
-        </div>
-        <div class="contact-section">
-          <h2>문의 및 알림</h2>
-          <div class="contact-items">
-            <div class="contact-item"><a href="#">고객센터</a></div>
-            <div class="contact-item"><a href="#">자주 묻는 질문</a></div>
-          </div>
-          <div class="contact-items">
-            <div class="contact-item"><a href="#">공지사항</a></div>
-            <div class="contact-item"><a href="#">약관 및 정책</a></div>
-          </div>
-          <div class="contact-items">
-            <div class="contact-item full-width">
-              <a href="#">현재 버전 1.0.0</a>
+          <div class="reservation-details">
+            <img
+              src="/static/img/restaurent.png"
+              alt="스시쥬고야"
+              class="restaurant-image"
+            />
+            <div class="reservation-info">
+              <h4>스시쥬고야</h4>
+              <p>2024.09.13 (금) 오후 12:00 2명</p>
+              <button>상세 정보 보기</button>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+
+        <section class="card saved-list">
+          <div class="card-header">
+            <h3>저장목록</h3>
+            <img
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'/%3E%3C/svg%3E"
+              alt="더보기"
+              class="icon"
+            />
+          </div>
+          <p>이정현님의 컬렉션을 확인해보세요</p>
+        </section>
+
+        <section class="card advertisement">
+          광고
+        </section>
+
+        <section class="footer-content">
+          <hr class="line" />
+          <h3>혜택 정보</h3>
+          <ul>
+            <li>쿠폰함</li>
+            <li>진행 중인 이벤트</li>
+          </ul>
+          <hr class="line" />
+          <h3>문의 및 알림</h3>
+          <ul>
+            <li>고객센터</li>
+          </ul>
+          <ul>
+            <li>공지사항</li>
+            <li>약관 및 정책</li>
+          </ul>
+          <p class="version-info">현재 버전 1.0.0</p>
+        </section>
+      </main>
     </div>
   </body>
 </html>
