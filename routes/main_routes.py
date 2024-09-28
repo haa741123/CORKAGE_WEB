@@ -43,8 +43,13 @@ def drink_info():
     return render_template('html/drink_info.html')  # 와인 정보 페이지
 
 @main_routes.route("/reservation_owner")
-def reservat():
-    return render_template('html/reservation_owner.html')  # 와인 정보 페이지
+def reservatation_owner():
+    return render_template('html/reservation_owner.html')  # 예약 정보 페이지
+
+@main_routes.route("/main")
+def main():
+    return render_template('html/main.html')  # 메인 페이지
+
 
 
 # 허용된 파일 확장자 정의
