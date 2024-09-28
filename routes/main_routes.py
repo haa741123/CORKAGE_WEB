@@ -43,7 +43,7 @@ def drink_info():
     return render_template('html/drink_info.html')  # 와인 정보 페이지
 
 @main_routes.route("/reservation_owner")
-def reservation_owner():
+def reservat():
     return render_template('html/reservation_owner.html')  # 와인 정보 페이지
 
 
