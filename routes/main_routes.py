@@ -42,6 +42,11 @@ def mypage():
 def drink_info():
     return render_template('html/drink_info.html')  # 와인 정보 페이지
 
+@main_routes.route("/reservation_owner")
+def reservation_owner():
+    return render_template('html/reservation_owner.html')  # 와인 정보 페이지
+
+
 # 허용된 파일 확장자 정의
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
