@@ -3,108 +3,107 @@ from roboflow import Roboflow
 import os
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 from dotenv import load_dotenv
 import easyocr
 import json
 import logging
+import google.generativeai as genai
 from logging.handlers import RotatingFileHandler
 import sys
 import cv2
 import numpy as np
 import requests
+from werkzeug.utils import secure_filename
 
-class NumpyEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
-
-# 로깅 설정
-log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-log_file = '/home/hamin/flask/log/app.log'
-
-# 파일 핸들러 설정
-file_handler = RotatingFileHandler(log_file, maxBytes=10240, backupCount=10)
-file_handler.setFormatter(log_formatter)
-file_handler.setLevel(logging.INFO)
-
-# 콘솔 핸들러 설정
-console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setFormatter(log_formatter)
-console_handler.setLevel(logging.INFO)
-
-# 루트 로거 설정
-root_logger = logging.getLogger()
-root_logger.setLevel(logging.INFO)
-root_logger.addHandler(file_handler)
-root_logger.addHandler(console_handler)
-
-CROPPED_IMAGES_DIR = "/home/hamin/flask/cropped_images"
-
-# Flask Blueprint 생성
-WineDetectionController = Blueprint('WineDetectionController', __name__)
-
-@WineDetectionController.record_once
-def on_load(state):
-    state.app.logger.setLevel(logging.INFO)
-    state.app.logger.addHandler(file_handler)
-    state.app.logger.addHandler(console_handler)
-
-# .env 파일 로드
+# 환경 변수 로드
 dotenv_path = '/var/www/flask/modules/.env'
 load_dotenv(dotenv_path)
 
-# JSON 파일 저장 디렉토리 지정
-JSON_STORAGE_DIR = "/home/hamin/flask/ocr"
+# 상수 정의
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+MAX_CALLS_PER_DAY = int(os.getenv("MAX_CALLS_PER_DAY", 10))
+EXTRA_CALLS_AFTER_AD = int(os.getenv("EXTRA_CALLS_AFTER_AD", 5))
+JSON_STORAGE_DIR = os.getenv("JSON_STORAGE_DIR", "./ocr_results")
+CROPPED_IMAGES_DIR = os.getenv("CROPPED_IMAGES_DIR", "./cropped_images")
+TEMP_IMAGES_DIR = os.getenv("TEMP_IMAGES_DIR", "./temp_images")
+
+# 디렉토리 생성
+os.makedirs(JSON_STORAGE_DIR, exist_ok=True)
+os.makedirs(CROPPED_IMAGES_DIR, exist_ok=True)
+os.makedirs(TEMP_IMAGES_DIR, exist_ok=True)
+
+# 로거 설정
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+if not logger.handlers:
+    # 파일 핸들러
+    file_handler = RotatingFileHandler('app.log', maxBytes=10240, backupCount=10)
+    file_handler.setFormatter(log_formatter)
+    file_handler.setLevel(logging.INFO)
+    logger.addHandler(file_handler)
+
+    # 콘솔 핸들러
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(log_formatter)
+    console_handler.setLevel(logging.INFO)
+    logger.addHandler(console_handler)
 
 # Roboflow 설정
 api_key = os.getenv("ROBOFLOW_API_KEY")
-if api_key is None:
-    raise ValueError("ROBOFLOW_API_KEY not found in .env file")
+if not api_key:
+    logger.error("ROBOFLOW_API_KEY가 환경 변수에 설정되지 않았습니다.")
+    raise ValueError("ROBOFLOW_API_KEY not set")
 
 rf = Roboflow(api_key=api_key)
 project = rf.workspace("vin-c1flf").project("vin2")
 model = project.version(1).model
 
-# EasyOCR Reader 초기화
-reader = easyocr.Reader(['en'])
+# EasyOCR Reader 초기화 (스레드 안전)
+reader = easyocr.Reader(['en'], gpu=False)
 
-# 허용되는 이미지 파일 확장자 목록 정의
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+# Flask Blueprint 생성
+WineDetectionController = Blueprint('WineDetectionController', __name__)
 
-# 하루에 허용되는 최대 API 호출 수와 광고 시청 후 추가되는 호출 수 정의
-MAX_CALLS_PER_DAY = int(os.getenv("MAX_CALLS_PER_DAY", 10))
-EXTRA_CALLS_AFTER_AD = int(os.getenv("EXTRA_CALLS_AFTER_AD", 5))
+# 세션 만료 및 관리
+@WineDetectionController.before_request
+def make_session_permanent():
+    session.permanent = True
+    current_app.permanent_session_lifetime = timedelta(days=1)
 
 # 유틸리티 함수들
-def get_or_create_user_id():
-    if 'user_id' not in session:
-        session['user_id'] = str(uuid.uuid4())
-        logging.info(f"New user ID created: {session['user_id']}")
-    return session['user_id']
-
-def get_or_reset_daily_calls():
-    user_id = get_or_create_user_id()
-    today = datetime.now().date()
-    session.permanent = True
-    if session.get(f'{user_id}_last_call_date') != today:
-        session[f'{user_id}_last_call_date'] = today
-        session[f'{user_id}_remaining_calls'] = MAX_CALLS_PER_DAY
-    return session.get(f'{user_id}_remaining_calls', MAX_CALLS_PER_DAY)
-
-def modify_remaining_calls(change=0):
-    user_id = get_or_create_user_id()
-    try:
-        session[f'{user_id}_remaining_calls'] = max(0, session.get(f'{user_id}_remaining_calls', MAX_CALLS_PER_DAY) + change)
-        session.modified = True
-        logging.info(f"Modified remaining calls for user {user_id}: {session[f'{user_id}_remaining_calls']}")
-    finally:
-        session.permanent = True
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def get_or_create_user_id():
+    user_id = session.get('user_id')
+    if not user_id:
+        user_id = str(uuid.uuid4())
+        session['user_id'] = user_id
+        logger.info(f"새로운 사용자 ID 생성됨: {user_id}")
+    return user_id
+
+def get_remaining_calls():
+    user_id = get_or_create_user_id()
+    today = datetime.utcnow().date()
+    last_call_date = session.get(f'{user_id}_last_call_date')
+    remaining_calls = session.get(f'{user_id}_remaining_calls', MAX_CALLS_PER_DAY)
+    if last_call_date != today:
+        session[f'{user_id}_last_call_date'] = today
+        remaining_calls = MAX_CALLS_PER_DAY
+        session[f'{user_id}_remaining_calls'] = remaining_calls
+    return remaining_calls
+
+def modify_remaining_calls(change):
+    user_id = get_or_create_user_id()
+    remaining_calls = session.get(f'{user_id}_remaining_calls', MAX_CALLS_PER_DAY)
+    remaining_calls = max(0, remaining_calls + change)
+    session[f'{user_id}_remaining_calls'] = remaining_calls
+    session.modified = True
+    logger.info(f"사용자 {user_id}의 남은 호출 횟수 변경됨: {remaining_calls}")
 
 def crop_image(image, coordinates):
     x_center, y_center, width, height = coordinates
@@ -112,16 +111,22 @@ def crop_image(image, coordinates):
     top = y_center - (height / 2)
     right = x_center + (width / 2)
     bottom = y_center + (height / 2)
-    logging.info(f"Cropping image with coordinates: {left}, {top}, {right}, {bottom}")
+    logger.info(f"이미지를 다음 좌표로 자릅니다: {left}, {top}, {right}, {bottom}")
     return image.crop((left, top, right, bottom))
 
 def detect_text_easyocr(image_bytes):
-    logging.info("Starting OCR process with EasyOCR")
-    results = reader.readtext(image_bytes)
-    logging.info(f"EasyOCR results: {results}")
-    extracted_text = ' '.join([result[1] for result in results])
-    logging.info(f"Extracted text: {extracted_text}")
-    return extracted_text if extracted_text else "텍스트가 감지되지 않았습니다."
+    logger.info("EasyOCR로 OCR 프로세스 시작")
+    try:
+        image = Image.open(BytesIO(image_bytes))
+        image_np = np.array(image)
+        results = reader.readtext(image_np)
+        logger.info(f"EasyOCR 결과: {results}")
+        extracted_text = ' '.join([result[1] for result in results])
+        logger.info(f"추출된 텍스트: {extracted_text}")
+        return extracted_text if extracted_text else "텍스트가 감지되지 않았습니다."
+    except Exception as e:
+        logger.exception(f"OCR 처리 중 오류 발생: {str(e)}")
+        return "OCR 처리 중 오류 발생."
 
 def save_extracted_text_to_json(extracted_text, user_id):
     try:
@@ -130,47 +135,69 @@ def save_extracted_text_to_json(extracted_text, user_id):
         data = {
             'user_id': user_id,
             'extracted_text': extracted_text,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.utcnow().isoformat()
         }
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        logging.info(f"JSON file created: {filepath}")
+        logger.info(f"JSON 파일 생성됨: {filepath}")
         return filepath
     except Exception as e:
-        logging.error(f"Error in save_extracted_text_to_json: {str(e)}")
+        logger.error(f"save_extracted_text_to_json에서 오류 발생: {str(e)}")
         return None
 
 def delete_image(image_path):
-    if os.path.isfile(image_path):
-        os.remove(image_path)
-        logging.info(f'이미지 파일 삭제 완료: {image_path}')
-    else:
-        logging.warning(f'파일을 찾을 수 없습니다: {image_path}')
+    try:
+        if os.path.isfile(image_path):
+            os.remove(image_path)
+            logger.info(f'이미지 파일 삭제 완료: {image_path}')
+        else:
+            logger.warning(f'파일을 찾을 수 없습니다: {image_path}')
+    except Exception as e:
+        logger.error(f"이미지 삭제 중 오류 발생 {image_path}: {str(e)}")
 
 def resize_image(image, max_size=(800, 800)):
     image.thumbnail(max_size)
     return image
 
 def predict_with_multipart(image_path, api_url, api_key):
-    with open(image_path, 'rb') as image_file:
-        files = {'file': image_file}
-        params = {
-            'api_key': api_key,
-            'confidence': 40,
-            'overlap': 30,
-            'format': 'json'
-        }
-        response = requests.post(api_url, files=files, params=params)
-    return response.json()
+    try:
+        with open(image_path, 'rb') as image_file:
+            files = {'file': image_file}
+            params = {
+                'api_key': api_key,
+                'confidence': 40,
+                'overlap': 30,
+                'format': 'json'
+            }
+            response = requests.post(api_url, files=files, params=params)
+            response.raise_for_status()
+            return response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"predict_with_multipart에서 오류 발생: {str(e)}")
+        raise
+
+def process_prediction(image_path, prediction):
+    try:
+        with Image.open(image_path) as img:
+            label_coordinates = prediction['x'], prediction['y'], prediction['width'], prediction['height']
+            cropped_img = crop_image(img, label_coordinates)
+            cropped_img_bytes_io = BytesIO()
+            cropped_img.save(cropped_img_bytes_io, format='JPEG')
+            cropped_img_bytes = cropped_img_bytes_io.getvalue()
+            extracted_text = detect_text_easyocr(cropped_img_bytes)
+        return extracted_text
+    except Exception as e:
+        logger.error(f"예측 처리 중 오류 발생: {str(e)}")
+        return "예측 처리 중 오류 발생."
 
 # API 엔드포인트
 @WineDetectionController.route('/detect', methods=['POST'])
 def detect_vin():
+    logger.info("감지 요청을 수신하였습니다")
     try:
-        logging.info("Received detect request")
-        remaining_calls = get_or_reset_daily_calls()
+        remaining_calls = get_remaining_calls()
         user_id = get_or_create_user_id()
-        logging.info(f"User ID: {user_id}, Remaining calls: {remaining_calls}")
+        logger.info(f"사용자 ID: {user_id}, 남은 호출 횟수: {remaining_calls}")
 
         if remaining_calls <= 0:
             return jsonify({"error": "오늘의 호출 한도를 초과했습니다."}), 403
@@ -178,115 +205,89 @@ def detect_vin():
         if 'image' not in request.files or not request.files['image'].filename:
             return jsonify({"error": "이미지 파일이 제공되지 않았습니다."}), 400
 
-        image = request.files['image']
-        if not allowed_file(image.filename):
+        image_file = request.files['image']
+        if not allowed_file(image_file.filename):
             return jsonify({"error": "허용되지 않는 파일 형식입니다."}), 400
 
-        temp_image_path = os.path.join('/home/hamin/flask/images', f'temp_{user_id}.jpg')
+        filename = secure_filename(f"temp_{user_id}.jpg")
+        temp_image_path = os.path.join(TEMP_IMAGES_DIR, filename)
 
         try:
-            logging.info("Processing image")
             modify_remaining_calls(-1)
-            
-            # 이미지 크기 조정
-            with Image.open(image) as img:
+
+            with Image.open(image_file) as img:
                 img = resize_image(img)
                 img.save(temp_image_path)
-            
-            logging.info(f"Resized image saved to {temp_image_path}")
+            logger.info(f"크기 조정된 이미지가 {temp_image_path}에 저장되었습니다")
 
-            # Roboflow API 호출
             api_url = "https://detect.roboflow.com/vin2/1"
             prediction = predict_with_multipart(temp_image_path, api_url, api_key)
-            logging.info("Received response from Roboflow API")
+            logger.info("Roboflow API로부터 응답을 받았습니다")
 
             if not prediction.get("predictions"):
-                raise ValueError("No predictions found in Roboflow result")
-
-            # 각 클래스에 대한 예측 추출
-            maker_name_predictions = [p for p in prediction['predictions'] if p['class'] == 'Maker-Name']
-            vintage_year_predictions = [p for p in prediction['predictions'] if p['class'] == 'VintageYear']
-            wine_type_predictions = [p for p in prediction['predictions'] if p['class'] == 'TypeWine Type']
+                logger.warning("Roboflow 응답에서 예측을 찾을 수 없습니다")
+                return jsonify({"error": "이미지에서 예측을 찾을 수 없습니다."}), 200
 
             results = {}
 
-            # Maker-Name 처리
-            if maker_name_predictions:
-                maker_name_prediction = max(maker_name_predictions, key=lambda x: x['confidence'])
-                results['Maker-Name'] = process_prediction(temp_image_path, maker_name_prediction)
+            for class_name in ['Maker-Name', 'VintageYear', 'TypeWine Type']:
+                predictions = [p for p in prediction['predictions'] if p['class'] == class_name]
+                if predictions:
+                    best_prediction = max(predictions, key=lambda x: x['confidence'])
+                    extracted_text = process_prediction(temp_image_path, best_prediction)
+                    results[class_name] = extracted_text
 
-            # VintageYear 처리
-            if vintage_year_predictions:
-                vintage_year_prediction = max(vintage_year_predictions, key=lambda x: x['confidence'])
-                results['VintageYear'] = process_prediction(temp_image_path, vintage_year_prediction)
+            if not results:
+                logger.warning("처리 후 관련 예측이 없습니다")
+                return jsonify({"error": "이미지에서 관련 텍스트를 감지할 수 없습니다."}), 200
 
-            # TypeWine Type 처리
-            if wine_type_predictions:
-                wine_type_prediction = max(wine_type_predictions, key=lambda x: x['confidence'])
-                results['TypeWine Type'] = process_prediction(temp_image_path, wine_type_prediction)
-
-            # 결과 저장 및 반환
             json_filepath = save_extracted_text_to_json(results, user_id)
-            if json_filepath is None:
-                raise ValueError("Failed to save OCR results to JSON")
+            if not json_filepath:
+                logger.error("OCR 결과를 JSON으로 저장하는 데 실패했습니다")
+                return jsonify({"error": "OCR 결과를 저장하는 데 실패했습니다."}), 500
 
             session['ocr_result'] = {
                 "extracted_text": results,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.utcnow().isoformat()
             }
-
-            logging.info("OCR results saved to session")
+            session.modified = True
+            logger.info("OCR 결과가 세션에 저장되었습니다")
 
             return jsonify({
-                "message": "Image processed successfully",
-                "remaining_calls": get_or_reset_daily_calls(),
+                "message": "이미지가 성공적으로 처리되었습니다.",
+                "remaining_calls": get_remaining_calls(),
                 "ocr_result": results
-            })
+            }), 200
 
-        except ValueError as ve:
-            logging.error(f"Value error: {str(ve)}")
-            return jsonify({"error": str(ve)}), 400
-        except requests.exceptions.RequestException as re:
-            logging.error(f"Request error: {str(re)}")
-            return jsonify({"error": "Failed to communicate with Roboflow API"}), 500
         except Exception as e:
-            logging.exception(f"Unexpected error occurred: {str(e)}")
-            return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+            logger.exception(f"오류 발생: {str(e)}")
+            return jsonify({"error": "오류가 발생했습니다."}), 500
+
         finally:
             delete_image(temp_image_path)
 
     except Exception as e:
-        logging.exception(f"Critical error in detect_vin: {str(e)}")
-        return jsonify({"error": "A critical error occurred. Please try again later."}), 500
-
-def process_prediction(image_path, prediction):
-    with Image.open(image_path) as img:
-        label_coordinates = prediction['x'], prediction['y'], prediction['width'], prediction['height']
-        cropped_img = crop_image(img, label_coordinates)
-        cropped_img_bytes = BytesIO()
-        cropped_img.save(cropped_img_bytes, format='JPEG')
-        extracted_text = detect_text_easyocr(cropped_img_bytes.getvalue())
-    return extracted_text
+        logger.exception(f"detect_vin에서 오류 발생: {str(e)}")
+        return jsonify({"error": "오류가 발생했습니다. 나중에 다시 시도해주세요."}), 500
 
 @WineDetectionController.route('/watch_ad', methods=['POST'])
 def watch_ad():
     modify_remaining_calls(EXTRA_CALLS_AFTER_AD)
-    logging.info(f"Ad watched, calls added. New remaining calls: {get_or_reset_daily_calls()}")
-    return jsonify({"message": "광고 시청 완료, 호출 횟수가 추가되었습니다.", "remaining_calls": get_or_reset_daily_calls()})
+    logger.info(f"광고 시청 완료, 호출 횟수가 추가되었습니다. 새로운 남은 호출 횟수: {get_remaining_calls()}")
+    return jsonify({"message": "광고 시청 완료, 호출 횟수가 추가되었습니다.", "remaining_calls": get_remaining_calls()}), 200
 
 @WineDetectionController.route('/get_ocr_result', methods=['GET'])
 def get_ocr_result():
-    logging.info("Received request for OCR result")
-    ocr_result = session.get('ocr_result', {})
+    logger.info("OCR 결과 요청을 수신하였습니다")
+    ocr_result = session.get('ocr_result')
     if not ocr_result:
-        logging.warning("No OCR result found in session")
-        return jsonify({"error": "No OCR result found", "session_data": dict(session)}), 404
+        logger.warning("세션에서 OCR 결과를 찾을 수 없습니다")
+        return jsonify({"error": "OCR 결과를 찾을 수 없습니다."}), 404
 
-    if 'timestamp' in ocr_result:
-        result_time = datetime.fromisoformat(ocr_result['timestamp'])
-        if (datetime.now() - result_time).total_seconds() > 3600:
-            logging.warning("OCR result has expired")
-            return jsonify({"error": "OCR result has expired"}), 410
+    result_time = datetime.fromisoformat(ocr_result.get('timestamp'))
+    if (datetime.utcnow() - result_time).total_seconds() > 3600:
+        logger.warning("OCR 결과가 만료되었습니다")
+        return jsonify({"error": "OCR 결과가 만료되었습니다."}), 410
 
-    logging.info(f"Returning OCR result: {ocr_result}")
-    return jsonify(ocr_result)
+    logger.info(f"OCR 결과 반환 중: {ocr_result}")
+    return jsonify(ocr_result), 200

@@ -592,3 +592,13 @@ body {
     }
 
 }
+
+.selected {
+    background-color: #d9534f;
+    color: white;
+}
+.disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    pointer-events: none;
+}

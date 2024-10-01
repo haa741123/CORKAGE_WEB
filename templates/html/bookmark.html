@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>저장 목록</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bookmark.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(51, 51, 51, 0.9);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+            z-index: 1000;
+            font-size: 1rem;
+        }
+        .toast-message.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .btn-spacing {
+            margin: 0 70px;
+        }
+
+        .bookmark-icon img {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar with Back Icon and Title -->
+    <div class="navbar">
+        <a href="#" class="back-icon">
+            <img src="/static/img/Expand_left_light.png" alt="뒤로가기" loading="lazy">
+        </a>
+        <span class="navbar-title">저장 목록</span>
+    </div>
+
+    <div class="container mt-3">
+        <h2 id="collection-title">이정헌님의 컬렉션 <span class="count"></span></h2>
+        <div id="restaurant-list" class="restaurant-list">
+            <!-- JS로 데이터 추가 예정 -->
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        // 샘플 레스토랑 데이터 (테스트용 JSON 포함)
+        let restaurants = [
+            {
+                name: "스시오마주",
+                image: "/static/img/res_sample_img.jpg",
+                tags: ["콜키지 프리", "1명 제한", "양쪽만 가능"],
+                description: "극강의 가성비를 자랑하는 가로수길 미들급 스시야",
+                rating: "4.8",
+                bookmark: true,
+                status: "active"
+            },
+            {
+                name: "스시킨",
+                image: "/static/img/res_sample_img.jpg",
+                tags: ["콜키지 프리", "2명 제한", "모든 주류 가능"],
+                description: "극강의 가성비를 자랑하는 가로수길 미들급 스시야",
+                rating: "4.8",
+                bookmark: false,
+                status: "inactive"
+            },
+            {
+                name: "썸머키친",
+                image: "/static/img/res_sample_img.jpg",
+                tags: ["콜키지 요금 발생", "와인만 가능"],
+                description: "극강의 가성비를 자랑하는 가로수길 미들급 스시야",
+                rating: "4.8",
+                bookmark: true,
+                status: "active"
+            }
+        ];
+
+        // 토스트 메시지 표시 함수
+        function showToast(message) {
+            const toast = $('<div>').addClass('toast-message').text(message);
+            $('body').append(toast);
+
+            setTimeout(function() {
+                toast.addClass('show');
+            }, 100); // 토스트 메시지 표시
+
+            setTimeout(function() {
+                toast.removeClass('show');
+                setTimeout(() => toast.remove(), 500); // 메시지 숨기고 DOM에서 제거
+            }, 3000); // 3초 후 메시지 숨김
+        }
+
+        // 북마크 상태인 레스토랑만 동적으로 생성하는 함수
+        function get_bookmark() {
+            const list = $('#restaurant-list');
+            const count = $('.count');
+
+            // 북마크된 항목 필터링
+            const bookmarkedRestaurants = restaurants.filter(restaurant => restaurant.bookmark && restaurant.status === "active");
+
+            // 레스토랑 수 업데이트 (DOM 접근 최소화)
+            count.text(bookmarkedRestaurants.length);
+
+            list.empty(); // 기존 리스트 비우기
+            const fragment = $(document.createDocumentFragment()); // documentFragment 사용
+
+            bookmarkedRestaurants.forEach((restaurant, index) => {
+                const item = $('<div>').addClass('restaurant-item');
+
+                const row = $('<div>').addClass('row');
+
+                // 이미지 부분
+                const img_col = $('<div>').addClass('col-4 col-lg-3');
+                const img = $('<img>')
+                    .attr('src', restaurant.image)
+                    .attr('alt', restaurant.name)
+                    .addClass('restaurant-img')
+                    .attr('loading', 'lazy'); // lazy 로딩 적용
+                img_col.append(img);
+
+                // 텍스트 부분
+                const text_col = $('<div>').addClass('col-8 col-lg-9');
+
+                const name = $('<h5>').addClass('restaurant-name').text(restaurant.name);
+
+                const bookmark_icon = $('<span>').addClass('bookmark-icon');
+                const bookmark_img = $('<img>')
+                    .attr('src', restaurant.bookmark ? '/static/img/Bookmark.png' : '/static/img/Unbookmark.png')
+                    .attr('alt', '북마크')
+                    .attr('aria-label', '북마크');
+                bookmark_icon.append(bookmark_img);
+                name.append(bookmark_icon);
+
+                const tag_div = $('<div>').addClass('tags');
+                restaurant.tags.forEach(function(tag) {
+                    const tag_span = $('<span>')
+                        .addClass('tag')
+                        .addClass(tag === "콜키지 프리" ? 'red' : 'black')
+                        .text(tag);
+                    tag_div.append(tag_span);
+                });
+
+                const description = $('<p>').addClass('description').text(`"${restaurant.description}"`);
+
+                const rating = $('<p>').addClass('rating').text(`★ ${restaurant.rating}`);
+
+                const memo_btn = $('<button>').addClass('memo-btn').text('메모를 남겨보세요').attr('aria-label', '메모를 남겨보세요');
+
+                text_col.append(name, tag_div, description, rating, memo_btn);
+
+                row.append(img_col, text_col);
+
+                item.append(row);
+
+                fragment.append(item);
+            });
+
+            list.append(fragment);
+        }
+
+        // 이벤트 위임으로 bookmark 클릭 처리
+        $('#restaurant-list').on('click', '.bookmark-icon img', function() {
+            const index = $(this).closest('.restaurant-item').index();
+            const restaurant = restaurants[index];
+
+            // SweetAlert2로 대화 상자 표시
+            Swal.fire({
+                title: restaurant.bookmark ? '북마크를 취소하시겠습니까?' : '북마크를 추가하시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '예',
+                cancelButtonText: '아니요',
+                customClass: {
+                    confirmButton: 'btn-spacing',
+                    cancelButton: 'btn-spacing'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // 북마크 상태 변경
+                    restaurant.bookmark = !restaurant.bookmark;
+                    $(this).attr('src', restaurant.bookmark ? '/static/img/Bookmark.png' : '/static/img/Unbookmark.png');
+
+                    // 토스트 알림
+                    showToast(restaurant.bookmark ? '북마크가 추가되었습니다.' : '북마크가 취소되었습니다.');
+                    
+                    // 리스트 다시 렌더링 필요 시
+                    get_bookmark();
+                }
+            });
+        });
+
+        // 페이지 로드 시 북마크된 레스토랑 리스트 생성
+        $(document).ready(function() {
+            get_bookmark(); // 데이터를 렌더링
+        });
+
+    </script>
+
+</body>
+</html>
