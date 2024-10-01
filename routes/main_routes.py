@@ -47,9 +47,16 @@ def bookmark():
     return render_template('html/bookmark.html')  # 북마크한 음식점 리스트
 
 
+@main_routes.route("/reservation_owner")
+def reservatation_owner():
+    return render_template('html/reservation_owner.html')  # 예약 정보 페이지
+
 @main_routes.route("/main")
 def main():
     return render_template('html/main.html')  # 메인 페이지
+
+
+
 # 허용된 파일 확장자 정의
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 

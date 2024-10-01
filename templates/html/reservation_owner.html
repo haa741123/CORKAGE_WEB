@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 시스템</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-desk {
+            background-color: var(--primary-color);
+            padding: 1rem;
+        }
+
+        .nav-logo img {
+            height: 40px;
+        }
+
+        .nav-items ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .nav-items ul li {
+            display: inline;
+            margin-right: 1rem;
+        }
+
+        .nav-items ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        #reservations {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .reservation {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 0;
+        }
+
+        .reservation:last-child {
+            border-bottom: none;
+        }
+
+        .reservation p {
+            margin: 0.5rem 0;
+        }
+
+        .menu-wrap {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .legal {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+        }
+
+        .legal a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-desk">
+        <center>
+            <div class="nav-logo">
+                <a href="index.html"><img id="logo" src="assets/img/logo2.png" alt="모두의잔 사장님 사이트"></a>
+            </div>
+    </nav>
+
+    <div id="reservations"></div>
+
+    <div class="menu-wrap">
+        <!-- 메뉴 토글 버튼 등을 여기에 추가할 수 있습니다 -->
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        async function initializeApp() {
+            const supabase = createClient('https://kovzqlclzpduuxejjxwf.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ');
+
+            const reservationsContainer = document.getElementById('reservations');
+
+            function displayReservation(reservation) {
+                const reservationElement = document.createElement('div');
+                reservationElement.className = 'reservation';
+                reservationElement.innerHTML = `
+                    <p>예약 날짜: ${reservation.reservation_date}</p>
+                    <p>예약 시간: ${reservation.reservation_time}</p>
+                    <p>인원 수: ${reservation.people_count}</p>
+                    <p>생성 시간: ${reservation.created_at}</p>
+                `;
+                reservationsContainer.insertBefore(reservationElement, reservationsContainer.firstChild);
+            }
+
+            supabase
+                .channel('public:reservations')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reservations' }, payload => {
+                    displayReservation(payload.new);
+                })
+                .subscribe();
+
+            async function fetchReservations() {
+                const { data, error } = await supabase
+                    .from('reservations')
+                    .select('id, reservation_date, reservation_time, people_count, created_at')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('예약 정보 가져오기 오류:', error);
+                    reservationsContainer.innerHTML = `<p>예약 정보를 가져오는 중 오류가 발생했습니다: ${error.message}</p>`;
+                } else if (data && data.length > 0) {
+                    reservationsContainer.innerHTML = '';
+                    data.forEach(displayReservation);
+                } else {
+                    reservationsContainer.innerHTML = '<p>예약 정보가 없습니다.</p>';
+                }
+            }
+
+            await fetchReservations();
+        }
+
+        initializeApp();
+    </script>
+</body>
+</html>
