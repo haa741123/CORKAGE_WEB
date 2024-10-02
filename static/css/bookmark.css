@@ -1,3 +1,8 @@
+html::-webkit-scrollbar, 
+body::-webkit-scrollbar {
+    display: none;  
+}
+
 body {
     font-family: 'Pretendard', sans-serif;
     background-color: #f9f9f9;
@@ -63,6 +68,7 @@ body {
     width: 20px;
     height: 20px;
     margin-left: 10px;
+    cursor: pointer;
 }
 
 .tags {
@@ -94,7 +100,7 @@ body {
 }
 
 .rating {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: bold;
     color: #f39c12;
     margin-top: 5px;
@@ -122,4 +128,70 @@ h2 {
 
 .memo-btn:hover {
     background-color: #ff3a3a;
+}
+
+
+
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(51, 51, 51, 0.9);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s, visibility 0.5s;
+    z-index: 1000;
+    font-size: 1rem;
+}
+.toast-message.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* SweetAlert2의 네/아니오 버튼을 화면 양 끝에 배치 */
+.swal2-actions {
+    display: flex;
+    justify-content: space-between;  /* 버튼을 화면의 양 끝에 배치 */
+    width: 100%;  
+    padding: 0 15vw; 
+}
+
+/* 버튼 스타일 */
+.swal2-confirm-btn, .swal2-cancel-btn {
+    padding: 2vh 5vw; 
+    background-color: #3085d6; /* 확인 버튼의 기본 색상 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.swal2-cancel-btn {
+    background-color: #d33;  /* 취소 버튼의 색상 */
+}
+
+
+
+
+
+/* 페이징 버튼 스타일 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+.pagination button.active {
+    font-weight: bold;
+    background-color: #F0394F;
+    color: white;
 }
