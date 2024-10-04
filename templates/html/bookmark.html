@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>저장 목록</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bookmark.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+
+    <!-- 뒷면 아이콘 및 제목이 있는 탐색 표시줄 -->
+    <div class="navbar">
+        <a href="#" class="back-icon">
+            <img src="/static/img/Expand_left_light.png" alt="뒤로가기" loading="lazy">
+        </a>
+        <span class="navbar-title">저장 목록</span>
+    </div>
+
+    <div class="container mt-3">
+        <h2 id="collection-title">이정헌님의 컬렉션 <span class="count"></span></h2>
+        <div id="restaurant-list" class="restaurant-list">
+            <!-- JS로 데이터 추가 예정 -->
+        </div>
+        <!-- 페이징 버튼 -->
+        <div class="pagination">
+            <button class="prev-page">이전</button>
+            <span id="pagination-numbers"></span>
+            <button class="next-page">다음</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.js"></script>
+    <script src="/static/js/bookmark.js" type="module"></script>
+    <script>
+
+    </script>
+
+</body>
+</html>

@@ -40,7 +40,12 @@ def mypage():
 
 @main_routes.route("/drink_info")
 def drink_info():
-    return render_template('html/drink_info.html')  # 와인 정보 페이지
+    return render_template('html/drink_info.html')  # 주류 정보 페이지
+
+@main_routes.route("/bookmark")
+def bookmark():
+    return render_template('html/bookmark.html')  # 북마크한 음식점 리스트
+
 
 @main_routes.route("/reservation_owner")
 def reservatation_owner():
