@@ -35,6 +35,33 @@ async function fetchReservations(page = 1) {
   }
 }
 
+ // 기간으로 예약 검색하는 함수
+ async function searchReservationsByPeriod() {
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+
+  if (!startDate || !endDate) {
+      alert('시작 날짜와 종료 날짜를 모두 선택해주세요.');
+      return;
+  }
+
+  try {
+      const { data, error, count } = await supabase
+          .from("reservations")
+          .select("id, reservation_date, reservation_time, people_count, created_at", { count: "exact" })
+          .gte("reservation_date", startDate)
+          .lte("reservation_date", endDate)
+          .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      displayReservations(data);
+      updatePagination(1, Math.ceil(count / itemsPerPage));
+  } catch (error) {
+      console.error("기간 검색 오류:", error);
+  }
+}
+
 // 예약 정보를 화면에 표시하는 함수입니다.
 function displayReservations(reservations) {
   const reservationsTableBody = document.querySelector(
