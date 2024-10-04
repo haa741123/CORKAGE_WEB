@@ -1,153 +1,323 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>예약 시스템</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --background-color: #ecf0f1;
-            --text-color: #34495e;
-        }
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>모두의 잔 사장님 페이지</title>
+    <link
+    href="/static/css/all.min.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/jejumyeongjo.css" />
+    <link href="/static/css/sb-admin-2.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+      const supabaseUrl = "https://kovzqlclzpduuxejjxwf.supabase.co";
+      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ";
+      const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    </script>
+  </head>
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-        }
+  <body id="page-top">
+    <div id="wrapper">
+      <!-- Sidebar -->
+      <ul
+        class="navbar-nav sidebar"
+        id="accordionSidebar" style="background-color: #FFF;"
+      >
 
-        .nav-desk {
-            background-color: var(--primary-color);
-            padding: 1rem;
-        }
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0" />
 
-        .nav-logo img {
-            height: 40px;
-        }
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item active">
+          <a class="nav-link" href="index.html">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>대시보드</span>
+          </a>
+        </li>
 
-        .nav-items ul {
-            list-style-type: none;
-            padding: 0;
-        }
 
-        .nav-items ul li {
-            display: inline;
-            margin-right: 1rem;
-        }
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block" />
 
-        .nav-items ul li a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-        }
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+      </ul>
+      <!-- End of Sidebar -->
 
-        #reservations {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 1rem;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Topbar -->
+          <nav
+            class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"
+          >
+            <!-- Sidebar Toggle (Topbar) -->
+            <button
+              id="sidebarToggleTop"
+              class="btn btn-link d-md-none rounded-circle mr-3"
+            >
+              <i class="fa fa-bars"></i>
+            </button>
 
-        .reservation {
-            border-bottom: 1px solid #e0e0e0;
-            padding: 1rem 0;
-        }
+            <a
+            class="sidebar-brand d-flex align-items-center justify-content-center"
+            href="index.html"
+          >
+            <div class="sidebar-brand-text mx-3" style="font-size: 20px; color: #D0273B; font-family: Jeju Myeongjo;">모두의 잔 <sup style="color: black;">사장님</sup></div>
+          </a>
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+              <!-- Nav Item - Alerts -->
+              <li class="nav-item dropdown no-arrow mx-1">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="alertsDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-bell fa-fw"></i>
+                  <!-- Counter - Alerts -->
+                  <span class="badge badge-danger badge-counter">3+</span>
+                </a>
+                <!-- Dropdown - Alerts -->
+                <div
+                  class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                  aria-labelledby="alertsDropdown"
+                >
+                  <h6 class="dropdown-header">
+                    예약 알림
+                  </h6>
+                </div>
+              </li>
+          
+              <!-- Nav Item - User Information -->
+              <li class="nav-item dropdown no-arrow">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                    >이정현</span
+                  >
+                  <img
+                    class="img-profile rounded-circle"
+                    src="/static/img/undraw_profile.svg"
+                  />
+                </a>
+                <!-- Dropdown - User Information -->
+                <div
+                  class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                  aria-labelledby="userDropdown"
+                >
+                  <!-- <a class="dropdown-item" href="#">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Settings
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Activity Log
+                  </a> -->
+                  <div class="dropdown-divider"></div>
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    data-toggle="modal"
+                    data-target="#logoutModal"
+                  >
+                    <i
+                      class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                    ></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </nav>
+          <!-- End of Topbar -->
 
-        .reservation:last-child {
-            border-bottom: none;
-        }
-
-        .reservation p {
-            margin: 0.5rem 0;
-        }
-
-        .menu-wrap {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-        }
-
-        .legal {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-        }
-
-        .legal a {
-            color: var(--secondary-color);
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
-    <nav class="nav-desk">
-        <center>
-            <div class="nav-logo">
-                <a href="index.html"><img id="logo" src="assets/img/logo2.png" alt="모두의잔 사장님 사이트"></a>
+          <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div
+              class="d-sm-flex align-items-center justify-content-between mb-4"
+            >
+              <h1 class="h3 mb-0 text-gray-800">예약 분석</h1>
             </div>
-    </nav>
 
-    <div id="reservations"></div>
+            <!-- Content Row -->
+            <div class="row">
+              <!-- Area Chart -->
+              <div class="col-xl-12 col-lg-7">
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Dropdown -->
+                  <div
+                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                  >
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      날짜별 예약
+                    </h6>
+                  </div>
+                  <!-- Card Body -->
+                  <div class="card-body">
+                    <div class="chart-area">
+                      <canvas id="myAreaChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-    <div class="menu-wrap">
-        <!-- 메뉴 토글 버튼 등을 여기에 추가할 수 있습니다 -->
+              <!-- Pie Chart -->
+              <!-- <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4"> -->
+                  <!-- Card Header - Dropdown -->
+                  <!-- <div
+                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                  >
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      예약 현황
+                    </h6>
+                  </div> -->
+                  <!-- Card Body -->
+                  <!-- <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                      <canvas id="myPieChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+          <!-- /.container-fluid -->
+
+          <div class="col-xl-12 col-lg-7">
+            <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div
+                class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+              >
+                <h6 class="m-0 font-weight-bold text-primary">
+                  예약 내역
+                </h6>
+                <div id="pagination" class="pagination"></div>
+              </div>
+              <!-- Card Body -->
+              <div class="card-body">
+                <div class="chart-area">
+                  <div id="reservationsContainer">
+                    
+                    <table id="reservationsTable" class="table">
+                      <thead>
+                        <tr>
+                          <th>예약 날짜</th>
+                          <th>예약 시간</th>
+                          <th>인원 수</th>
+                          <th>생성 시간</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                    
+                  </div>                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End of Main Content -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div
+      class="modal fade"
+      id="logoutModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+            <button
+              class="close"
+              type="button"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Select "Logout" below if you are ready to end your current session.
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-secondary"
+              type="button"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <a class="btn btn-primary" href="login.html">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="notificationPopup" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" style="display: none;">
+      <h6 class="dropdown-header">
+        새 예약 알림
+      </h6>
+      <div id="notificationContent" class="notification-content">
+        <!-- 여기에 알림 내용이 동적으로 추가됩니다 -->
+      </div>
+      <a class="dropdown-item text-center small text-gray-500" href="#" id="closeNotification">알림 닫기</a>
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-        async function initializeApp() {
-            const supabase = createClient('https://kovzqlclzpduuxejjxwf.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ');
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
-            const reservationsContainer = document.getElementById('reservations');
 
-            function displayReservation(reservation) {
-                const reservationElement = document.createElement('div');
-                reservationElement.className = 'reservation';
-                reservationElement.innerHTML = `
-                    <p>예약 날짜: ${reservation.reservation_date}</p>
-                    <p>예약 시간: ${reservation.reservation_time}</p>
-                    <p>인원 수: ${reservation.people_count}</p>
-                    <p>생성 시간: ${reservation.created_at}</p>
-                `;
-                reservationsContainer.insertBefore(reservationElement, reservationsContainer.firstChild);
-            }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap core JavaScript-->
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
 
-            supabase
-                .channel('public:reservations')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reservations' }, payload => {
-                    displayReservation(payload.new);
-                })
-                .subscribe();
 
-            async function fetchReservations() {
-                const { data, error } = await supabase
-                    .from('reservations')
-                    .select('id, reservation_date, reservation_time, people_count, created_at')
-                    .order('created_at', { ascending: false });
+    <!-- Custom scripts for all pages-->
+    <script src="/static/js/sb-admin-2.min.js"></script>
+    <!-- Page level custom scripts -->
+    <script type="module" src="/static/js/chart-area-demo.js"></script>
 
-                if (error) {
-                    console.error('예약 정보 가져오기 오류:', error);
-                    reservationsContainer.innerHTML = `<p>예약 정보를 가져오는 중 오류가 발생했습니다: ${error.message}</p>`;
-                } else if (data && data.length > 0) {
-                    reservationsContainer.innerHTML = '';
-                    data.forEach(displayReservation);
-                } else {
-                    reservationsContainer.innerHTML = '<p>예약 정보가 없습니다.</p>';
-                }
-            }
-
-            await fetchReservations();
-        }
-
-        initializeApp();
-    </script>
-</body>
+    
+  </body>
 </html>
