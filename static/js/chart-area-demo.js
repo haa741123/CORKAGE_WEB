@@ -80,25 +80,31 @@ const setPagination = (totalItems) => {
   const $paginationEl = $("#pagination");
   $paginationEl.empty();
 
-  const createButton = (text, isActive, onClick) => {
+  const createButton = (text, isActive, onClick, isDisabled = false) => {
     const buttonClass = isActive
       ? 'btn btn-primary mx-1 active'  // 선택된 페이지의 스타일
       : 'btn btn-outline-primary mx-1'; // 일반 페이지 스타일
 
-    return $("<button>")
+    const $button = $("<button>")
       .addClass(buttonClass)
       .text(text)
       .on("click", onClick);
+    
+    if (isDisabled) {
+      $button.prop("disabled", true); // 비활성화 처리
+    }
+
+    return $button;
   };
 
-  // 이전 버튼
-  const $prevButton = createButton("이전", currentPage === 1, () => {
+  // 이전 버튼 (1페이지에서는 비활성화 및 outline 스타일 적용)
+  const $prevButton = createButton("이전", false, () => {
     if (currentPage > 1) {
       currentPage--;
       updateReservations();
+      setPagination(totalItems); // 버튼 스타일 재설정
     }
-  });
-  $prevButton.prop("disabled", currentPage === 1); // 첫 번째 페이지일 때 비활성화
+  }, currentPage === 1); // 첫 페이지일 때 비활성화
   $paginationEl.append($prevButton);
 
   // 페이지 번호 버튼
@@ -107,25 +113,45 @@ const setPagination = (totalItems) => {
     const $pageLink = createButton(i, isActive, () => {
       currentPage = i;
       updateReservations();
+      setPagination(totalItems); // 버튼 스타일 재설정
 
-      // 기존의 active 클래스를 제거하고, 클릭한 버튼에 추가
-      $("#pagination .btn").removeClass("active");
-      $pageLink.addClass("active");
+      // 클릭 후, 기존의 active와 btn-primary 클래스를 제거하고, 클릭한 버튼에 추가
+      $("#pagination .btn").removeClass("active btn-primary").addClass("btn-outline-primary");
+      $pageLink.removeClass("btn-outline-primary").addClass("btn-primary active");
     });
 
     $paginationEl.append($pageLink);
   }
 
-  // 다음 버튼
-  const $nextButton = createButton("다음", currentPage === totalPages, () => {
+  // 다음 버튼 (마지막 페이지에서는 비활성화 및 outline 스타일 적용)
+  const $nextButton = createButton("다음", false, () => {
     if (currentPage < totalPages) {
       currentPage++;
       updateReservations();
+      setPagination(totalItems); // 버튼 스타일 재설정
     }
-  });
-  $nextButton.prop("disabled", currentPage === totalPages); // 마지막 페이지일 때 비활성화
+  }, currentPage === totalPages); // 마지막 페이지일 때 비활성화
   $paginationEl.append($nextButton);
+
+  // 이전 버튼 색상 설정
+  if (currentPage === 1) {
+    $prevButton.removeClass("btn-primary").addClass("btn-outline-primary");
+    $nextButton.removeClass("btn-outline-primary").addClass("btn-primary");
+  } 
+  // 마지막 페이지일 경우 다음 버튼 색상 설정
+  else if (currentPage === totalPages) {
+    $prevButton.removeClass("btn-outline-primary").addClass("btn-primary");
+    $nextButton.removeClass("btn-primary").addClass("btn-outline-primary");
+  } 
+  // 중간 페이지일 경우
+  else {
+    $prevButton.removeClass("btn-outline-primary").addClass("btn-primary");
+    $nextButton.removeClass("btn-outline-primary").addClass("btn-primary");
+  }
 };
+
+
+
 
 
 

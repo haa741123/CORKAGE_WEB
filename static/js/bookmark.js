@@ -25,7 +25,6 @@ const Restaurant_Count = async () => {
         .not('rating', 'is', null)  // rating 값이 null이 아닌 것만 필터링
         .eq('bookmark', true);  // bookmark 값이 true인 것만 필터링
 
-
     if (error) {
         console.error('DB 에러:', error);
         return 0;
@@ -40,11 +39,6 @@ const Restaurant_Count = async () => {
  * @returns {Array} 현재 페이지에 해당하는 레스토랑 리스트
  */
 const fetchPagedRestaurants = async (page) => {
-    if (pagination.cache[page]) {
-        // 캐시된 데이터가 있으면 캐시된 데이터를 사용
-        return pagination.cache[page];
-    }
-
     const start = (page - 1) * pagination.pageSize;
     const end = start + pagination.pageSize - 1;
 
@@ -64,10 +58,10 @@ const fetchPagedRestaurants = async (page) => {
         return [];
     }
 
-    // 데이터를 캐싱
-    pagination.cache[page] = data;
+    // 캐시 없이 데이터를 바로 반환
     return data;
 };
+
 
 /**
  * 북마크를 취소하고 레스토랑 목록에서 제거하는 함수
@@ -103,11 +97,16 @@ const removeBookmark = async (id) => {
                 return;
             }
 
-            // 북마크 제거 후 리스트 갱신
+            // 북마크 제거 후 총 개수를 다시 가져옴
+            pagination.totalItems = await Restaurant_Count();
+            
+            // 리스트 및 페이지네이션을 다시 렌더링
             renderList(pagination.currentPage);
+            renderPagination();
         }
     });
 };
+
 
 
 

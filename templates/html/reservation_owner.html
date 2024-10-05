@@ -143,10 +143,11 @@
             <div class="card shadow mb-4">
               <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">예약 내역</h6>
-                <div>
-                  <label for="dateRange" class="mr-2">날짜 선택:</label>
-                  <input type="text" id="dateRange" class="form-control d-inline-block w-auto" />
-                  <button class="btn btn-primary ml-2" onclick="searchByPeriod()">기간 검색</button>
+                <!-- 가운데 영역을 flex-grow로 크기 조정 -->
+                <div class="d-flex align-items-center" style="max-width: 380px; width: 100%;">
+                  <label for="dateRange" class="mr-2 mt-2">날짜 선택:</label>
+                  <input type="text" id="dateRange" class="form-control" style="width: 55%;" />
+                  <button class="btn btn-primary ml-2" onclick="searchByPeriod()">검색</button>
                 </div>
                 <div id="pagination" class="pagination"></div>
               </div>
@@ -169,6 +170,9 @@
               </div>
             </div>
           </div>
+
+
+
         </div>
         <!-- End of Main Content -->
       </div>
