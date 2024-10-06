@@ -18,6 +18,9 @@ import requests
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
 
+# 해야되는 설정
+# $ pip install google-generativeai
+
 # Google Gemini API 설정
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
