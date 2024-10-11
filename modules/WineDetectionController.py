@@ -16,6 +16,26 @@ import cv2
 import numpy as np
 import requests
 from werkzeug.utils import secure_filename
+import google.generativeai as genai
+
+# 해야되는 설정
+# $ pip install google-generativeai
+
+# Google Gemini API 설정
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 64,
+    "max_output_tokens": 8192,
+    "response_mime_type": "application/json",
+}
+
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    generation_config=generation_config,
+)
 
 # 환경 변수 로드
 dotenv_path = '/var/www/flask/modules/.env'
@@ -56,7 +76,7 @@ if not logger.handlers:
 api_key = os.getenv("ROBOFLOW_API_KEY")
 if not api_key:
     logger.error("ROBOFLOW_API_KEY가 환경 변수에 설정되지 않았습니다.")
-    raise ValueError("ROBOFLOW_API_KEY not set")
+    raise ValueError("ROBOFLOW_API_KEY 세팅 문제")
 
 rf = Roboflow(api_key=api_key)
 project = rf.workspace("vin-c1flf").project("vin2")
@@ -78,14 +98,16 @@ def make_session_permanent():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# 세션에 사용자 ID가 없으면 새로 생성하고 반환하는 함수
 def get_or_create_user_id():
     user_id = session.get('user_id')
     if not user_id:
         user_id = str(uuid.uuid4())
         session['user_id'] = user_id
-        logger.info(f"새로운 사용자 ID 생성됨: {user_id}")
+        # logger.info(f"새로운 사용자 ID 생성됨: {user_id}")
     return user_id
 
+# 사용자가 남은 호출 횟수를 가져오는 함수, 날짜가 바뀌면 횟수를 리셋
 def get_remaining_calls():
     user_id = get_or_create_user_id()
     today = datetime.utcnow().date()
@@ -97,23 +119,26 @@ def get_remaining_calls():
         session[f'{user_id}_remaining_calls'] = remaining_calls
     return remaining_calls
 
+# 남은 호출 횟수를 변경하는 함수
 def modify_remaining_calls(change):
     user_id = get_or_create_user_id()
     remaining_calls = session.get(f'{user_id}_remaining_calls', MAX_CALLS_PER_DAY)
     remaining_calls = max(0, remaining_calls + change)
     session[f'{user_id}_remaining_calls'] = remaining_calls
     session.modified = True
-    logger.info(f"사용자 {user_id}의 남은 호출 횟수 변경됨: {remaining_calls}")
+    # logger.info(f"사용자 {user_id}의 남은 호출 횟수 변경됨: {remaining_calls}")
 
+# 이미지를 주어진 좌표로 자르는 함수
 def crop_image(image, coordinates):
     x_center, y_center, width, height = coordinates
     left = x_center - (width / 2)
     top = y_center - (height / 2)
     right = x_center + (width / 2)
     bottom = y_center + (height / 2)
-    logger.info(f"이미지를 다음 좌표로 자릅니다: {left}, {top}, {right}, {bottom}")
+    # logger.info(f"이미지를 다음 좌표로 자릅니다: {left}, {top}, {right}, {bottom}")
     return image.crop((left, top, right, bottom))
 
+# EasyOCR를 사용하여 이미지에서 텍스트를 감지하는 함수
 def detect_text_easyocr(image_bytes):
     logger.info("EasyOCR로 OCR 프로세스 시작")
     try:
@@ -128,6 +153,7 @@ def detect_text_easyocr(image_bytes):
         logger.exception(f"OCR 처리 중 오류 발생: {str(e)}")
         return "OCR 처리 중 오류 발생."
 
+# 추출된 텍스트를 JSON 파일로 저장하는 함수
 def save_extracted_text_to_json(extracted_text, user_id):
     try:
         filename = f'extracted_text_{user_id}_{datetime.now().strftime("%Y%m%d%H%M%S")}.json'
@@ -145,6 +171,7 @@ def save_extracted_text_to_json(extracted_text, user_id):
         logger.error(f"save_extracted_text_to_json에서 오류 발생: {str(e)}")
         return None
 
+# 이미지 파일을 삭제하는 함수
 def delete_image(image_path):
     try:
         if os.path.isfile(image_path):
@@ -155,10 +182,12 @@ def delete_image(image_path):
     except Exception as e:
         logger.error(f"이미지 삭제 중 오류 발생 {image_path}: {str(e)}")
 
+# 이미지를 최대 크기로 리사이즈하는 함수
 def resize_image(image, max_size=(800, 800)):
     image.thumbnail(max_size)
     return image
 
+# Multipart를 사용하여 Roboflow API에 이미지를 업로드하고 예측 결과를 받는 함수
 def predict_with_multipart(image_path, api_url, api_key):
     try:
         with open(image_path, 'rb') as image_file:
@@ -176,6 +205,7 @@ def predict_with_multipart(image_path, api_url, api_key):
         logger.error(f"predict_with_multipart에서 오류 발생: {str(e)}")
         raise
 
+# Roboflow 예측 결과를 처리하고 텍스트를 추출하는 함수
 def process_prediction(image_path, prediction):
     try:
         with Image.open(image_path) as img:
@@ -228,7 +258,9 @@ def detect_vin():
                 logger.warning("Roboflow 응답에서 예측을 찾을 수 없습니다")
                 return jsonify({"error": "이미지에서 예측을 찾을 수 없습니다."}), 200
 
+            # OCR 결과에서 주류 이름 추출
             results = {}
+            wine_name = None
 
             for class_name in ['Maker-Name', 'VintageYear', 'TypeWine Type']:
                 predictions = [p for p in prediction['predictions'] if p['class'] == class_name]
@@ -236,11 +268,29 @@ def detect_vin():
                     best_prediction = max(predictions, key=lambda x: x['confidence'])
                     extracted_text = process_prediction(temp_image_path, best_prediction)
                     results[class_name] = extracted_text
+                    if class_name == 'Maker-Name':
+                        wine_name = extracted_text
 
-            if not results:
+            if not results or not wine_name:
                 logger.warning("처리 후 관련 예측이 없습니다")
                 return jsonify({"error": "이미지에서 관련 텍스트를 감지할 수 없습니다."}), 200
 
+            # Google Gemini API를 통해 주류 정보 요청
+            chat_session = model.start_chat(
+                history=[
+                    {
+                        "role": "user",
+                        "parts": [
+                            f"\"{wine_name}\" Provide this wine information in the form of JSON \n\nNecessary information\n\nProduct Name\nProduct Image\nProduct Description\nOrigin\nType and Classification\nAlcohol\nTaste and Aroma\nRecommeded Consumption Temperature\nPairing Food\nPrice information\nStorage\ncaution"
+                        ],
+                    }
+                ]
+            )
+
+            response = chat_session.send_message(wine_name)
+            wine_info = response.text
+
+            # 결과 저장 및 응답 반환
             json_filepath = save_extracted_text_to_json(results, user_id)
             if not json_filepath:
                 logger.error("OCR 결과를 JSON으로 저장하는 데 실패했습니다")
@@ -248,6 +298,7 @@ def detect_vin():
 
             session['ocr_result'] = {
                 "extracted_text": results,
+                "wine_info": wine_info,
                 "timestamp": datetime.utcnow().isoformat()
             }
             session.modified = True
@@ -256,7 +307,8 @@ def detect_vin():
             return jsonify({
                 "message": "이미지가 성공적으로 처리되었습니다.",
                 "remaining_calls": get_remaining_calls(),
-                "ocr_result": results
+                "ocr_result": results,
+                "wine_info": wine_info
             }), 200
 
         except Exception as e:
@@ -269,7 +321,6 @@ def detect_vin():
     except Exception as e:
         logger.exception(f"detect_vin에서 오류 발생: {str(e)}")
         return jsonify({"error": "오류가 발생했습니다. 나중에 다시 시도해주세요."}), 500
-
 @WineDetectionController.route('/watch_ad', methods=['POST'])
 def watch_ad():
     modify_remaining_calls(EXTRA_CALLS_AFTER_AD)

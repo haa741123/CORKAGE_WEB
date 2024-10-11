@@ -6,7 +6,7 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 // 페이지네이션 설정 및 상태 관리 객체
 const pagination = {
     pageSize: 10,  // 페이지 당 표시할 레스토랑 수
-    currentPage: 1,  // 현재 페이지
+    currentPage: 0,  // 현재 페이지
     totalItems: 0,  // 전체 레스토랑 개수
     cache: {}  // 페이지 데이터를 캐싱할 객체
 };
@@ -15,59 +15,37 @@ const pagination = {
  * Supabase에서 값이 모두 존재하는 레스토랑 수를 가져오는 함수
  */
 const Restaurant_Count = async () => {
-    const { count, error } = await supabase
-        .from('corkage')
-        .select('id', { count: 'exact', head: true }) // id 기준으로 카운트
-        .not('name', 'is', null)  // name 값이 null이 아닌 것만 필터링
-        .not('image_url', 'is', null)  // image_url 값이 null이 아닌 것만 필터링
-        .not('tags', 'is', null)  // tags 값이 null이 아닌 것만 필터링
-        .not('description', 'is', null)  // description 값이 null이 아닌 것만 필터링
-        .not('rating', 'is', null)  // rating 값이 null이 아닌 것만 필터링
-        .eq('bookmark', true);  // bookmark 값이 true인 것만 필터링
-
+    const { data, error } = await supabase
+        .rpc('get_corkage_bookmarks');  // 저장된 RPC 호출
 
     if (error) {
         console.error('DB 에러:', error);
         return 0;
     }
 
-    return count;
+    return data.length;  // 데이터의 길이를 반환
 };
+
+
 
 /**
  * Supabase에서 현재 페이지에 해당하는 데이터를 가져오는 함수
  * 지정한 컬럼만 받아오도록 수정: name, image_url, tags, description, rating, bookmark
  * @returns {Array} 현재 페이지에 해당하는 레스토랑 리스트
  */
-const fetchPagedRestaurants = async (page) => {
-    if (pagination.cache[page]) {
-        // 캐시된 데이터가 있으면 캐시된 데이터를 사용
-        return pagination.cache[page];
-    }
-
-    const start = (page - 1) * pagination.pageSize;
-    const end = start + pagination.pageSize - 1;
-
+const fetchPagedRestaurants = async (end_limit, start) => {
     const { data, error } = await supabase
-        .from('corkage')
-        .select('id, name, image_url, tags, description, rating, bookmark')
-        .not('name', 'is', null)  // name 값이 null이 아닌 것만 필터링
-        .not('image_url', 'is', null)  // image_url 값이 null이 아닌 것만 필터링
-        .not('tags', 'is', null)  // tags 값이 null이 아닌 것만 필터링
-        .not('description', 'is', null)  // description 값이 null이 아닌 것만 필터링
-        .not('rating', 'is', null)  // rating 값이 null이 아닌 것만 필터링
-        .eq('bookmark', true)  // bookmark 값이 true인 것만 필터링
-        .range(start, end);
+        .rpc('fetch_paged_restaurants', { end_limit, start });
 
     if (error) {
         console.error('DB 에러:', error);
         return [];
     }
 
-    // 데이터를 캐싱
-    pagination.cache[page] = data;
     return data;
 };
+
+
 
 /**
  * 북마크를 취소하고 레스토랑 목록에서 제거하는 함수
@@ -78,13 +56,12 @@ const removeBookmark = async (id) => {
         console.error('Invalid restaurant id:', id);
         return;
     }
-    console.log(id);
 
     Swal.fire({
         title: '북마크를 취소하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: '네',    
+        confirmButtonText: '네',
         cancelButtonText: '아니요',
         customClass: {
             confirmButton: 'swal2-confirm-btn',
@@ -93,21 +70,50 @@ const removeBookmark = async (id) => {
         buttonsStyling: false
     }).then(async (result) => {
         if (result.isConfirmed) {
+            // 북마크 상태를 false로 업데이트
             const { error } = await supabase
-                .from('corkage')
-                .update({ bookmark: false })
-                .eq('id', id);
+                .from('bookmark')  // bookmark 테이블을 업데이트
+                .update({ status: false })  // status 컬럼을 false로 변경
+                .eq('restaurant_id', id);
 
             if (error) {
                 console.error('DB 에러:', error);
                 return;
             }
 
-            // 북마크 제거 후 리스트 갱신
+            // 북마크 제거 후 현재 페이지 데이터 다시 가져오기
+            const currentPage = pagination.currentPage;  // 현재 페이지 값 저장
+            pagination.totalItems = await Restaurant_Count();  // 전체 북마크 개수 다시 카운트
+
+            // 총 북마크 개수가 줄었으므로 마지막 페이지에서 데이터를 확인
+            const totalPages = Math.ceil(pagination.totalItems / pagination.pageSize);
+            if (currentPage > totalPages - 1) {
+                pagination.currentPage = totalPages - 1;  // 마지막 페이지로 이동
+            }
+
+            // 리스트 및 페이지네이션을 다시 렌더링
             renderList(pagination.currentPage);
+            renderPagination();
+
+            // 토스트 스타일의 알림 메시지 표시
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '북마크가 해지되었습니다.',
+                showConfirmButton: false,
+                timer: 1500,  // 1.5초 후 자동으로 사라짐
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'swal2-toast'
+                }
+            });
         }
     });
 };
+
+
+
 
 
 
@@ -118,7 +124,7 @@ const removeBookmark = async (id) => {
 const renderList = async (page) => {
     const list = $('#restaurant-list');
     const count = $('.count');
-    const restaurants = await fetchPagedRestaurants(page);
+    const restaurants = await fetchPagedRestaurants(pagination.pageSize, page);
 
     count.text(pagination.totalItems); // 레스토랑 총 개수 표시
     list.empty();
@@ -128,11 +134,6 @@ const renderList = async (page) => {
     console.log(restaurants);
 
     restaurants.forEach((restaurant, index) => {
-        // restaurant의 id가 있는지 확인
-        if (!restaurant.id) {
-            console.error('Invalid restaurant data: missing id', restaurant);
-            return;
-        }
 
         const item = $('<div>').addClass('restaurant-item').attr('data-id', restaurant.id);  // restaurant의 id를 data-id 속성에 추가
         const row = $('<div>').addClass('row');
@@ -234,6 +235,6 @@ const renderPagination = () => {
 $(document).ready(async () => {
     const [totalItems] = await Promise.all([Restaurant_Count()]);
     pagination.totalItems = totalItems;
-    renderList(pagination.currentPage);
+    renderList(Number(pagination.currentPage));
     renderPagination();
 });

@@ -280,7 +280,7 @@ let generatePlaceInfo = function(place, index) {
   }" class="category-icon"> 
                     ${place.place_name}
                     <span class="bookmark-icon">
-                      <img src="/static/img/Bookmark.png" alt="즐겨찾기 아이콘">
+                      <img src="/static/img/UnBookmark.png" alt="즐겨찾기 아이콘">
                     </span>
                 </p>
                 <div class="tag-container">
@@ -300,24 +300,7 @@ document.addEventListener('click', function (event) {
   let target = event.target.closest('.res_info');
 
   if (target) {
-    let placeName = target.getAttribute("data-place_name");
-    let addressName = target.getAttribute("data-address_name");
-    let phone = target.getAttribute("data-phone");
-    let distance = target.getAttribute("data-distance");
-    let walkingTime = target.getAttribute("data-walking_time");
-    let drivingTime = target.getAttribute("data-driving_time");
-    let categoryName = target.getAttribute("data-category_name");
-    window.location.href = `/details?place_name=${encodeURIComponent(
-      placeName
-    )}&address_name=${encodeURIComponent(
-      addressName
-    )}&phone=${encodeURIComponent(phone)}&distance=${encodeURIComponent(
-      distance
-    )}&walking_time=${encodeURIComponent(
-      walkingTime
-    )}&driving_time=${encodeURIComponent(
-      drivingTime
-    )}&category_name=${encodeURIComponent(categoryName)}`;
+    window.location.href = '/restaurant';
   }
 });
 
