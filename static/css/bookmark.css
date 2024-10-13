@@ -1,6 +1,10 @@
-html::-webkit-scrollbar, 
-body::-webkit-scrollbar {
-    display: none;  
+/* 모든 스크롤바가 보이지 않도록 설정 */
+* {
+    scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
 body {
@@ -127,6 +131,38 @@ body {
     margin-bottom: 0.6rem;
 }
 
+
+
+/* 메모 입력란 디자인 */
+.memo-input {
+    width: calc(100% - 60px);  /* 저장 버튼 크기 만큼 줄어든 너비 설정 */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;  /* 왼쪽만 둥근 모서리 */
+    font-size: 14px;
+    resize: none;  /* 크기 조절 비활성화 */
+    display: flex;
+    align-items: center;  /* 세로 기준 중앙 정렬 */
+    box-sizing: border-box; /* padding 포함한 너비 계산 */
+}
+
+
+/* 저장 버튼 디자인 */
+.save-memo-btn {
+    width: 60px;  /* 고정된 너비 */
+    background-color: #ff5c5c;  
+    color: white;  /* 버튼 텍스트 흰색 */
+    border: 1px solid #ff5c5c;
+    border-radius: 0 5px 5px 0;  /* 오른쪽만 둥근 모서리 */
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;  /* 배경색 전환 애니메이션 */
+}
+
+/* 저장 버튼 호버 시 */
+.save-memo-btn:hover {
+    background-color: #ff5c5c;  /* 더 어두운 녹색 배경 */
+}
 
 
 h2 {

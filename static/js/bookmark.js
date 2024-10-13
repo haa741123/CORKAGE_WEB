@@ -171,19 +171,36 @@ const renderList = async (page) => {
         item.append(row);
     
         // 메모 버튼과 입력란을 restaurant-item 안에 추가
-        const memoButton = $('<button>').addClass('memo-btn').text('메모를 남겨보세요');
-        const memoInput = $('<textarea>').addClass('memo-input')
-            .attr('placeholder', '메모를 입력하세요')
-            .css('width', '100%')  // 입력란을 화면 전체 너비로 설정
-            .hide();  // 처음엔 숨김 처리
+        const memoContainer = $('<div>').addClass('memo-container').css('display', 'flex');  // flex를 사용해 메모 버튼과 저장 버튼을 나란히 배치
     
-        // 메모 버튼 클릭 시 메모 입력란 표시/숨김 토글
+        // restaurants.memo가 존재하면 그 내용을, 없으면 빈 문자열을 넣음
+        const memoContent = restaurant.memo ? restaurant.memo : '';  // 메모가 있으면 내용 가져오기
+        const memoInput = $('<textarea>').addClass('memo-input')
+            .addClass('memo-input')  // CSS 클래스 적용
+            .attr('placeholder', '메모를 입력하세요')
+            .val(memoContent)  // 메모 내용이 있으면 넣고 없으면 빈 입력란
+            .css('flex', '1')  // 입력란을 flex-grow로 화면 전체 너비에 맞게 설정
+            .hide();  // 처음엔 숨김 처리
+        
+        const saveMemoButton = $('<button>').addClass('save-memo-btn').text('저장').hide();  // 저장 버튼도 처음엔 숨김 처리
+    
+        // 메모 버튼 클릭 시 메모 입력란과 저장 버튼 표시/숨김 토글
+        const memoButton = $('<button>').addClass('memo-btn').text('메모를 남겨보세요');
         memoButton.on('click', function () {
             memoInput.toggle();
+            saveMemoButton.toggle();  // 저장 버튼도 함께 토글
         });
     
-        // restaurant-item 안에 메모 버튼과 입력란 추가
-        item.append(memoButton, memoInput);
+        // 저장 버튼 클릭 시 메모를 업데이트하는 로직
+        saveMemoButton.on('click', function () {
+            const restaurantId = item.attr('data-id');
+            const memoContent = memoInput.val();  // 입력된 메모 내용 가져오기
+            updateMemo(restaurantId, memoContent);  // 메모 업데이트 함수 호출
+        });
+    
+        // 메모 입력란과 저장 버튼을 컨테이너에 추가
+        memoContainer.append(memoInput, saveMemoButton);
+        item.append(memoButton, memoContainer);
     
         fragment.append(item);
     });
@@ -201,14 +218,14 @@ const renderList = async (page) => {
  */
 const updateMemo = async (restaurantId, memoContent) => {
     if (!restaurantId || !memoContent) {
-        console.error('Invalid restaurant id or memo content:', restaurantId, memoContent);
+        console.error('메모 내용이 존재하지 않음:', restaurantId, memoContent);
         return;
     }
 
     const { data, error } = await supabase
-        .from('restaurants')  // 'restaurants' 테이블을 업데이트
+        .from('bookmark')  // 'bookmark' 테이블을 업데이트
         .update({ memo: memoContent })  // 'memo' 컬럼에 메모 내용을 업데이트
-        .eq('id', restaurantId);  // 특정 레스토랑의 id에 해당하는 행을 업데이트
+        .eq('restaurant_id', restaurantId);  // 특정 레스토랑의 id에 해당하는 행을 업데이트
 
     if (error) {
         console.error('메모 업데이트 실패:', error);
