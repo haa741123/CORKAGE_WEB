@@ -207,7 +207,6 @@ const renderList = async (page) => {
     
     list.append(fragment);
     
-    
 };
 
 

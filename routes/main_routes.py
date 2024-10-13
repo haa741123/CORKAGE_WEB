@@ -10,6 +10,11 @@ main_routes = Blueprint('main_routes', __name__)
 def login():
     return render_template('html/login.html')  # 로그인 화면 페이지
 
+# 각 라우트에 대한 설명
+@main_routes.route("/login_test")
+def login_test():
+    return render_template('html/login_test.html')  # 로그인 테스트 페이지
+
 @main_routes.route("/")
 def home():
     return render_template('html/index.html')  # 홈화면

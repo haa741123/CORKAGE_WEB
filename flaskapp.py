@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, request, redirect, make_response
+import requests
 from flask_cors import CORS
 from routes.main_routes import main_routes
 from datetime import timedelta
@@ -30,6 +31,15 @@ except ImportError as e:
     logging.error(f"WineDetectionController 모듈 임포트 중 오류 발생: {e}")
 except Exception as e:
     logging.error(f"WineDetectionController 블루프린트 등록 중 오류 발생: {e}")
+
+# 로그인 경로 추가
+try:
+    from modules.LoginController import LoginController
+    app.register_blueprint(LoginController)  # 로그인
+except ImportError as e:
+    logging.error(f"LoginController 모듈 임포트 중 오류 발생: {e}")
+except Exception as e:
+    logging.error(f"LoginController 블루프린트 등록 중 오류 발생: {e}")
 
 if __name__ == '__main__':
     app.debug = True

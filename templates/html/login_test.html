@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>카카오 로그인 테스트</title>
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+    integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
+  <script>
+    // 카카오 SDK 초기화 (본인의 JavaScript 키를 사용하세요)
+    Kakao.init('212301aed0cac29616f97d494d63e9b0'); 
+
+    function loginWithKakao() {
+      Kakao.Auth.authorize({
+        redirectUri: 'https://corkage.store/login_test' // 서버에서 처리할 URI
+      });
+    }
+  </script>
+</head>
+<body>
+  <h2>카카오 로그인 테스트</h2>
+  <a id="kakao-login-btn" href="javascript:loginWithKakao()">
+    <img src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" width="222" alt="카카오 로그인 버튼" />
+  </a>
+  <p id="token-result"></p>
+
+  <script>
+    // 액세스 토큰이 있는지 확인하는 함수
+    function checkLoginStatus() {
+      Kakao.Auth.getStatusInfo(function(res) {
+        if (res.status === 'connected') {
+          document.getElementById('token-result').innerText = '로그인 성공';
+        } else {
+          document.getElementById('token-result').innerText = '로그인이 필요합니다.';
+        }
+      });
+    }
+
+    // 페이지 로드 시 로그인 상태를 체크
+    window.onload = function() {
+      checkLoginStatus();
+    };
+  </script>
+</body>
+</html>
