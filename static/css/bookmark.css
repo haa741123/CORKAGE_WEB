@@ -30,7 +30,9 @@ body {
     object-fit: contain; /* 이미지 비율 유지 */
 }
 
-
+#collection-title {
+    font-size: 20px;
+}
 
 .navbar-title {
     position: absolute; /* 중앙 정렬을 위해 position 속성 사용 */
