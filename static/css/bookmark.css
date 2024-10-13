@@ -57,9 +57,9 @@ body {
 }
 
 .restaurant-img {
-    width: 100%;
+    width: 85%;
     border-radius: 8px;
-    height: 180px;
+    height: 100px;
     object-fit: cover;
 }
 
@@ -97,6 +97,7 @@ body {
     font-size: 13px;
     color: #555;
     margin-top: 5px;
+    margin-bottom: 0.1rem;
 }
 
 .rating {
@@ -106,29 +107,32 @@ body {
     margin-top: 5px;
 }
 
+/* 메모 버튼 스타일 */
+.memo-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #ffffff; 
+    color: #ff5c5c;  
+    font-weight: bold;
+    border: 1px solid #ff5c5c; 
+    border-radius: 5px;  
+    font-size: 16px;  
+    text-align: center;  
+    cursor: pointer;  
+    transition: background-color 0.3s ease; 
+    margin-bottom: 0.6rem;
+}
+
+
+
 h2 {
     font-size: 22px;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-/* Memo button styling */
-.memo-btn {
-    display: inline-block;
-    background-color: #ff5c5c;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 5px;
-    font-weight: bold;
-}
-
-.memo-btn:hover {
-    background-color: #ff3a3a;
-}
 
 
 
