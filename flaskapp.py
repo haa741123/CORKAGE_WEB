@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, request, redirect, make_response
+import requests
 from flask_cors import CORS
 from routes.main_routes import main_routes
 from datetime import timedelta
@@ -9,10 +10,6 @@ CORS(app)  # CORS 설정 추가
 app.config['UPLOAD_FOLDER'] = '/home/hamin/flask/images'  # 실제 업로드 폴더 경로로 변경해야 합니다
 app.config['SECRET_KEY'] = 'your_secret_key_here'  # 안전한 비밀 키로 변경하세요
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
-
-app.register_blueprint(main_routes)
-app.register_blueprint(RecommendController, url_prefix='/api/v1')       # 주류 추천 
-app.register_blueprint(WineDetectionController, url_prefix='/api/v1')   # 플러터에서 제공받은 사진 분석
 
 # 페이지 경로
 app.register_blueprint(main_routes)
@@ -34,6 +31,15 @@ except ImportError as e:
     logging.error(f"WineDetectionController 모듈 임포트 중 오류 발생: {e}")
 except Exception as e:
     logging.error(f"WineDetectionController 블루프린트 등록 중 오류 발생: {e}")
+
+# 로그인 경로 추가
+try:
+    from modules.LoginController import LoginController
+    app.register_blueprint(LoginController)  # 로그인
+except ImportError as e:
+    logging.error(f"LoginController 모듈 임포트 중 오류 발생: {e}")
+except Exception as e:
+    logging.error(f"LoginController 블루프린트 등록 중 오류 발생: {e}")
 
 if __name__ == '__main__':
     app.debug = True
