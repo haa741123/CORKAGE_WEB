@@ -109,11 +109,15 @@ def crawling_main(driver, elem, name_list, rating_list):
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
+        # 업종 추출 (클래스명 변동에 대응)
         try:
-            category_list.append(soup.select('span.DJJvD')[0].text)
-        except IndexError:
+            # 클래스명이 변할 가능성이 있으므로 텍스트 구조로 접근
+            category = soup.find('span', text=lambda t: t and "요리" in t).text
+            category_list.append(category)
+        except AttributeError:
             category_list.append(float('nan'))
 
+        # 주소 추출
         try:
             addr_list.append(soup.select('span.LDgIH')[0].text)
         except IndexError:
@@ -134,6 +138,7 @@ def crawling_main(driver, elem, name_list, rating_list):
 
     naver_res.to_excel('./naver_crawling_result.xlsx')
     return True
+
 
 # 자동 스크롤 및 페이지 이동 함수
 def scroll_and_crawl(driver):
