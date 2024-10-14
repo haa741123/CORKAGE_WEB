@@ -131,9 +131,7 @@ const renderList = async (page) => {
     
     const fragment = $(document.createDocumentFragment());
 
-    console.log(restaurants);
-
-    restaurants.forEach((restaurant, index) => {
+    restaurants.forEach((restaurant) => {
         const item = $('<div>').addClass('restaurant-item').attr('data-id', restaurant.id);  // restaurant의 id를 data-id 속성에 추가
         const row = $('<div>').addClass('row');
         const img_col = $('<div>').addClass('col-4 col-lg-3');
@@ -176,19 +174,23 @@ const renderList = async (page) => {
         // restaurants.memo가 존재하면 그 내용을, 없으면 빈 문자열을 넣음
         const memoContent = restaurant.memo ? restaurant.memo : '';  // 메모가 있으면 내용 가져오기
         const memoInput = $('<textarea>').addClass('memo-input')
-            .addClass('memo-input')  // CSS 클래스 적용
             .attr('placeholder', '메모를 입력하세요')
             .val(memoContent)  // 메모 내용이 있으면 넣고 없으면 빈 입력란
             .css('flex', '1')  // 입력란을 flex-grow로 화면 전체 너비에 맞게 설정
-            .hide();  // 처음엔 숨김 처리
+            .toggle(!!memoContent);  // 메모가 있으면 표시, 없으면 숨김 처리
         
-        const saveMemoButton = $('<button>').addClass('save-memo-btn').text('저장').hide();  // 저장 버튼도 처음엔 숨김 처리
+        const saveMemoButton = $('<button>').addClass('save-memo-btn').text('저장').toggle(!!memoContent);  // 저장 버튼도 처음엔 숨김 처리
+    
+        // 메모가 있으면 height 55px, 없으면 height 0으로 설정
+        memoContainer.css('height', memoContent ? '55px' : '0');
     
         // 메모 버튼 클릭 시 메모 입력란과 저장 버튼 표시/숨김 토글
         const memoButton = $('<button>').addClass('memo-btn').text('메모를 남겨보세요');
         memoButton.on('click', function () {
             memoInput.toggle();
             saveMemoButton.toggle();  // 저장 버튼도 함께 토글
+            const newHeight = memoInput.is(':visible') ? '55px' : '0';  // 메모 입력란이 보이면 height 55px, 숨기면 0
+            memoContainer.css('height', newHeight);
         });
     
         // 저장 버튼 클릭 시 메모를 업데이트하는 로직
@@ -204,6 +206,7 @@ const renderList = async (page) => {
     
         fragment.append(item);
     });
+    
     
     list.append(fragment);
     
