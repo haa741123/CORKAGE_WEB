@@ -54,9 +54,10 @@ let selectedMarker = null;
 let mapContainer = document.getElementById("map");
 let mapOption = {
   center: new kakao.maps.LatLng(37.606665, 127.027316),
-  level: 12,
+  level: 10,
 };
 let map = new kakao.maps.Map(mapContainer, mapOption);  
+map.setMaxLevel(12);
 let ps = new kakao.maps.services.Places();
 let infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
 let isSearchInProgress = false;
@@ -68,10 +69,11 @@ document.addEventListener('DOMContentLoaded', function () {
     category.addEventListener('click', function () {
       searchPlaces(this.getAttribute('data-val'));
     });
-    getUserLocation();
+    
+    getUserLocation();  
 
     $('#my_loc_img').on('click', function() {
-        if (userPosition) {  // userPosition이 설정된 경우에만 moveMyloc 호출
+        if (userPosition) {  // userPosition이 설정된 경우에만 
             moveMyloc();  
         } else {
             console.error("User position is not available yet.");
@@ -82,11 +84,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /** 사용자의 현재 위치로 지도를 이동시키는 함수 */
 let moveMyloc = function() {
+  // console.log(userPosition);
   if (userPosition) {
     let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
     map.panTo(moveLatLon);  // 부드럽게 지도 이동
   } else {
-    console.error("User position is not available.");
+    console.error("사용자 위치 정보를 받지 못했습니다.");
   }
 }
 
@@ -169,36 +172,66 @@ let placesSearchCB = function(data, status) {
   }
 }
 
-/** 장소에 마커를 표시하는 함수 - 수정하지마 제발*/
+
+/** 장소에 마커를 표시하는 함수 */
 let displayMarker = function(place, index) {
   let marker = createMarker(place);
+  
   kakao.maps.event.addListener(marker, "click", function () {
-    if (selectedMarker) {
-      setMarkerImage(selectedMarker, marker.originalImageSrc);
+    if (selectedMarker === marker) {
       if (selectedMarker.customOverlay) {
-        selectedMarker.customOverlay.setMap(null);
+        selectedMarker.customOverlay.setMap(null);  // 오버레이를 닫음
+        selectedMarker = null;
+        setMarkerImage(marker, marker.originalImageSrc);
       }
+    } else {
+      if (selectedMarker) {
+        setMarkerImage(selectedMarker, selectedMarker.originalImageSrc);
+        if (selectedMarker.customOverlay) {
+          selectedMarker.customOverlay.setMap(null);
+        }
+      }
+
+      // 말풍선 스타일과 꼬리표를 자연스럽게 맞춤
+      let content = `
+        <div style="position: relative;">
+          <div style="display: flex; align-items: center; padding: 10px 20px 10px 10px; background-color: #F8E9E9; border: 2px solid #EFC3C3; border-radius: 20px; box-shadow: 0px 2px 6px rgba(0,0,0,0.3);">
+            <div style="margin-right: 10px;">
+              <img src="${getImageSrc(place.category_name)}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+            </div>
+            <div style="display: flex; flex-direction: column; text-align: left;">
+              <span style="font-size: 14px; font-weight: bold; color: #D0273B;">${place.place_name}</span>
+              <span style="display: inline-block; font-size: 12px; color: #FFFFFF; background-color: #E1707A; padding: 2px 5px; border-radius: 5px; margin-top: 2px;">콜키지 프리</span>
+            </div>
+          </div>
+          <div style="position: absolute; bottom: -11px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 11px solid #F8E9E9; border-top-color: #EFC3C3; border-top: 11px solid #EFC3C3;"></div>
+        </div>`;
+        
+      let customOverlay = new kakao.maps.CustomOverlay({
+        content: content,
+        position: new kakao.maps.LatLng(place.y, place.x),
+        yAnchor: 1.5,
+      });
+      customOverlay.setMap(map);
+
+      marker.customOverlay = customOverlay;
+      // 이미지가 cork_restaurant.jpg인 경우만 click_mark.jpg로 변경
+      if (marker.originalImageSrc === "/static/img/cork_restaurant.jpg") {
+        setMarkerImage(marker, "/static/img/click_mark.jpg", 1.2);
+      }
+
+      document
+        .getElementById(`res_info_${index}`)
+        .scrollIntoView({ behavior: "smooth", block: "center" });
+
+      selectedMarker = marker;
     }
-
-    let content = `<div style="padding:5px;z-index:1;background-color:white;border:1px solid black;border-radius:5px;font-size:12px;">${place.place_name}</div>`;
-    let customOverlay = new kakao.maps.CustomOverlay({
-      content: content,
-      position: new kakao.maps.LatLng(place.y, place.x),
-      yAnchor: 1.5,
-    });
-    customOverlay.setMap(map);
-
-    marker.customOverlay = customOverlay;
-    setMarkerImage(marker, "/static/img/click_mark.jpg", 1.2);
-
-    document
-      .getElementById(`res_info_${index}`)
-      .scrollIntoView({ behavior: "smooth", block: "center" });
-    selectedMarker = marker;
   });
 
   markers.push(marker);
 }
+
+
 
 /** 마커 이미지를 설정하는 함수 */
 let setMarkerImage = function(marker, imageSrc, scale = 1) {
@@ -295,7 +328,67 @@ let generatePlaceInfo = function(place, index) {
   `;
 }
 
+
+/**
+ * 북마크 아이콘을 클릭하면 북마크 테이블 업데이트 (true or false)
+ * @param {number} id 레스토랑 id
+ */
+// const setBookmark = async (id, status) => {
+//   if (!id) {
+//       console.error('요소에 ID가 존재하지 않습니다.:', id);
+//       return;
+//   }
+
+//   Swal.fire({
+//       title: '북마크를 취소하시겠습니까?',
+//       icon: 'warning',
+//       showCancelButton: true,
+//       confirmButtonText: '네',
+//       cancelButtonText: '아니요',
+//       customClass: {
+//           confirmButton: 'swal2-confirm-btn',
+//           cancelButton: 'swal2-cancel-btn'
+//       },
+//       buttonsStyling: false
+//   }).then(async (result) => {
+//       if (result.isConfirmed) {
+//           // 북마크 상태를 false로 업데이트
+//           const { error } = await supabase
+//               .from('bookmark')  // bookmark 테이블을 업데이트
+//               .update({ status:  })  // status 컬럼을 false로 변경
+//               .eq('restaurant_id', id);
+
+//           if (error) {
+//               console.error('DB 에러:', error);
+//               return;
+//           }
+
+//           // 토스트 스타일의 알림 메시지 표시
+//           Swal.fire({
+//               toast: true,
+//               position: 'top-end',
+//               icon: 'success',
+//               title: '북마크 상태가 변경되었습니다.',
+//               showConfirmButton: false,
+//               timer: 1500,  // 1.5초 후 자동으로 사라짐
+//               timerProgressBar: true,
+//               customClass: {
+//                   popup: 'swal2-toast'
+//               }
+//           });
+//       }
+//   });
+// };
+
+
+
+
+
 // 장소 정보 클릭 시 상세 페이지로 이동하는 함수
+
+
+
+
 document.addEventListener('click', function (event) {
   let target = event.target.closest('.res_info');
 
@@ -338,30 +431,7 @@ let formatTime = function(time) {
   return hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
 }
 
-/** 사용자 위치를 가져오는 함수 */
-let getUserLocation = function() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        userPosition = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
-        console.log("유저 위치:", userPosition);
-        showUserPosition();  // 위치가 설정된 후 마커 표시
-        moveMyloc();  // 위치가 설정된 후 지도를 이동
-        searchPlaces("콜키지 프리");
-      },
-      (error) => {
-        console.log("브라우저에서 위치 정보를 받아올 수 없음", error);
-        console.log("플러터에서 받아올거임");
-        searchPlaces("콜키지 프리");
-      }
-    );
-  } else {
-    console.log("브라우저 지오로케이션에 액세스할 수 없습니다. 플러터 위치를 기다리는 중...");
-  }
-}
+
 
 // 플러터에서 전달된 위치 정보를 처리하는 함수
 window.handleFlutterLocation = function(latitude, longitude) {
@@ -369,11 +439,56 @@ window.handleFlutterLocation = function(latitude, longitude) {
     latitude: latitude,
     longitude: longitude,
   };
-  console.log("플러터에서 제공한 사용자 위치:", userPosition);
+  // console.log("플러터에서 제공한 사용자 위치:", userPosition);
   showUserPosition();  // 위치가 설정된 후 마커 표시
-  moveMyloc();  // 위치가 설정된 후 지도를 이동
   searchPlaces("콜키지 프리");
+  map.setLevel(10); // 지도를 10레벨로 유지
+  moveMyloc();  // 위치가 설정된 후 지도를 이동
 }
+
+
+
+/** 사용자 위치를 가져오는 함수 */
+let getUserLocation = function() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+
+      async (position) => {
+        userPosition = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+
+        // 1순위: 유저 위치 표시
+        await showUserPosition();  // 사용자 위치를 지도에 표시
+
+        // 2순위: 콜키지 프리 음식점 검색
+        await searchPlaces("콜키지 프리");
+
+        // 3순위: 마지막으로 지도 이동
+        // 해결 방안이 떠오르기 전까지 setTimeout 사용....
+        setTimeout(() => {
+          map.setLevel(10); // 지도를 10레벨로 유지
+          moveMyloc();
+        }, 850);  
+      },
+      (error) => {
+        console.log("브라우저에서 위치 정보를 받아올 수 없음", error);
+        console.log("플러터에서 받아올거임");
+
+        // 위치를 가져오지 못할 경우에도 장소 검색은 진행
+        searchPlaces("콜키지 프리").then(() => {
+          console.log("Places search complete without user location.");
+        });
+      }
+    );
+  } else {
+    console.log("브라우저 지오로케이션에 액세스할 수 없습니다. 플러터 위치를 기다리는 중...");
+  }
+};
+
+
+
 
 
 /** 사용자 위치를 지도에 표시하는 함수 */

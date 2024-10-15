@@ -9,7 +9,7 @@
 
 body {
     font-family: 'Pretendard', sans-serif;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     margin: 0;
     padding: 0;
 }
@@ -20,7 +20,8 @@ body {
     justify-content: space-between; /* 좌우로 요소 배치 */
     background-color: white;
     padding: 10px 15px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 10px solid #F8F5F7;
+    
 }
 
 .back-icon {
@@ -58,7 +59,7 @@ body {
 
 .restaurant-item {
     padding: 15px 0;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 5px solid #F8F5F7;
     margin-bottom: 10px;
 }
 
