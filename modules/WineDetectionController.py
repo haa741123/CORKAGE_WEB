@@ -223,7 +223,7 @@ def detect_vin():
             
             # Google Gemini API를 통해 주류 정보 요청
             chat = gemini_model.start_chat()
-            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in the form of JSON and transfer as korean, Remove backticks and 'json' tag \n\nNecessary information\n\nProduct Name\nProduct Image\nProduct Description\nOrigin\nType and Classification\nAlcohol\nTaste and Aroma\nRecommeded Consumption Temperature\nPairing Food\nPrice information\nStorage\ncaution")
+            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in the form of JSON and transfer as korean but keep form language as english, Remove backticks and 'json' tag \n\nNecessary information\n\nProduct Name\nProduct Image\nProduct Description\nOrigin\nType and Classification\nAlcohol\nTaste and Aroma\nRecommeded Consumption Temperature\nPairing Food\nPrice information\nStorage\ncaution")
             wine_info = response.text
             logging.info(wine_info)
 
