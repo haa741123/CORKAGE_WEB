@@ -3,16 +3,20 @@ from roboflow import Roboflow
 import os
 from PIL import Image, UnidentifiedImageError
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 from dotenv import load_dotenv
 import easyocr
 import json
 import logging
+import google.generativeai as genai
 from logging.handlers import RotatingFileHandler
 import sys
 import cv2
 import numpy as np
+import requests
+from werkzeug.utils import secure_filename
+import google.generativeai as genai
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -23,9 +27,11 @@ class NumpyEncoder(json.JSONEncoder):
 # 로깅 설정
 log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log_file = '/home/hamin/flask/log/app.log'
+logging.basicConfig(encoding='utf-8', level=logging.INFO)
+
 
 # 파일 핸들러 설정
-file_handler = RotatingFileHandler(log_file, maxBytes=10240, backupCount=10)
+file_handler = RotatingFileHandler(log_file, maxBytes=10240, backupCount=10, encoding='utf-8')
 file_handler.setFormatter(log_formatter)
 file_handler.setLevel(logging.INFO)
 
@@ -65,7 +71,12 @@ if api_key is None:
 
 rf = Roboflow(api_key=api_key)
 project = rf.workspace("vin-c1flf").project("vin2")
-model = project.version(1).model
+roboflow_model = project.version(1).model
+
+
+# Gemini 모델 초기화
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+gemini_model = genai.GenerativeModel('gemini-pro')
 
 # EasyOCR Reader 초기화
 reader = easyocr.Reader(['en'])
@@ -122,6 +133,7 @@ def detect_text_easyocr(image_bytes):
     logging.info(f"Extracted text: {extracted_text}")
     return extracted_text if extracted_text else "텍스트가 감지되지 않았습니다."
 
+
 def save_extracted_text_to_json(extracted_text, user_id):
     try:
         filename = f'extracted_text_{user_id}_{datetime.now().strftime("%Y%m%d%H%M%S")}.json'
@@ -130,6 +142,7 @@ def save_extracted_text_to_json(extracted_text, user_id):
             'user_id': user_id,
             'extracted_text': extracted_text,
             'timestamp': datetime.now().isoformat()
+            
         }
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
@@ -179,7 +192,7 @@ def detect_vin():
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             logging.info("Sending request to Roboflow API")
 
-            prediction = model.predict(img_rgb, confidence=40, overlap=30).json()
+            prediction = roboflow_model.predict(img_rgb, confidence=40, overlap=30).json()
             logging.info("Received response from Roboflow API")
 
             if not prediction.get("predictions"):
@@ -207,12 +220,23 @@ def detect_vin():
             log_message = f"OCR 결과 (Maker-Name): {extracted_text}"
             logging.info(log_message)
 
+            
+            # Google Gemini API를 통해 주류 정보 요청
+            chat = gemini_model.start_chat()
+            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in the form of JSON and transfer as korean, Remove backticks and 'json' tag \n\nNecessary information\n\nProduct Name\nProduct Image\nProduct Description\nOrigin\nType and Classification\nAlcohol\nTaste and Aroma\nRecommeded Consumption Temperature\nPairing Food\nPrice information\nStorage\ncaution")
+            wine_info = response.text
+            logging.info(wine_info)
+
             json_filepath = save_extracted_text_to_json(extracted_text, user_id)
             if json_filepath is None:
                 raise ValueError("Failed to save OCR result to JSON")
 
+            # wine_info를 JSON 객체로 파싱
+            wine_info_json = json.loads(wine_info)
+
             session['ocr_result'] = {
                 "extracted_text": extracted_text,
+                "wine_info": wine_info_json,
                 "log": log_message,
                 "timestamp": datetime.now().isoformat()
             }
@@ -223,6 +247,7 @@ def detect_vin():
                 "remaining_calls": get_or_reset_daily_calls(),
                 "ocr_result": {
                     "extracted_text": extracted_text,
+                    "wine_info": wine_info_json,
                     "log": log_message,
                     "cropped_image_path": cropped_img_path
                 }
