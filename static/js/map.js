@@ -333,62 +333,60 @@ let generatePlaceInfo = function(place, index) {
  * 북마크 아이콘을 클릭하면 북마크 테이블 업데이트 (true or false)
  * @param {number} id 레스토랑 id
  */
-// const setBookmark = async (id, status) => {
-//   if (!id) {
-//       console.error('요소에 ID가 존재하지 않습니다.:', id);
-//       return;
-//   }
+const setBookmark = async (id, status) => {
+  if (!id) {
+      console.error('요소에 ID가 존재하지 않습니다.:', id);
+      return;
+  }
 
-//   Swal.fire({
-//       title: '북마크를 취소하시겠습니까?',
-//       icon: 'warning',
-//       showCancelButton: true,
-//       confirmButtonText: '네',
-//       cancelButtonText: '아니요',
-//       customClass: {
-//           confirmButton: 'swal2-confirm-btn',
-//           cancelButton: 'swal2-cancel-btn'
-//       },
-//       buttonsStyling: false
-//   }).then(async (result) => {
-//       if (result.isConfirmed) {
-//           // 북마크 상태를 false로 업데이트
-//           const { error } = await supabase
-//               .from('bookmark')  // bookmark 테이블을 업데이트
-//               .update({ status:  })  // status 컬럼을 false로 변경
-//               .eq('restaurant_id', id);
+  Swal.fire({
+      title: '북마크를 취소하시겠습니까?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '네',
+      cancelButtonText: '아니요',
+      customClass: {
+          confirmButton: 'swal2-confirm-btn',
+          cancelButton: 'swal2-cancel-btn'
+      },
+      buttonsStyling: false
+  }).then(async (result) => {
+    if (result.isConfirmed) {
 
-//           if (error) {
-//               console.error('DB 에러:', error);
-//               return;
-//           }
+      // 북마크 테이블에 데이터가 존재하지 않은 경우 북마크 테이블에 데이터 생성 (user_id, restaurant_id, status)
 
-//           // 토스트 스타일의 알림 메시지 표시
-//           Swal.fire({
-//               toast: true,
-//               position: 'top-end',
-//               icon: 'success',
-//               title: '북마크 상태가 변경되었습니다.',
-//               showConfirmButton: false,
-//               timer: 1500,  // 1.5초 후 자동으로 사라짐
-//               timerProgressBar: true,
-//               customClass: {
-//                   popup: 'swal2-toast'
-//               }
-//           });
-//       }
-//   });
-// };
+      // 북마크 테이블에 데이터가 존재하고 status가 true인 상태에서 버튼을 누른 경우 북마크 상태를 false로 업데이트
+      const { error } = await supabase
+      .from('bookmark')  // bookmark 테이블을 업데이트
+      .update({ status: false })  // status 컬럼을 false로 변경
+      .eq('restaurant_id', id);
+
+    if (error) {
+        console.error('DB 에러:', error);
+        return;
+    }
+        // 토스트 스타일의 알림 메시지 표시
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '북마크 상태가 변경되었습니다.',
+            showConfirmButton: false,
+            timer: 1500,  // 1.5초 후 자동으로 사라짐
+            timerProgressBar: true,
+            customClass: {
+                popup: 'swal2-toast'
+            }
+        });
+      }
+  });
+};
 
 
 
 
 
 // 장소 정보 클릭 시 상세 페이지로 이동하는 함수
-
-
-
-
 document.addEventListener('click', function (event) {
   let target = event.target.closest('.res_info');
 
