@@ -133,6 +133,7 @@ def detect_text_easyocr(image_bytes):
     logging.info(f"Extracted text: {extracted_text}")
     return extracted_text if extracted_text else "텍스트가 감지되지 않았습니다."
 
+
 def save_extracted_text_to_json(extracted_text, user_id):
     try:
         filename = f'extracted_text_{user_id}_{datetime.now().strftime("%Y%m%d%H%M%S")}.json'
@@ -222,7 +223,7 @@ def detect_vin():
             
             # Google Gemini API를 통해 주류 정보 요청
             chat = gemini_model.start_chat()
-            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in the form of JSON \n\nNecessary information\n\nProduct Name\nProduct Image\nProduct Description\nOrigin\nType and Classification\nAlcohol\nTaste and Aroma\nRecommeded Consumption Temperature\nPairing Food\nPrice information\nStorage\ncaution")
+            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in the form of JSON and transfer as korean, Remove backticks and 'json' tag \n\nNecessary information\n\nProduct Name\nProduct Image\nProduct Description\nOrigin\nType and Classification\nAlcohol\nTaste and Aroma\nRecommeded Consumption Temperature\nPairing Food\nPrice information\nStorage\ncaution")
             wine_info = response.text
             logging.info(wine_info)
 
@@ -230,9 +231,12 @@ def detect_vin():
             if json_filepath is None:
                 raise ValueError("Failed to save OCR result to JSON")
 
+            # wine_info를 JSON 객체로 파싱
+            wine_info_json = json.loads(wine_info)
+
             session['ocr_result'] = {
                 "extracted_text": extracted_text,
-                "wine_info": wine_info,
+                "wine_info": wine_info_json,
                 "log": log_message,
                 "timestamp": datetime.now().isoformat()
             }
@@ -243,7 +247,7 @@ def detect_vin():
                 "remaining_calls": get_or_reset_daily_calls(),
                 "ocr_result": {
                     "extracted_text": extracted_text,
-                    "wine_info": wine_info,
+                    "wine_info": wine_info_json,
                     "log": log_message,
                     "cropped_image_path": cropped_img_path
                 }
