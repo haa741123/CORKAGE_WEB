@@ -418,15 +418,18 @@ body {
 #my_loc {
   position: absolute;
   bottom: 10vh;
-  right: 39vh;
+  margin-bottom: 5vh;
+  left:42vh;
   z-index: 10;
 }
 
 #my_loc_img {
-  width: 45px !important;
-  height: 45px !important;
+  width: 40px !important;
+  height: 40px !important;
+  padding: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 50%;
+  background-color: #fff;
 }
 
 @media (max-width: 767px) {
@@ -435,7 +438,7 @@ body {
   }
 
   #my_loc_img {
-      width: 55px !important;
-      height: 55px !important;
+      width: 40px !important;
+      height: 40px !important;
   }
 }
