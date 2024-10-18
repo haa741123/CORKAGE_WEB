@@ -464,12 +464,19 @@ let getUserLocation = function() {
         // 2순위: 콜키지 프리 음식점 검색
         await searchPlaces("콜키지 프리");
 
+
+        async function delay(ms) {
+          return new Promise((resolve) => setTimeout(resolve, ms));
+        }
         // 3순위: 마지막으로 지도 이동
-        // 해결 방안이 떠오르기 전까지 setTimeout 사용....
-        setTimeout(() => {
-          map.setLevel(10); // 지도를 10레벨로 유지
-          moveMyloc();
-        }, 850);  
+        async function moveMap() {
+          await delay(1000);   // 1초 대기
+          map.setLevel(10);    // 지도를 10레벨로 유지
+          await moveMyloc();   // 비동기 함수 moveMyloc 실행
+        }
+
+        moveMap();
+
       },
       (error) => {
         console.log("브라우저에서 위치 정보를 받아올 수 없음", error);

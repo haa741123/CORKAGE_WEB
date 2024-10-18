@@ -54,69 +54,7 @@
         </div>
     </div>
 
-    <!-- 모달 구간 -->
-    <div id="filterModal" class="modal">
-        <div class="modal-content">
-            <div class="drag-handle"></div>
-            <!-- 드래그 핸들 추가 -->
-            <div class="container">
-                <form id="filterForm" action="/submit_filters" method="POST">
-                    <div class="filter-section">
-                        <h5>콜키지 가격대</h5>
-                        <p class="text-center" id="priceText">콜키지 프리 ~ 2만원</p>
-                        <div class="slider-container">
-                            <div class="slider-track"></div>
-                            <div class="slider-range" id="sliderRange"></div>
-                            <input type="range" class="slider" id="minSlider" min="0" max="100000" step="10000" value="0" />
-                            <input type="range" class="slider" id="maxSlider" min="0" max="100000" step="10000" value="20000" />
-                            <div class="price-labels">
-                                <span style="color: #a6a4a5;">0원</span>
-                                <span style="color: #a6a4a5; padding-left: 7dvh;">5만원</span>
-                                <span style="color: #a6a4a5;">10만원 이상</span>
-                            </div>
-                        </div>
-
-                        <h5>음식종류</h5>
-                        <div class="filter-buttons" data-category="food">
-                            <button type="button" class="btn" data-value="한식">한식</button>
-                            <button type="button" class="btn" data-value="일식">일식</button>
-                            <button type="button" class="btn" data-value="중식">중식</button>
-                            <button type="button" class="btn" data-value="양식">양식</button>
-                            <button type="button" class="btn" data-value="분식">분식</button>
-                        </div>
-
-                        <h5>영업시간</h5>
-                        <div class="filter-buttons" data-category="time">
-                            <button type="button" class="btn" data-value="오전">오전</button>
-                            <button type="button" class="btn" data-value="점심">점심</button>
-                            <button type="button" class="btn" data-value="오후">오후</button>
-                            <button type="button" class="btn" data-value="저녁">저녁</button>
-                            <button type="button" class="btn" data-value="심야">심야</button>
-                        </div>
-
-                        <h5>음식점 평점</h5>
-                        <div class="filter-buttons" data-category="score">
-                            <button type="button" class="btn" data-value="1점">1점</button>
-                            <button type="button" class="btn" data-value="2점">2점</button>
-                            <button type="button" class="btn" data-value="3점">3점</button>
-                            <button type="button" class="btn" data-value="4점">4점</button>
-                            <button type="button" class="btn" data-value="5점">5점</button>
-                        </div>
-
-                        <input type="hidden" name="price" id="priceInput" />
-                        <input type="hidden" name="food" id="foodInput" />
-                        <input type="hidden" name="time" id="timeInput" />
-                        <input type="hidden" name="score" id="scoreInput" />
-
-                        <div class="filter-buttons mt-3">
-                            <button type="button" class="btn btn-close">닫기</button>
-                            <button type="submit" class="btn btn-apply">적용하기</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    {% include 'partials/filter_modal.html' %}
 
 
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=212301aed0cac29616f97d494d63e9b0&libraries=services"></script>
