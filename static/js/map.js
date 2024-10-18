@@ -88,6 +88,7 @@ let moveMyloc = function() {
   if (userPosition) {
     let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
     map.panTo(moveLatLon);  // 부드럽게 지도 이동
+    map.setLevel(5);  // 지도의 레벨을 5로 설정
   } else {
     console.error("사용자 위치 정보를 받지 못했습니다.");
   }
