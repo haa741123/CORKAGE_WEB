@@ -82,18 +82,16 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-/** 사용자의 현재 위치로 지도를 이동시키는 함수 */
 let moveMyloc = function() {
-  // console.log(userPosition);
   if (userPosition) {
     let moveLatLon = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
-    map.panTo(moveLatLon);  // 부드럽게 지도 이동
-    map.setLevel(5);  // 지도의 레벨을 5로 설정
+    map.panTo(moveLatLon);
+    map.setLevel(5);
+    map.setCenter(moveLatLon);
   } else {
     console.error("사용자 위치 정보를 받지 못했습니다.");
   }
 }
-
 /** 카테고리 이름에 따라 이미지 경로를 반환하는 함수 */
 let getImageSrc = function(categoryName) {
   if (categoryName.includes("한식")) return "/static/img/kor_food.png";

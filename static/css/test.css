@@ -219,9 +219,9 @@ body {
   background-color: #ffffff;
   border-radius: 5px;
   cursor: pointer;
-  width: 40vh;
+  width: 43vh;
   box-sizing: border-box;
-  padding: 10px;
+  padding: 13px;
   border: 1px solid #ddd;
   margin-bottom: 10px;
   max-width: 100%;
@@ -417,8 +417,8 @@ body {
 #my_loc {
   position: absolute;
   bottom: 10vh;
-  margin-bottom: 5vh;
-  left:42vh;
+  margin-bottom: 6vh;
+  left:41vh;
   z-index: 10;
 }
 
