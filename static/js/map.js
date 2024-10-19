@@ -60,19 +60,19 @@ let getUserLocation = function () {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         };
-        await handleLocation ();
+        await processUserLocation();
       },
       async (error) => {
         console.log("브라우저에서 위치 정보를 받아올 수 없음", error);
         console.log("Flutter에서 위치 정보를 기다리는 중...");
-        await handleLocation ();
+        await processUserLocation();
       }
     );
   } else {
     console.log(
       "브라우저 지오로케이션에 액세스할 수 없습니다. Flutter 위치를 기다리는 중..."
     );
-    handleLocation ();
+    processUserLocation();
   }
 };
 
@@ -83,31 +83,31 @@ async function handleFlutterLocation(latitude, longitude) {
     longitude: longitude,
   };
   console.log("Flutter에서 제공한 사용자 위치:", userPosition);
-  await handleLocation ();
+  await processUserLocation();
 }
 
 // 위치 정보 처리 및 지도 업데이트 함수
-async function handleLocation () {
-  // 로딩 화면 표시
-  document.getElementById("loading-screen").style.display = "flex";
+async function processUserLocation() {
+    // 로딩 화면 표시
+    document.getElementById("loading-screen").style.display = "flex";
 
-  await showUserPosition(); // 사용자 위치를 지도에 표시
-  await searchPlaces("콜키지 프리");
+    await showUserPosition(); // 사용자 위치를 지도에 표시
+    await searchPlaces("콜키지 프리");
 
-  async function delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+    async function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
 
-  async function moveMap() {
-      await delay(1000); // 1초 대기
-      map.setLevel(10); // 지도를 10레벨로 유지
-      await moveMyloc(); // 비동기 함수 moveMyloc 실행
-  }
+    async function moveMap() {
+        await delay(1000); // 1초 대기
+        map.setLevel(10); // 지도를 10레벨로 유지
+        await moveMyloc(); // 비동기 함수 moveMyloc 실행
+    }
 
-  await moveMap();
+    await moveMap();
 
-  // 로딩 화면 숨김
-  document.getElementById("loading-screen").style.display = "none";
+    // 로딩 화면 숨김
+    document.getElementById("loading-screen").style.display = "none";
 }
 
 
