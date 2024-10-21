@@ -17,6 +17,7 @@ import numpy as np
 import requests
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
+from flask import make_response
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -242,7 +243,7 @@ def detect_vin():
             }
             logging.info("OCR result saved to session")
 
-            return jsonify({
+            response_data = {
                 "message": "Image processed successfully",
                 "remaining_calls": get_or_reset_daily_calls(),
                 "ocr_result": {
@@ -251,7 +252,8 @@ def detect_vin():
                     "log": log_message,
                     "cropped_image_path": cropped_img_path
                 }
-            })
+            }
+            return make_response(json.dumps(response_data, ensure_ascii=False), 200, {'Content-Type': 'application/json; charset=utf-8'})
 
         except ValueError as ve:
             logging.error(f"Value error: {str(ve)}")

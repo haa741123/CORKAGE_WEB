@@ -10,6 +10,9 @@ CORS(app)  # CORS 설정 추가
 app.config['UPLOAD_FOLDER'] = '/home/hamin/flask/images'  # 실제 업로드 폴더 경로로 변경해야 합니다
 app.config['SECRET_KEY'] = 'your_secret_key_here'  # 안전한 비밀 키로 변경하세요
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
+app.config['JSON_AS_ASCII'] = False
+
+
 
 # 페이지 경로
 app.register_blueprint(main_routes)
