@@ -224,7 +224,7 @@ def detect_vin():
             
             # Google Gemini API를 통해 주류 정보 요청
             chat = gemini_model.start_chat()
-            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in the form of JSON and transfer as korean but keep form language as english, Remove backticks and 'json' tag \n\nNecessary information\n\nProduct Name\nProduct Image\nProduct Description\nOrigin\nType and Classification\nAlcohol\nTaste and Aroma\nRecommeded Consumption Temperature\nPairing Food\nPrice information\nStorage\ncaution")
+            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in the form of JSON and Keep the list names (ProductName) I gave you in English, and translate the contents in them into Korean and about price give their price without money symbol ,you must Remove backticks and 'json' tag \n\nNecessaryinformation\n\nProductName\nProductImage\nProductDescription\nOrigin\nTypeandClassification\nAlcohol\nTasteandAroma\nRecommededConsumptionTemperature\nPairingFood\nPriceinformation\nStorage\ncaution")
             wine_info = response.text
             logging.info(wine_info)
 
