@@ -17,6 +17,7 @@ import numpy as np
 import requests
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
+from google.ai.generativelanguage_v1beta.types import content
 from flask import make_response
 
 class NumpyEncoder(json.JSONEncoder):
@@ -74,11 +75,60 @@ rf = Roboflow(api_key=api_key)
 project = rf.workspace("vin-c1flf").project("vin2")
 roboflow_model = project.version(1).model
 
+# Create the model
+generation_config = {
+  "temperature": 0.5,
+  "top_p": 0.95,
+  "top_k": 64,
+  "max_output_tokens": 8192,
+  "response_schema": content.Schema(
+    type = content.Type.OBJECT,
+    properties = {
+      "productName": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "varietal": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "region": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "appellation": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "vintage": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "description": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "tasting_notes": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "PairingFood": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "awards": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "production": content.Schema(
+        type = content.Type.STRING,
+      ),
+      "alcohol": content.Schema(
+        type = content.Type.STRING,
+      ),
+    },
+  ),
+  "response_mime_type": "application/json",
+}
+
 
 # Gemini 모델 초기화
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-gemini_model = genai.GenerativeModel('gemini-pro')
-
+gemini_model = genai.GenerativeModel(
+  model_name="gemini-1.5-flash",
+  generation_config=generation_config,
+)
 # EasyOCR Reader 초기화
 reader = easyocr.Reader(['en'])
 
@@ -160,7 +210,7 @@ def delete_image(image_path):
     else:
         logging.warning(f'파일을 찾을 수 없습니다: {image_path}')
 
-# API 엔드포인트
+# 주류 인식 API 엔드포인트
 @WineDetectionController.route('/detect', methods=['POST'])
 def detect_vin():
     try:
@@ -221,19 +271,27 @@ def detect_vin():
             log_message = f"OCR 결과 (Maker-Name): {extracted_text}"
             logging.info(log_message)
 
-            
             # Google Gemini API를 통해 주류 정보 요청
             chat = gemini_model.start_chat()
-            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in the form of JSON and transfer as korean but keep form language as english, Remove backticks and 'json' tag \n\nNecessary information\n\nProduct Name\nProduct Image\nProduct Description\nOrigin\nType and Classification\nAlcohol\nTaste and Aroma\nRecommeded Consumption Temperature\nPairing Food\nPrice information\nStorage\ncaution")
+            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in JSON format with the fields: ProductName, description, alcohol, PairingFood, Body, Sweetness. Translate the content into Korean if possible.")
             wine_info = response.text
-            logging.info(wine_info)
 
+            try:
+                wine_info_json = json.loads(wine_info)
+            except json.JSONDecodeError as e:
+                logging.error(f"Failed to parse Gemini API response as JSON: {str(e)}")
+                return jsonify({"error": "Google Gemini API 응답이 JSON 형식이 아닙니다."}), 500
+
+            # 필수 필드 체크 및 기본 값 할당
+            required_fields = ["ProductName", "description", "alcohol", "PairingFood", "Body", "Sweetness"]
+            for field in required_fields:
+                if field not in wine_info_json:
+                    wine_info_json[field] = "데이터가 제공되지 않았습니다."
+
+            # JSON 파일 저장
             json_filepath = save_extracted_text_to_json(extracted_text, user_id)
             if json_filepath is None:
                 raise ValueError("Failed to save OCR result to JSON")
-
-            # wine_info를 JSON 객체로 파싱
-            wine_info_json = json.loads(wine_info)
 
             session['ocr_result'] = {
                 "extracted_text": extracted_text,
@@ -267,6 +325,7 @@ def detect_vin():
     except Exception as e:
         logging.exception(f"Critical error in detect_vin: {str(e)}")
         return jsonify({"error": "A critical error occurred. Please try again later."}), 500
+
 
 @WineDetectionController.route('/watch_ad', methods=['POST'])
 def watch_ad():
