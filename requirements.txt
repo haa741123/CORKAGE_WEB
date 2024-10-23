@@ -12,3 +12,5 @@ google-generativeai
 opencv-python
 requests
 flask-cors
+PyJWT
+supabase-py
