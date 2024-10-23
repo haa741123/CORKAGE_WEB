@@ -1,0 +1,51 @@
+<!-- signup.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>추가 정보 입력</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="signup-container">
+        <h2>추가 정보 입력</h2>
+        <p>해당하는 이메일로 가입이 진행됩니다.</p>
+        <input type="text" id="email" value="{{ email }}" disabled>
+        
+        <label for="nickname">닉네임</label>
+        <p>다른 유저와 겹치지 않는 별명을 입력해주세요. (2~12자)</p>
+        <input type="text" id="nickname" placeholder="닉네임" required>
+
+        <button id="signup-btn">동의하고 가입하기</button>
+    </div>
+
+    <script>
+        document.getElementById('signup-btn').addEventListener('click', function() {
+            const nickname = document.getElementById('nickname').value;
+    
+            if (nickname.length >= 2 && nickname.length <= 12) {
+                fetch('/auth/kakao/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: "{{ email }}",
+                        kakao_id: "{{ kakao_id }}",  // kakao_id 전송 추가
+                        nickname: nickname
+                    })
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          window.location.href = '/home';
+                      } else {
+                          alert(data.message || '회원가입 중 오류가 발생했습니다.');
+                      }
+                  });
+            } else {
+                alert('닉네임은 2자 이상 12자 이하로 입력해주세요.');
+            }
+        });
+    </script>
+    
+</body>
+</html>
