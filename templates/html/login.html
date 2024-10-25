@@ -1,15 +1,185 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kakao Login</title>
-    <script src="{{ url_for('static', filename='js/kakao_login.js') }}" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Custom Slide</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pretendard Variable', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 스크롤바 숨기기 */
+        .slider {
+            display: flex;
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            width: 100%;
+            max-width: 400px;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .slider::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .title {
+            font-size: 24px;
+            color: #848383;
+            text-align: left; 
+            margin-left: 20px;
+        }
+
+        .desc-container {
+            flex-shrink: 0;
+            width: 100%;
+            scroll-snap-align: start;
+            text-align: center;
+        }
+
+        .desc-container img {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            margin-top: 20vh;
+        }
+
+        .description {
+            font-size: 48px;
+            color: #000000;
+            text-align: left; 
+            margin-top: 20px;
+            margin-left: 20px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        /* 인디케이터 스타일 */
+        .indicator {
+            display: flex;
+            justify-content: center;
+            margin-top: 20vh;
+            margin-bottom: 20px;
+        }
+
+        .indicator div {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+
+        .indicator div.active {
+            background-color: #D0273B;
+        }
+
+        /* 카카오 버튼 이미지 */
+        #kakao-login-btn {
+            width: 80%;
+            max-width: 300px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @media (max-width: 600px) {
+            .description {
+                font-size: 2rem;
+                line-height: 1.4;
+            }
+
+            .desc-container img {
+                max-width: 200px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .description {
+                font-size: 1.8rem;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+
+            .desc-container img {
+                max-width: 180px;
+            }
+
+            .indicator {
+                margin-top: 20vh;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
-        <button id="kakao-login-btn">카카오로 로그인</button>
+
+  <div class="slider" id="slider" aria-live="polite">
+    <div class="desc-container">
+        <div class="title">01. 콜키지 검색</div>    
+        <div class="description">여러 레스토랑의<br>콜키지 정보를<br>모아 볼 수 있어요</div>    
+        <img src="/static/img/human_icon_1.svg" alt="Slide 1 Image"/>
     </div>
+    <div class="desc-container">
+        <div class="title">02. 간편한 예약</div>    
+        <div class="description">리뷰를 보고<br>원하는 레스토랑을<br>간편하게 예약해요</div>    
+        <img src="/static/img/human_icon_2.svg" alt="Slide 2 Image"/>
+    </div>
+  </div>
+
+  <div class="indicator" id="indicator">
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <img id="kakao-login-btn" src="/static/img/kakao_login_medium_wide.png" alt="카카오로 로그인">
+
+  <script src="/static/js/kakao_login.js"></script>
+  <script>
+    const slider = document.getElementById('slider');
+    const dots = document.querySelectorAll('.dot');
+    let isScrolling = false;
+
+    // 슬라이더가 스크롤 될 때마다 인디케이터 업데이트
+    slider.addEventListener('scroll', function() {
+        if (!isScrolling) {
+            window.requestAnimationFrame(() => {
+                const scrollPosition = slider.scrollLeft;
+                const sliderWidth = slider.clientWidth;
+                const currentIndex = Math.round(scrollPosition / sliderWidth);
+
+                dots.forEach((dot, index) => {
+                    if (index === currentIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+
+                isScrolling = false;
+            });
+        }
+        isScrolling = true;
+    });
+
+    // 첫 번째 인디케이터 활성화
+    dots[0].classList.add('active');
+  </script>
 </body>
 </html>
