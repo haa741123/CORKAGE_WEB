@@ -53,8 +53,12 @@ def bookmark():
 
 
 @main_routes.route("/reservation_owner")
-def reservatation_owner():
+def reservation_owner():
     return render_template('html/reservation_owner.html')  # 예약 정보 페이지
+
+@main_routes.route("/login_owner")
+def login_owner():
+    return render_template('html/login_owner.html')  # 사장님 로그인 페이지
 
 @main_routes.route("/main")
 def main():

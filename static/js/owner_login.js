@@ -38,7 +38,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     console.log("로그인 성공:", ownerData);
     // 로그인 성공 시 세션 저장 및 리다이렉트
     localStorage.setItem("user", JSON.stringify(ownerData));
-    window.location.href = "reservation_owner.html";
+    window.location.href = "reservation_owner";
   } catch (error) {
     console.error("로그인 에러:", error.message);
     alert("로그인 실패: " + error.message);
