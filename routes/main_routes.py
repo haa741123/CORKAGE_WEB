@@ -35,9 +35,9 @@ def post():
 def edit_post():
     return render_template('html/edit_post.html')  # 게시물 작성 및 수정
 
-@main_routes.route("/restaurant")
-def restaurant():
-    return render_template('html/restaurant.html')  # 음식점 페이지
+@main_routes.route("/restaurant/<int:restaurant_id>")
+def restaurant(restaurant_id):
+    return render_template('html/restaurant.html', restaurant_id=restaurant_id)
 
 @main_routes.route("/mypage")
 def mypage():
