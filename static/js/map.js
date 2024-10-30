@@ -467,12 +467,27 @@ const setBookmark = async (id, status) => {
   });
 };
 
+
+// 레스토랑 정보를 가져와서 URL을 생성하는 함수
+function navigateToRestaurant() {
+  get_res_info().then((restaurants) => {
+    if (restaurants.length > 0) {
+      // 첫 번째 레스토랑의 id를 사용하여 URL 생성
+      const firstRestaurantId = restaurants[0].id;
+      const newUrl = `/restaurant/${firstRestaurantId}`;
+      window.location.href = newUrl;
+    } else {
+      console.error("레스토랑 정보를 가져오지 못했습니다.");
+    }
+  });
+}
+
 // 장소 정보 클릭 시 상세 페이지로 이동하는 함수
 document.addEventListener("click", function (event) {
   let target = event.target.closest(".res_info");
 
   if (target) {
-    window.location.href = "/restaurant";
+    navigateToRestaurant();
   }
 });
 
