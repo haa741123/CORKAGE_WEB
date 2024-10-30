@@ -178,6 +178,53 @@ def main():
         return redirect('/login')
 
 
+# 닉네임 변경 API
+@LoginController.route('/ch_nickname', methods=['POST'])
+def ch_nickname():
+    try:
+        # JWT 토큰으로부터 사용자 ID 가져오기
+        token = request.cookies.get('accessToken')
+        if not token:
+            flash("로그인이 필요합니다.", 'error')
+            return redirect('/login')
+
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['id']
+        except jwt.ExpiredSignatureError:
+            flash("로그인 세션이 만료되었습니다.", 'error')
+            return redirect('/login')
+        except jwt.InvalidTokenError:
+            flash("유효하지 않은 로그인 세션입니다.", 'error')
+            return redirect('/login')
+
+        # 요청으로부터 새 닉네임 가져오기
+        data = request.get_json()
+        new_nickname = data.get('nickname')
+        
+        if not new_nickname:
+            flash("닉네임을 입력해주세요.", 'error')
+            return jsonify({'success': False, 'message': "닉네임을 입력해주세요."}), 400
+
+        # 닉네임 중복 확인
+        nickname_check = supabase.table('users').select('*').eq('nickname', new_nickname).execute()
+        if len(nickname_check.data) > 0:
+            flash('이미 사용 중인 닉네임입니다.', 'error')
+            return jsonify({'success': False, 'message': "이미 사용 중인 닉네임입니다."}), 400
+
+        # 닉네임 변경
+        supabase.table('users').update({'nickname': new_nickname}).eq('id', user_id).execute()
+        flash("닉네임이 성공적으로 변경되었습니다.", 'success')
+        
+        return jsonify({'success': True, 'message': "닉네임이 변경되었습니다."})
+    
+    except Exception as e:
+        logging.error(f"닉네임 변경 중 오류 발생: {e}")
+        flash("닉네임 변경 중 문제가 발생했습니다.", 'error')
+        return jsonify({'success': False, 'message': "닉네임 변경 중 문제가 발생했습니다."}), 500
+
+
+
 # 로그아웃 처리
 @LoginController.route('/logout')
 def logout():
