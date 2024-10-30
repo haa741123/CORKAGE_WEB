@@ -17,7 +17,7 @@ async function fetchRestaurantInfo(id) {
   try {
     const { data, error } = await supabase
       .from('corkage')
-      .select('id, name, phone, address')
+      .select('id, name, phone, address, description, rating')
       .eq('id', id)
       .single();
 
@@ -29,18 +29,166 @@ async function fetchRestaurantInfo(id) {
     return null;
   }
 }
+      // 나중에 DB로부터 받아올 데이터들....
+      const restaurantData = {
+        menu: [
+          {
+            name: "스시",
+            description:
+              "정통 일본식 스시 세트. 신선한 재료로 만든 최고급 스시를 즐겨보세요.",
+            price: "₩30,000",
+            image: "/static/img/sushi.jpg",
+          },
+          {
+            name: "사시미",
+            description:
+              "신선한 회 세트. 최고의 품질로 신선함을 유지한 사시미를 제공합니다.",
+            price: "₩35,000",
+            image: "/static/img/sashimi.jpg",
+          },
+          {
+            name: "롤",
+            description:
+              "다양한 재료로 만든 롤. 신선한 재료와 독특한 맛이 특징입니다.",
+            price: "₩25,000",
+            image: "/static/img/roll.jpg",
+          },
+          {
+            name: "튀김",
+            description:
+              "바삭한 일본식 튀김. 고소한 맛과 바삭한 식감이 일품입니다.",
+            price: "₩20,000",
+            image: "/static/img/tempura.jpg",
+          },
+        ],
+        photos: [
+          "/static/img/res_sample_img.jpg",
+          "/static/img/res_sample_img.jpg",
+          "/static/img/res_sample_img.jpg",
+        ],
+        reviews: [
+          {
+            rating: 5,
+            text: "맛있어요!",
+            author: "사용자1",
+          },
+          {
+            rating: 4.5,
+            text: "서비스가 매우 좋았습니다.",
+            author: "사용자2",
+          },
+          {
+            rating: 4.5,
+            text: "다시 가고 싶어요!",
+            author: "사용자3",
+          },
+        ],
+      };
 
-// 페이지 로드 시 음식점 정보를 가져와 표시하는 함수
+      // 메뉴 데이터를 로드하는 함수 (DOM 조작 최적화)
+      function loadMenu() {
+        const menuContainer = $("#menu-container");
+        let menuItems = "";
+        $.each(restaurantData.menu, function (index, item) {
+          menuItems += `
+                    <div class="col-md-6 mb-4">
+                        <div class="menu-item-card">
+                            <img src="${item.image}" class="card-img-top" alt="${item.name} 이미지" loading="lazy">
+                            <div class="card-body">
+                                <h5 class="card-title">${item.name}</h5>
+                                <p class="card-text">${item.description}</p>
+                                <p class="card-price">${item.price}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        });
+        menuContainer.append(menuItems);
+      }
+
+      // 사진 데이터를 로드하는 함수 (DOM 조작 최적화)
+      function loadPhotos() {
+        const photosContainer = $("#photos-container");
+        let photoItems = "";
+        $.each(restaurantData.photos, function (index, photo) {
+          photoItems += `
+                    <div class="photo-card mb-3">
+                        <img src="${photo}" alt="Dish Image" class="img-fluid rounded" loading="lazy">
+                    </div>
+                `;
+        });
+        photosContainer.append(photoItems);
+      }
+
+      // 리뷰 데이터를 로드하는 함수 (DOM 조작 최적화)
+      function loadReviews() {
+        const reviewsContainer = $("#reviews-container");
+        let reviewItems = "";
+        $.each(restaurantData.reviews, function (index, review) {
+          reviewItems += `
+                    <div class="review-card mb-3 p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            ${'<i class="bi bi-star-fill text-warning"></i>'.repeat(
+                              Math.floor(review.rating)
+                            )}
+                            ${
+                              review.rating % 1 !== 0
+                                ? '<i class="bi bi-star-half text-warning"></i>'
+                                : ""
+                            }
+                        </div>
+                        <p class="review-text">${review.text}</p>
+                        <small class="text-muted">작성자: ${
+                          review.author
+                        }</small>
+                    </div>
+                `;
+        });
+        reviewsContainer.append(reviewItems);
+      }
+
+      // 매장 정보를 로드하는 함수 (DOM 조작 최적화)
+      async function loadStoreInfo() {
+        const restaurantId = getRestaurantIdFromUrl();
+        const restaurantInfo = await fetchRestaurantInfo(restaurantId);
+      
+        if (restaurantInfo) {
+          const storeInfoContainer = $("#store-info-container");
+          const storeInfoItem = `
+            <div class="store-info-card mb-3 p-3">
+              <p><strong>주소:</strong> ${restaurantInfo.address || '정보 없음'}</p>
+              <p><strong>전화번호:</strong> ${restaurantInfo.phone || '정보 없음'}</p>
+              <p><strong>영업시간:</strong> ${restaurantInfo.hours || '정보 없음'}</p>
+            </div>
+          `;
+          storeInfoContainer.empty().append(storeInfoItem);
+        } else {
+          console.error('음식점 정보를 가져오지 못했습니다.');
+          $("#store-info-container").html('<p>음식점 정보를 불러오는 데 실패했습니다.</p>');
+        }
+      }
+
+//불러온 데이터 업데이트
 async function loadRestaurantInfo() {
   const restaurantId = getRestaurantIdFromUrl();
   const restaurantInfo = await fetchRestaurantInfo(restaurantId);
 
   if (restaurantInfo) {
-    // 음식점 정보를 페이지에 표시
-    document.querySelector('.restaurant-name').textContent = restaurantInfo.name;
-    
+    // 음식점 이름 업데이트
+    const nameElement = document.querySelector('.restaurant-name');
+    if (nameElement) nameElement.textContent = restaurantInfo.name;
+
+    // 설명 업데이트
+    const descriptionElement = document.querySelector('.description');
+    if (descriptionElement) descriptionElement.textContent = restaurantInfo.description;
+
+    // 별점 업데이트
+    const ratingElement = document.querySelector('.rating');
+    if (ratingElement) ratingElement.textContent = restaurantInfo.rating;
+
     // 주소 정보 업데이트
-    document.getElementById('modalAddress').textContent = restaurantInfo.address;
+    const addressElement = document.getElementById('modalAddress');
+    if (addressElement) addressElement.textContent = restaurantInfo.address;
 
     // 전화번호 업데이트
     const phoneLink = document.querySelector('a[href^="tel:"]');
@@ -48,16 +196,21 @@ async function loadRestaurantInfo() {
       phoneLink.href = `tel:${restaurantInfo.phone}`;
       phoneLink.textContent = restaurantInfo.phone;
     }
-
-    // 기타 정보 표시...
   } else {
     console.error('음식점 정보를 가져오지 못했습니다.');
   }
 }
 
 // 페이지 로드 시 실행
-document.addEventListener('DOMContentLoaded', loadRestaurantInfo);
-
+document.addEventListener('DOMContentLoaded', async function() {
+  await loadRestaurantInfo();
+  loadMenu();
+  loadPhotos();
+  loadReviews();
+  loadStoreInfo();
+  initializeEventListeners();
+  initializeSlider();
+});
 
 
 // 지도를 초기화하는 함수, 위치 모달이 표시될 때 호출됩니다.
