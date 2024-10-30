@@ -377,7 +377,7 @@ let generatePlaceInfo = function (place, index) {
   let categoryImageSrc = getImageSrc(place.category_name);
 
   return `
-    <div id="res_info_${index}" class="res_info" 
+    <div id="res_info_${index}" class="res_info" data-id="${place.id}"
         data-place_name="${place.place_name}"
         data-address_name="${place.address_name}"
         data-phone="${place.phone}"
@@ -388,16 +388,12 @@ let generatePlaceInfo = function (place, index) {
         <div class="row">
             <div class="col-4" style="padding-right: 1px;">
                 <div class="image-container">
-                    <img src="${place.image_url}" alt="${
-    place.place_name
-  }" class="cover-image">
+                    <img src="${place.image_url}" alt="${place.place_name}" class="cover-image">
                 </div>
             </div>
             <div class="col-8 info-container">
                 <p class="place-name">
-                    <img src="${categoryImageSrc}" alt="${
-    place.category_name
-  }" class="category-icon"> 
+                    <img src="${categoryImageSrc}" alt="${place.category_name}" class="category-icon"> 
                     ${place.place_name}
                     <span class="bookmark-icon">
                       <img src="/static/img/UnBookmark.png" alt="즐겨찾기 아이콘">
@@ -468,28 +464,21 @@ const setBookmark = async (id, status) => {
 };
 
 
-// 레스토랑 정보를 가져와서 URL을 생성하는 함수
-function navigateToRestaurant() {
-  get_res_info().then((restaurants) => {
-    if (restaurants.length > 0) {
-      // 첫 번째 레스토랑의 id를 사용하여 URL 생성
-      const firstRestaurantId = restaurants[0].id;
-      const newUrl = `/restaurant/${firstRestaurantId}`;
+function navigateToRestaurant(event) {
+  let target = event.target.closest(".res_info");
+  if (target) {
+    const restaurantId = target.dataset.id; // HTML 요소에 data-id 속성을 추가해야 합니다
+    if (restaurantId) {
+      const newUrl = `/restaurant/${restaurantId}`;
       window.location.href = newUrl;
     } else {
-      console.error("레스토랑 정보를 가져오지 못했습니다.");
+      console.error("레스토랑 ID를 찾을 수 없습니다.");
     }
-  });
+  }
 }
 
-// 장소 정보 클릭 시 상세 페이지로 이동하는 함수
-document.addEventListener("click", function (event) {
-  let target = event.target.closest(".res_info");
-
-  if (target) {
-    navigateToRestaurant();
-  }
-});
+// 이벤트 리스너 추가
+document.addEventListener("click", navigateToRestaurant);
 
 /** 지도에서 마커를 제거하는 함수 */
 let removeMarkers = function () {
