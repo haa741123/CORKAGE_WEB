@@ -120,6 +120,36 @@ def get_recommendations_for_user(user_data):
         logging.error(f"추천을 생성하는 중 오류가 발생했습니다: {e}")
         return CONFIG['NO_RECOMMENDATIONS']
 
+
+# 사용자 데이터를 기반으로 추천 주류 하나만 리턴하는 함수
+def get_single_rec_for_user(user_data):
+    try:
+        favorite_drink = user_data['좋아하는주류이름'].values[0].strip().lower()
+        favorite_taste = user_data['좋아하는맛'].values[0].strip().lower()
+
+        matched_drink_data = process.extractOne(favorite_drink, wine_info_df['cleaned_주류이름'], scorer=fuzz.token_sort_ratio)
+        if matched_drink_data is None or matched_drink_data[1] < 50:
+            return CONFIG['DRINK_NOT_FOUND']
+
+        matched_drink = matched_drink_data[0]
+        favorite_idx = wine_info_df[wine_info_df['cleaned_주류이름'] == matched_drink].index[0]
+        
+        # 코사인 유사도를 통해 가장 유사한 주류 1개 추출
+        cosine_similarities = cosine_similarity(wine_features[favorite_idx], wine_features).flatten()
+        similar_idx = cosine_similarities.argsort()[-2]  # 자기 자신을 제외한 가장 유사한 주류 인덱스
+        content_based_rec = wine_info_df.iloc[similar_idx]
+
+        # 최종 추천 결과 생성
+        recommendation = f"{content_based_rec['주류이름']} - {content_based_rec['주류특징']}"
+        
+        return f"{recommendation}"
+
+    except Exception as e:
+        logging.error(f"추천을 생성하는 중 오류가 발생했습니다: {e}")
+        return CONFIG['NO_RECOMMENDATIONS']
+
+
+
 # Flask 라우트: 사용자 요청에 따라 주류 추천 리스트 반환
 @RecommendController.route("/recommendations", methods=['POST'])
 def get_recommendations():
@@ -127,7 +157,7 @@ def get_recommendations():
     user_id = data.get('user_id')
     user_message = data.get('message')
 
-    if not user_message == "주류 추천":
+    if user_message not in ["주류 추천", "rec_wine_list"]:
         return jsonify({"response": CONFIG['UNKNOWN_COMMAND']})
 
     if not user_id:
@@ -137,5 +167,11 @@ def get_recommendations():
     if user_data.empty:
         return jsonify({"response": CONFIG['USER_NOT_FOUND']})
 
-    bot_response = get_recommendations_for_user(user_data)
+    if user_message == "주류 추천":
+        bot_response = get_recommendations_for_user(user_data)
+
+    if user_message == "rec_wine_list":
+        bot_response = get_single_rec_for_user(user_data)
+
+
     return jsonify({"response": bot_response})

@@ -17,15 +17,15 @@
     <!-- 와인 추천 섹션 -->
     <div class="wine-recommendation">
         <div class="wine-info">
-            <p>Joseph Drouhin Cote de Nuits Villages</p>
-            <p>⭐ <strong>4.7</strong> (1,234)</p>
-            <p>173,400 원</p>
-            <button>최저가 구매하기</button>
+            <p id="wine-name">Joseph Drouhin Cote de Nuits Villages</p>
+            <p id="wine-rating">⭐ <strong>4.7</strong> (1,234)</p>
+            <p id="wine-price">173,400 원</p>
         </div>
         <div class="wine-image">
-            <img src="/static/img/wine_img.png" alt="Wine Image">
+            <img id="wine-image" src="/static/img/wine_img.png" alt="Wine Image">
         </div>
     </div>
+
 
     <div class="container">
         <!-- 인기 맛집 리스트 -->
@@ -91,5 +91,64 @@
         </div>
     </div>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+
+        // 와인 추천 API 호출 함수
+        const fetchRec = async (action, uid) => {
+            console.log(action, uid);
+            try {
+                const res = await $.ajax({
+                    url: '/api/v1/recommendations',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ message: action, user_id: uid })
+                });
+                return res;
+            } catch (err) {
+                console.error('API 호출 실패:', err);
+                throw new Error('와인 추천 정보를 불러오는데 문제가 발생했습니다.');
+            }
+        };
+
+        // 추천된 와인 정보를 업데이트하는 함수
+        const updateWineInfo = ({ wine_name = '와인 이름이 없습니다', rating = '0', reviews = '0', image_url = '/static/img/wine_img.png' }) => {
+            $('#wine-name').text(wine_name);
+            $('#wine-rating').html(`⭐ <strong>${rating}</strong> (${reviews})`);
+            $('#wine-image').attr('src', image_url);
+        };
+
+        // 추천된 와인 정보를 가져와서 UI 업데이트
+        const loadRec = async (action, uid) => {
+            try {
+                const data = await fetchRec(action, uid);
+                console.log(data);
+                updateWineInfo(data);
+            } catch (err) {
+                console.error(err.message);
+                alert(err.message);
+            }
+        };
+
+        // 쿠키에서 특정 값을 가져오는 함수
+        const getCookie = (name) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            return parts.length === 2 ? parts.pop().split(';').shift() : null;
+        };
+
+        $(document).ready(() => {
+            const action = 'rec_wine_list';
+            const uid = getCookie('user_id');
+            if (uid) {
+                loadRec(action, uid);
+            } else {
+                console.error("user_id 쿠키가 존재하지 않습니다.");
+            }
+        });
+
+        
+
+    </script>
 </body>
 </html>
