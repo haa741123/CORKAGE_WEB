@@ -238,7 +238,7 @@ let placesSearchCB = function (data, status) {
       allPlacesInfo += additionalPlacesInfo;
 
       // 결합된 결과를 DOM에 삽입
-      document.getElementById("restaurantInfo").innerHTML = allPlacesInfo;
+      document.getElementById("restaurantInfo").innerHTML = additionalPlacesInfo;
 
       // 유저 위치가 있으면 경계에 포함시킴
       if (userPosition) {
