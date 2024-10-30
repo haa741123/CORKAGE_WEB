@@ -10,16 +10,16 @@
 
     <!-- 사용자 이름 섹션 -->
     <div class="container">
-        <p class="user-greeting"><strong>{{ nickname }}</strong>님, 모처럼의 주말인 오늘</p>
+        <p class="user-greeting"><strong>{{ nickname }}</strong>님에게 어울리는 주류</p>
         <p class="wine-prompt">이 와인 어때요?</p>
     </div>
     
     <!-- 와인 추천 섹션 -->
     <div class="wine-recommendation">
         <div class="wine-info">
-            <p id="wine-name">Joseph Drouhin Cote de Nuits Villages</p>
-            <p id="wine-rating">⭐ <strong>4.7</strong> (1,234)</p>
-            <p id="wine-price">173,400 원</p>
+            <p id="drink_name"></p>
+            <p id="drink_desc"></p>
+            <p id="wine_rating">⭐ <strong>4.7</strong> (1,234)</p>
         </div>
         <div class="wine-image">
             <img id="wine-image" src="/static/img/wine_img.png" alt="Wine Image">
@@ -96,7 +96,6 @@
 
         // 와인 추천 API 호출 함수
         const fetchRec = async (action, uid) => {
-            console.log(action, uid);
             try {
                 const res = await $.ajax({
                     url: '/api/v1/recommendations',
@@ -112,10 +111,12 @@
         };
 
         // 추천된 와인 정보를 업데이트하는 함수
-        const updateWineInfo = ({ wine_name = '와인 이름이 없습니다', rating = '0', reviews = '0', image_url = '/static/img/wine_img.png' }) => {
-            $('#wine-name').text(wine_name);
-            $('#wine-rating').html(`⭐ <strong>${rating}</strong> (${reviews})`);
-            $('#wine-image').attr('src', image_url);
+        const updateWineInfo = (data) => {
+            r = data.response;
+            $('#drink_name').text(r.drink_name);
+            $('#drink_desc').text(r.drink_desc);
+            $('#wine_rating').html(`⭐ <strong>${r.rating}</strong>`);
+            $('#wine-image').attr('src', r.image_url);
         };
 
         // 추천된 와인 정보를 가져와서 UI 업데이트

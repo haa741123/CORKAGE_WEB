@@ -139,10 +139,13 @@ def get_single_rec_for_user(user_data):
         similar_idx = cosine_similarities.argsort()[-2]  # 자기 자신을 제외한 가장 유사한 주류 인덱스
         content_based_rec = wine_info_df.iloc[similar_idx]
 
-        # 최종 추천 결과 생성
-        recommendation = f"{content_based_rec['주류이름']} - {content_based_rec['주류특징']}"
+        # 주류 이름과 특징을 dict 형태로 반환
+        recommendation = {
+            "drink_name": content_based_rec['주류이름'],
+            "drink_desc": content_based_rec['주류특징']
+        }
         
-        return f"{recommendation}"
+        return recommendation
 
     except Exception as e:
         logging.error(f"추천을 생성하는 중 오류가 발생했습니다: {e}")
