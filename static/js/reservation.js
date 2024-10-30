@@ -178,6 +178,7 @@ async function loadRestaurantInfo() {
     const nameElement = document.querySelector('.restaurant-name');
     if (nameElement) nameElement.textContent = restaurantInfo.name;
 
+
     // 설명 업데이트
     const descriptionElement = document.querySelector('.description');
     if (descriptionElement) descriptionElement.textContent = restaurantInfo.description;
@@ -244,18 +245,26 @@ const redirectToKakaoMap = function (address) {
   window.location.href = webUrl;
 };
 
+//모달이 열릴 때 데이터를 업데이트하는 함수
+function updateModalInfo(info) {
+  const modalNameElement = document.querySelector('#locationModal .restaurant-name');
+  if (modalNameElement) modalNameElement.textContent = info.name;
+
+  const modalAddressElement = document.getElementById('modalAddress');
+  if (modalAddressElement) modalAddressElement.textContent = info.address;
+}
+
 // 이벤트 리스너를 초기화하는 함수
 const initializeEventListeners = function () {
-  /**
-   * 모달이 표시될 때 지도를 초기화하고, 위치 버튼 클릭 시 지도 페이지로 리다이렉트합니다.
-   */
-  $("#locationModal").on("shown.bs.modal", initializeMap);
-
-  document
-    .querySelector(".custom-map-button")
-    .addEventListener("click", handleMapButtonClick);
-
-  $(".tab-button").on("click", handleTabButtonClick);
+  $("#locationModal").on("shown.bs.modal", function() {
+    initializeMap();
+    const restaurantId = getRestaurantIdFromUrl();
+    fetchRestaurantInfo(restaurantId).then(info => {
+      if (info) {
+        updateModalInfo(info);
+      }
+    });
+  });
 };
 
 // 위치 버튼 클릭 이벤트 핸들러
