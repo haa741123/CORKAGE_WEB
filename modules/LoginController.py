@@ -4,6 +4,7 @@ import requests
 from datetime import datetime, timedelta, timezone
 import logging
 from supabase import create_client
+from urllib.parse import quote
 
 LoginController = Blueprint('LoginController', __name__)
 
@@ -100,7 +101,8 @@ def kakao_callback():
             return redirect('/login')
 
         response = make_response(redirect('/auth/kakao/main_jwt'))
-        response.set_cookie('accessToken', jwt_token, httponly=True, secure=True)
+        response.set_cookie('accessToken', jwt_token, httponly=True, secure=True)   # 토큰 결과는 변조 방지 처리
+        response.set_cookie('user_id', quote(str(kakao_id)))                        # 주류 추천 결과를 얻기 위해서는 쿠키 값을 확인해야 되기 때문에 보안 처리 X
         return response
 
     except Exception as e:
