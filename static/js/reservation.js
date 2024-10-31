@@ -17,7 +17,7 @@ async function fetchRestaurantInfo(id) {
   try {
     const { data, error } = await supabase
       .from('corkage')
-      .select('id, name, phone, address, description, rating')
+      .select('id, name, phone, address, description, rating, coordinates')
       .eq('id', id)
       .single();
 
@@ -179,6 +179,46 @@ async function loadStoreInfo() {
   }
 }
 
+// 주어진 주소로 Kakao 지도를 리다이렉트하는 함수
+const redirectToKakaoMap = function (address) {
+  if (address) {
+    const webUrl = "https://map.kakao.com/link/search/" + encodeURIComponent(address);
+    window.open(webUrl, '_blank');
+  } else {
+    // console.error('주소 정보가 없습니다.');
+  }
+};
+
+const initializeMap = function (coordinates) {
+  if (!coordinates) {
+    // console.error('좌표 정보가 없습니다.');
+    // 기본 좌표 사용 (예: 서울시청)
+    coordinates = '37.5665,126.9780';
+  }
+
+  // 좌표 문자열을 배열로 분리
+  const [lng, lat] = coordinates.split(',').map(Number);
+
+  // 위도와 경도를 소수점 4자리까지 반올림하고 순서를 바꿔서 새로운 문자열 생성
+  const formattedCoordinates = `${lat.toFixed(4)},${lng.toFixed(4)}`;
+
+  const [mapLat, mapLng] = formattedCoordinates.split(',').map(Number);
+
+  const mapOptions = {
+    center: new kakao.maps.LatLng(mapLat, mapLng),
+    level: 3,
+  };
+  const map = new kakao.maps.Map(document.getElementById("map"), mapOptions);
+
+  const marker = new kakao.maps.Marker({
+    position: mapOptions.center,
+  });
+  marker.setMap(map);
+
+  map.relayout();
+  map.setCenter(mapOptions.center);
+};
+
 //불러온 데이터 업데이트
 async function loadRestaurantInfo() {
   const restaurantId = getRestaurantIdFromUrl();
@@ -207,6 +247,7 @@ async function loadRestaurantInfo() {
     if (phoneLink) {
       phoneLink.href = `tel:${restaurantInfo.phone}`;
     }
+
   } else {
     console.error('음식점 정보를 가져오지 못했습니다.');
   }
@@ -219,6 +260,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     await loadPhotos();
     await loadReviews();
     await loadStoreInfo();
+    await redirectToKakaoMap();
     initializeEventListeners();
     initializeSlider();
   } catch (error) {
@@ -228,36 +270,26 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 
-// 지도를 초기화하는 함수, 위치 모달이 표시될 때 호출됩니다.
-const initializeMap = function () {
-  /**
-   * 특정 위치에 중심을 둔 Kakao 지도를 초기화하고 마커를 설정합니다.
-   */
-  const mapOptions = {
-    center: new kakao.maps.LatLng(37.5665, 126.978),
-    level: 3,
-  };
-  const map = new kakao.maps.Map(document.getElementById("map"), mapOptions);
 
-  const marker = new kakao.maps.Marker({
-    position: mapOptions.center,
+
+
+$("#locationModal").on("shown.bs.modal", function() {
+  initializeMap();
+  const restaurantId = getRestaurantIdFromUrl();
+  fetchRestaurantInfo(restaurantId).then(info => {
+    if (info) {
+      updateModalInfo(info);
+      // 모달 내의 위치 버튼에 이벤트 리스너 추가
+      const modalLocationButton = document.querySelector('#locationModal .location-button');
+      if (modalLocationButton) {
+        modalLocationButton.addEventListener('click', function() {
+          redirectToKakaoMap(info.address);
+        });
+      }
+    }
   });
-  marker.setMap(map);
+});
 
-  map.relayout();
-  map.setCenter(mapOptions.center);
-};
-
-// 주어진 주소로 Kakao 지도를 리다이렉트하는 함수
-const redirectToKakaoMap = function (address) {
-  /**
-   * 주어진 주소를 가지고 Kakao 지도 검색 페이지로 브라우저를 리다이렉트합니다.
-   * @param {string} address - Kakao 지도에서 검색할 주소.
-   */
-  const webUrl =
-    "https://map.kakao.com/link/search/" + encodeURIComponent(address);
-  window.location.href = webUrl;
-};
 
 //모달이 열릴 때 데이터를 업데이트하는 함수
 function updateModalInfo(info) {
@@ -268,17 +300,29 @@ function updateModalInfo(info) {
   if (modalAddressElement) modalAddressElement.textContent = info.address;
 }
 
+/**
+ * 탭 버튼을 클릭했을 때 활성 탭을 전환하는 함수
+ */
+const handleTabButtonClick = function () {
+  $(".tab-button").removeClass("active"); // 모든 탭 버튼에서 'active' 클래스 제거
+  $(".tab-content").removeClass("active"); // 모든 탭 콘텐츠에서 'active' 클래스 제거
+  $(this).addClass("active"); // 클릭한 탭 버튼에 'active' 클래스 추가
+  const target = $(this).data("target"); // 클릭한 버튼의 data-target 속성 값 가져오기
+  $(target).addClass("active"); // 해당하는 탭 콘텐츠에 'active' 클래스 추가
+};
+
 // 이벤트 리스너를 초기화하는 함수
 const initializeEventListeners = function () {
   $(".tab-button").on("click", handleTabButtonClick);
-  $("#locationModal").on("shown.bs.modal", function() {
-    initializeMap();
+  $("#locationModal").on("shown.bs.modal", async function() {
     const restaurantId = getRestaurantIdFromUrl();
-    fetchRestaurantInfo(restaurantId).then(info => {
-      if (info) {
-        updateModalInfo(info);
-      }
-    });
+    const restaurantInfo = await fetchRestaurantInfo(restaurantId);
+    if (restaurantInfo) {
+      updateModalInfo(restaurantInfo);
+      initializeMap(restaurantInfo.coordinates); // 여기서 좌표를 전달
+    } else {
+      initializeMap(); // 정보가 없는 경우 기본 좌표 사용
+    }
   });
 };
 
@@ -294,51 +338,67 @@ const handleMapButtonClick = function () {
 /**
  * 탭 버튼을 클릭했을 때 활성 탭을 전환합니다.
  */
-const handleTabButtonClick = function () {
-  $(".tab-button").removeClass("active");
-  $(".tab-content").removeClass("active");
-  $(this).addClass("active");
-  const target = $(this).data("target");
-  $(target).addClass("active");
-};
-
-/**
- * 슬라이더 기능을 초기화하고 터치 이벤트를 설정합니다.
- */
 const initializeSlider = function () {
-  let startX = 0;
+  let startX = 0; // 터치 시작 위치를 저장할 변수
   let currentTranslate = 0;
   let prevTranslate = 0;
   let currentIndex = 0;
   const slides = document.querySelectorAll(".slide");
   const slider = document.getElementById("slider");
+  const sliderCounter = document.getElementById("slider-counter"); // 슬라이더 카운터 요소
 
+  // 슬라이드 위치 설정 함수
+  const setPositionByIndex = function () {
+    currentTranslate = currentIndex * -window.innerWidth;
+    slider.style.transform = `translateX(${currentTranslate}px)`; // 현재 인덱스에 맞춰 슬라이더 이동
+    updateCounter(); // 슬라이드 변경 시 카운터 업데이트
+  };
+
+  // 카운터 업데이트 함수
+  const updateCounter = function () {
+    if (sliderCounter) {
+      sliderCounter.textContent = `${currentIndex + 1} / ${slides.length} `;
+    }
+  };
+
+  // 터치 시작 시 이벤트 처리
   slider.addEventListener("touchstart", function (event) {
-    startX = event.touches[0].clientX;
-    prevTranslate = currentTranslate;
+    startX = event.touches[0].clientX; // 터치 시작 위치 저장
+    prevTranslate = currentTranslate; // 이전 이동값 저장
   });
 
+  // 터치 중일 때 슬라이더 이동 처리
   slider.addEventListener("touchmove", function (event) {
     const currentX = event.touches[0].clientX;
-    const deltaX = currentX - startX;
-    currentTranslate = prevTranslate + deltaX;
-    slider.style.transform = `translateX(${currentTranslate}px)`;
+    const deltaX = currentX - startX; // 터치 이동 거리 계산
+    currentTranslate = prevTranslate + deltaX; // 이동 거리 반영
+    slider.style.transform = `translateX(${currentTranslate}px)`; // 슬라이더 이동
   });
 
+  // 터치 종료 시 슬라이더 위치 결정
   slider.addEventListener("touchend", function () {
     const movedBy = currentTranslate - prevTranslate;
 
-    if (movedBy < -100 && currentIndex < slides.length - 1) currentIndex += 1;
-    if (movedBy > 100 && currentIndex > 0) currentIndex -= 1;
+    if (movedBy < -100 && currentIndex < slides.length - 1) {
+      currentIndex += 1; // 다음 슬라이드로 이동
+    }
+    if (movedBy > 100 && currentIndex > 0) {
+      currentIndex -= 1; // 이전 슬라이드로 이동
+    }
 
-    setPositionByIndex();
+    setPositionByIndex(); // 새로운 위치로 슬라이더 설정
   });
 
-  const setPositionByIndex = function () {
-    currentTranslate = currentIndex * -window.innerWidth;
-    slider.style.transform = `translateX(${currentTranslate}px)`;
-  };
+  setPositionByIndex(); // 페이지 로드 시 첫 번째 슬라이드로 설정
 };
+
+// 페이지 로드 시 슬라이더 초기화
+document.addEventListener('DOMContentLoaded', initializeSlider);
+
+document.querySelector('.location-button').addEventListener('click', function() {
+  const address = document.getElementById("modalAddress").textContent;
+  redirectToKakaoMap(address);
+});
 
 // 시간을 'HH:mm:ss' 형식으로 변환하는 함수
 function convertTo24Hour(timeString) {
