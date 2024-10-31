@@ -19,7 +19,7 @@ SECRET_KEY = 'AbMyTfPj/w869Xe6nGn7Mf+EyCAH0dS+SfCboVjjGJbeg3DVASFl1iU6TL9AEBTS6A
 # 카카오 API 정보
 REST_API_KEY = '6b5cc3ff382b0cb3ea15795729b3329f'
 CLIENT_SECRET = 'S9WK77WOT8w1l4p6sn4leDk2FSs1hppB'
-REDIRECT_URI = f"{request.host_url}auth/kakao/callback"
+REDIRECT_URI = "https://corkage.store/auth/kakao/callback"
 
 # 로그 설정
 logging.basicConfig(level=logging.INFO)
