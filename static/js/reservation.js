@@ -86,87 +86,98 @@ async function fetchRestaurantInfo(id) {
       };
 
       // 메뉴 데이터를 로드하는 함수 (DOM 조작 최적화)
-      function loadMenu() {
-        const menuContainer = $("#menu-container");
-        let menuItems = "";
-        $.each(restaurantData.menu, function (index, item) {
-          menuItems += `
-                    <div class="col-md-6 mb-4">
-                        <div class="menu-item-card">
-                            <img src="${item.image}" class="card-img-top" alt="${item.name} 이미지" loading="lazy">
-                            <div class="card-body">
-                                <h5 class="card-title">${item.name}</h5>
-                                <p class="card-text">${item.description}</p>
-                                <p class="card-price">${item.price}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-        });
-        menuContainer.append(menuItems);
-      }
-
-      // 사진 데이터를 로드하는 함수 (DOM 조작 최적화)
-      function loadPhotos() {
-        const photosContainer = $("#photos-container");
-        let photoItems = "";
-        $.each(restaurantData.photos, function (index, photo) {
-          photoItems += `
-                    <div class="photo-card mb-3">
-                        <img src="${photo}" alt="Dish Image" class="img-fluid rounded" loading="lazy">
-                    </div>
-                `;
-        });
-        photosContainer.append(photoItems);
-      }
-
-      // 리뷰 데이터를 로드하는 함수 (DOM 조작 최적화)
-      function loadReviews() {
-        const reviewsContainer = $("#reviews-container");
-        let reviewItems = "";
-        $.each(restaurantData.reviews, function (index, review) {
-          reviewItems += `
-                    <div class="review-card mb-3 p-3">
-                        <div class="d-flex align-items-center mb-2">
-                            ${'<i class="bi bi-star-fill text-warning"></i>'.repeat(
-                              Math.floor(review.rating)
-                            )}
-                            ${
-                              review.rating % 1 !== 0
-                                ? '<i class="bi bi-star-half text-warning"></i>'
-                                : ""
-                            }
-                        </div>
-                        <p class="review-text">${review.text}</p>
-                        <small class="text-muted">작성자: ${
-                          review.author
-                        }</small>
-                    </div>
-                `;
-        });
-        reviewsContainer.append(reviewItems);
-      }
-
-      // 매장 정보를 로드하는 함수 (DOM 조작 최적화)
-      async function loadStoreInfo() {
-        const restaurantId = getRestaurantIdFromUrl();
-        const restaurantInfo = await fetchRestaurantInfo(restaurantId);
-      
-        if (restaurantInfo) {
-          const storeInfoContainer = $("#store-info-container");
-          const storeInfoItem = `
-            <div class="store-info-card mb-3 p-3">
-              <p><strong>주소:</strong> ${restaurantInfo.address || '정보 없음'}</p>
-              <p><strong>전화번호:</strong> ${restaurantInfo.phone || '정보 없음'}</p>
-              <p><strong>영업시간:</strong> ${restaurantInfo.hours || '정보 없음'}</p>
+async function loadMenu() {
+  try {
+    const menuContainer = $("#menu-container");
+    let menuItems = "";
+    $.each(restaurantData.menu, function (index, item) {
+      menuItems += `
+        <div class="col-md-6 mb-4">
+          <div class="menu-item-card">
+            <img src="${item.image}" class="card-img-top" alt="${item.name} 이미지" loading="lazy">
+            <div class="card-body">
+              <h5 class="card-title">${item.name}</h5>
+              <p class="card-text">${item.description}</p>
+              <p class="card-price">${item.price}</p>
             </div>
-          `;
-          storeInfoContainer.empty().append(storeInfoItem);
-        } else {
-          console.error('음식점 정보를 가져오지 못했습니다.');
-          $("#store-info-container").html('<p>음식점 정보를 불러오는 데 실패했습니다.</p>');
-        }
-      }
+          </div>
+        </div>
+      `;
+    });
+    menuContainer.append(menuItems);
+  } catch (error) {
+    console.error('메뉴 로드 중 오류 발생:', error);
+    $("#menu-container").html('<p>메뉴를 불러오는 데 실패했습니다.</p>');
+  }
+}
+
+// 사진 데이터를 로드하는 함수 (DOM 조작 최적화)
+async function loadPhotos() {
+  try {
+    const photosContainer = $("#photos-container");
+    let photoItems = "";
+    $.each(restaurantData.photos, function (index, photo) {
+      photoItems += `
+        <div class="photo-card mb-3">
+          <img src="${photo}" alt="Dish Image" class="img-fluid rounded" loading="lazy">
+        </div>
+      `;
+    });
+    photosContainer.append(photoItems);
+  } catch (error) {
+    console.error('사진 로드 중 오류 발생:', error);
+    $("#photos-container").html('<p>사진을 불러오는 데 실패했습니다.</p>');
+  }
+}
+
+// 리뷰 데이터를 로드하는 함수 (DOM 조작 최적화)
+async function loadReviews() {
+  try {
+    const reviewsContainer = $("#reviews-container");
+    let reviewItems = "";
+    $.each(restaurantData.reviews, function (index, review) {
+      reviewItems += `
+        <div class="review-card mb-3 p-3">
+          <div class="d-flex align-items-center mb-2">
+            ${'<i class="bi bi-star-fill text-warning"></i>'.repeat(Math.floor(review.rating))}
+            ${review.rating % 1 !== 0 ? '<i class="bi bi-star-half text-warning"></i>' : ""}
+          </div>
+          <p class="review-text">${review.text}</p>
+          <small class="text-muted">작성자: ${review.author}</small>
+        </div>
+      `;
+    });
+    reviewsContainer.append(reviewItems);
+  } catch (error) {
+    console.error('리뷰 로드 중 오류 발생:', error);
+    $("#reviews-container").html('<p>리뷰를 불러오는 데 실패했습니다.</p>');
+  }
+}
+
+// 매장 정보를 로드하는 함수 (DOM 조작 최적화)
+async function loadStoreInfo() {
+  try {
+    const restaurantId = getRestaurantIdFromUrl();
+    const restaurantInfo = await fetchRestaurantInfo(restaurantId);
+  
+    if (restaurantInfo) {
+      const storeInfoContainer = $("#store-info-container");
+      const storeInfoItem = `
+        <div class="store-info-card mb-3 p-3">
+          <p><strong>주소:</strong> ${restaurantInfo.address || '정보 없음'}</p>
+          <p><strong>전화번호:</strong> ${restaurantInfo.phone || '정보 없음'}</p>
+          <p><strong>영업시간:</strong> ${restaurantInfo.hours || '정보 없음'}</p>
+        </div>
+      `;
+      storeInfoContainer.empty().append(storeInfoItem);
+    } else {
+      throw new Error('음식점 정보를 가져오지 못했습니다.');
+    }
+  } catch (error) {
+    console.error('매장 정보 로드 중 오류 발생:', error);
+    $("#store-info-container").html('<p>매장 정보를 불러오는 데 실패했습니다.</p>');
+  }
+}
 
 //불러온 데이터 업데이트
 async function loadRestaurantInfo() {
@@ -195,22 +206,25 @@ async function loadRestaurantInfo() {
     const phoneLink = document.querySelector('a[href^="tel:"]');
     if (phoneLink) {
       phoneLink.href = `tel:${restaurantInfo.phone}`;
-      phoneLink.textContent = restaurantInfo.phone;
     }
   } else {
     console.error('음식점 정보를 가져오지 못했습니다.');
   }
 }
-
 // 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', async function() {
-  await loadRestaurantInfo();
-  loadMenu();
-  loadPhotos();
-  loadReviews();
-  loadStoreInfo();
-  initializeEventListeners();
-  initializeSlider();
+  try {
+    await loadRestaurantInfo();
+    await loadMenu();
+    await loadPhotos();
+    await loadReviews();
+    await loadStoreInfo();
+    initializeEventListeners();
+    initializeSlider();
+  } catch (error) {
+    console.error('페이지 로드 중 오류 발생:', error);
+    // 사용자에게 전체적인 오류 메시지를 표시할 수 있습니다.
+  }
 });
 
 
@@ -256,6 +270,7 @@ function updateModalInfo(info) {
 
 // 이벤트 리스너를 초기화하는 함수
 const initializeEventListeners = function () {
+  $(".tab-button").on("click", handleTabButtonClick);
   $("#locationModal").on("shown.bs.modal", function() {
     initializeMap();
     const restaurantId = getRestaurantIdFromUrl();
