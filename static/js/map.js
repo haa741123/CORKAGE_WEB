@@ -18,7 +18,8 @@ let get_res_info = function () {
       address, 
       phone, 
       image_url, 
-      category_name, 
+      category_name,
+      tags,
       coordinates
     `
     )
@@ -32,9 +33,18 @@ let get_res_info = function () {
         return [];
       }
 
-      // 컬럼을 JS에서 재매핑
       const formattedData = data.map((item) => {
-        const [x, y] = item.coordinates.split(",").map((coord) => coord.trim());
+        // coordinates가 존재하고 문자열인지 확인
+        const [x, y] = (item.coordinates && typeof item.coordinates === 'string')
+          ? item.coordinates.split(",").map((coord) => coord.trim())
+          : [null, null];
+      
+        const regex = /[^{}"]+/g;
+        // item.tags를 사용하고, 존재하는지 확인
+        const formattedTags = item.tags && typeof item.tags === 'string'
+          ? item.tags.match(regex) || []
+          : [];
+      
         return {
           id: item.id,
           place_name: item.name,
@@ -42,6 +52,7 @@ let get_res_info = function () {
           phone: item.phone,
           image_url: item.image_url,
           category_name: item.category_name,
+          tags: formattedTags,
           x: x,
           y: y,
         };
@@ -400,8 +411,7 @@ let generatePlaceInfo = function (place, index) {
                     </span>
                 </p>
                 <div class="tag-container">
-                    <span class="tag red">콜키지 프리</span>
-                    <span class="tag black">3병 제한</span>
+                    <span class="tag red">${place.tags}</span>
                 </div>
                 <p class="description">"숙성된 자연산 사시미와 스시를 즐길..."</p>
                 <p class="rating">평점: 4.5</p>
