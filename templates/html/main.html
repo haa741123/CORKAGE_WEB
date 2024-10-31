@@ -2,9 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <link rel="stylesheet" href="/static/css/main.css">
-    <title>콜키지 커뮤니티</title>
+    <title>콜키지 메인 페이지</title>
 </head>
 <body>
 
@@ -19,137 +19,31 @@
         <div class="wine-info">
             <p id="drink_name"></p>
             <p id="drink_desc"></p>
-            <p id="wine_rating">⭐ <strong>4.7</strong> (1,234)</p>
+            <!-- <p id="wine_rating">⭐ <strong>4.7</strong> (1,234)</p> -->
         </div>
         <div class="wine-image">
             <img id="wine-image" src="/static/img/wine_img.png" alt="Wine Image">
         </div>
-    </div>
-
+    </div>    
 
     <div class="container">
         <!-- 인기 맛집 리스트 -->
         <div class="popular-restaurants">
             <h3>콜키지 가능한 인기 맛집 10선</h3>
-            <div class="restaurant-list">
-                <div class="restaurant-item">
-                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 1">
-                    <p class="restaurant-name">리앤슈 램그릴</p>
-                    <div class="restaurant-tags">
-                        <span class="tag red">콜키지 프리</span>
-                    </div>
-                </div>
-                <div class="restaurant-item">
-                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 2">
-                    <p class="restaurant-name">면대원 블루스</p>
-                    <div class="restaurant-tags">
-                        <span class="tag red">콜키지 프리</span>
-                    </div>
-                </div>
-                <div class="restaurant-item">
-                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 3">
-                    <p class="restaurant-name">돈블랑</p>
-                    <div class="restaurant-tags">
-                        <span class="tag red">콜키지 프리</span>
-                    </div>
-                </div>
-                <div class="restaurant-item">
-                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 4">
-                    <p class="restaurant-name">스시진</p>
-                    <div class="restaurant-tags">
-                        <span class="tag red">콜키지 프리</span>
-                    </div>
-                </div>
-            </div>
+            <div class="restaurant-list"></div>
         </div>
 
         <!-- 유저들의 BEST픽 -->
         <div class="popular-restaurants">
             <h3>유저들의 BEST픽</h3>
             <p class="best-prompt">가장 추천을 많이 받은 게시물을 구경해보세요!</p>
-            <div class="restaurant-list">
-                <div class="restaurant-item">
-                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 1">
-                    <p class="restaurant-name">리앤슈 램그릴</p>
-                    <div class="restaurant-tags">
-                        <span class="tag red">콜키지 프리</span>
-                    </div>
-                </div>
-                <div class="restaurant-item">
-                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 2">
-                    <p class="restaurant-name">면대원 블루스</p>
-                </div>
-                <div class="restaurant-item">
-                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 3">
-                    <p class="restaurant-name">돈블랑</p>
-                </div>
-                <div class="restaurant-item">
-                    <img src="/static/img/res_sample_img.jpg" alt="Restaurant 4">
-                    <p class="restaurant-name">스시진</p>
-                </div>
-            </div>
+            <div class="restaurant-list"></div>
         </div>
     </div>
 
+    <!-- jQuery and JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>
-
-        // 와인 추천 API 호출 함수
-        const fetchRec = async (action, uid) => {
-            try {
-                const res = await $.ajax({
-                    url: '/api/v1/recommendations',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ message: action, user_id: uid })
-                });
-                return res;
-            } catch (err) {
-                console.error('API 호출 실패:', err);
-                throw new Error('와인 추천 정보를 불러오는데 문제가 발생했습니다.');
-            }
-        };
-
-        // 추천된 와인 정보를 업데이트하는 함수
-        const updateWineInfo = (data) => {
-            r = data.response;
-            $('#drink_name').text(r.drink_name);
-            $('#drink_desc').text(r.drink_desc);
-            $('#wine_rating').html(`⭐ <strong>${r.rating}</strong>`);
-            $('#wine-image').attr('src', r.image_url);
-        };
-
-        // 추천된 와인 정보를 가져와서 UI 업데이트
-        const loadRec = async (action, uid) => {
-            try {
-                const data = await fetchRec(action, uid);
-                console.log(data);
-                updateWineInfo(data);
-            } catch (err) {
-                console.error(err.message);
-                alert(err.message);
-            }
-        };
-
-        // 쿠키에서 특정 값을 가져오는 함수
-        const getCookie = (name) => {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            return parts.length === 2 ? parts.pop().split(';').shift() : null;
-        };
-
-        $(document).ready(() => {
-            const action = 'rec_wine_list';
-            const uid = getCookie('user_id');
-            if (uid) {
-                loadRec(action, uid);
-            } else {
-                console.error("user_id 쿠키가 존재하지 않습니다.");
-            }
-        });
-
-        
-
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="/static/js/main_page.js"></script>
 </body>
 </html>
