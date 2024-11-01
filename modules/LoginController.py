@@ -25,15 +25,16 @@ REDIRECT_URI = "http://127.0.0.1:5000/auth/kakao/callback"  # 테스트 환경
 # 로그 설정
 logging.basicConfig(level=logging.INFO)
 
-# JWT 토큰 생성 함수
+# JWT 토큰 생성 함수 - 만료 시간 무제한 설정
 def create_jwt(user_id):
     try:
-        expiration = datetime.now(timezone.utc) + timedelta(hours=1)
-        token = jwt.encode({'id': user_id, 'exp': expiration}, SECRET_KEY, algorithm='HS256')
+        # 만료 시간을 설정하지 않음으로써 무기한 유효한 토큰 발급
+        token = jwt.encode({'id': user_id}, SECRET_KEY, algorithm='HS256')
         return token
     except Exception as e:
         logging.error(f"JWT 토큰 생성 오류: {e}")
         return None
+
 
 # 카카오 사용자 정보 가져오기 함수
 def get_kakao_user_info(access_token):
