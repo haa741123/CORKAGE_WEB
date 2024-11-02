@@ -72,8 +72,6 @@ input[type="search"] {
 
 .filters {
     padding: 1rem;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow-x: auto;
     white-space: nowrap;
 }
@@ -87,8 +85,7 @@ input[type="search"] {
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    background: #e0e0e0;
-    border: 1px solid #ccc;
+    border: 1px solid #525252;
     border-radius: 20px;
     color: #333;
     font-size: 0.9rem;
@@ -122,8 +119,8 @@ input[type="search"] {
     white-space: nowrap;
 }
 
-.popular-searches h2{
-    font-size: 1.2rem;
+.filters h2, .popular-searches h2{
+    font-size: 1.3rem;  
     margin-bottom: 1rem;
     color: #555;
 }
