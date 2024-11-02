@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from supabase import create_client, Client
 from routes.main_routes import main_routes
 
+
 app = Flask(__name__)
 app.register_blueprint(main_routes)
 
