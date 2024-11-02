@@ -3,15 +3,15 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none; 
 }
 
 *::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none; 
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Pretendard', sans-serif;
     line-height: 1.6;
     color: #333;
     background: #f9f9f9;
@@ -25,6 +25,21 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
+}
+
+.loading-indicator {
+    display: none; /* 초기 상태는 숨김 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
+    color: #333;
+    z-index: 1000;
 }
 
 nav {
@@ -102,8 +117,12 @@ input[type="search"] {
 .popular-searches, .restaurant-list {
     padding: 1rem;
 }
+.restaurant-list {
+    overflow-x: auto;
+    white-space: nowrap;
+}
 
-.popular-searches h2, .restaurant-list h2 {
+.popular-searches h2{
     font-size: 1.2rem;
     margin-bottom: 1rem;
     color: #555;
@@ -127,16 +146,22 @@ input[type="search"] {
 }        
 
 .restaurant-grid {
-    display: grid;
-    gap: 1rem;
+    display: flex;
+    gap: 1rem; 
+    scroll-snap-type: x mandatory; 
 }
 
+
 .restaurant-card {
-    background: white;
-    border-radius: 12px;
+    flex: 0 0 auto; 
+    width: 23.5rem; 
+    display: inline-block;
+    white-space: normal; 
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
+    scroll-snap-align: start; 
+    transition: transform 0.3s ease; 
 }
 
 .restaurant-card:hover {
@@ -263,7 +288,7 @@ input[type="search"] {
     margin-left: 0.5rem;
 }
 
-/* 상위 3개 랭킹 간단히 표시 */
+
 .top-rankings {
     font-size: 1rem;
     color: #333;

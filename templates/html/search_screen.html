@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
     <link rel="stylesheet" href="/static/css/sch_screen.css">
-    <title>Food Delivery Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>검색 화면</title>
+    <style>
+        
+    </style>
 </head>
 <body>
     <header>
         <nav>
             <button class="back-btn">←</button>
             <div class="search-container">
-                <input type="search" placeholder="먹고 싶은 메뉴나 찾고 싶은 음식점을 입력해주세요" aria-label="Search">
+                <input type="search" placeholder="찾고 싶은 음식점을 입력해주세요" aria-label="Search">
             </div>
             <button class="cart-btn">🛒</button>
         </nav>
@@ -37,13 +42,13 @@
                 <div class="search-item" onclick="toggleExpand(this)">
                     <div class="top-rankings"></div>
                     <span class="expand-item">
-                        펼쳐서 보기 <i>▼</i>
+                        펼쳐서 보기 <i class="fas fa-chevron-down"></i>
                     </span>
                 </div>
                 <div class="expand-content" style="display: none;">
                     <div class="update-info">
                         오전 9시 업데이트
-                        <span class="collapse" onclick="toggleExpand(this)">접기 ▴</span>
+                        <span class="collapse" onclick="toggleExpand(this)">접기 <i class="fas fa-chevron-up"></i></span>
                     </div>
                     <div class="columns">
                         <ol class="search-rankings left-column"></ol>
@@ -53,20 +58,10 @@
             </div>
         </section>
 
+        <h2 style="font-size: 1.2rem; color: #555; padding: 1rem 1rem 0">콜키지 가능한 인기 맛집 10선</h2>
         <section class="restaurant-list">
-            <h2>콜키지 가능한 인기 맛집 10선</h2>
             <div class="restaurant-grid">
-                <article class="restaurant-card">
-                    <img src="restaurant1.jpg" alt="Restaurant">
-                    <div class="restaurant-info">
-                        <h3>Rooftop BBQ</h3>
-                        <div class="rating">★ 5.0</div>
-                        <div class="details">
-                            <span>27-42min</span>
-                            <span>540-1,540₩</span>
-                        </div>
-                    </div>
-                </article>
+                <!-- JS에서 데이터 넣고 있음 -->
             </div>
         </section>
     </main>
@@ -75,47 +70,12 @@
         <div class="ad-container">광고 내용</div>
     </aside>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const items = [
-                "이삭토스트", "메가커피", "써브웨이", "한솥도시락", "빽다방",
-                "파리바게뜨", "브런치", "샌드위치", "컴포즈커피", "본죽"
-            ];
-    
-            const leftColumn = document.querySelector(".left-column");
-            const rightColumn = document.querySelector(".right-column");
-            const topRankingsDiv = document.querySelector(".top-rankings");
-            const searchItem = document.querySelector('.search-item');
-            const expandContent = document.querySelector('.expand-content');
-    
-            let currentIndex = 0;
-            const midIndex = Math.ceil(items.length / 2);
-    
-            // 왼쪽과 오른쪽 컬럼 초기화
-            items.forEach((item, index) => {
-                const li = document.createElement("li");
-                li.innerHTML = `<span class="rank-number">${index + 1}.</span> ${item}`;
-                (index < midIndex ? leftColumn : rightColumn).appendChild(li);
-            });
-    
-            // 상위 랭킹 데이터를 업데이트하는 함수
-            const updateTopRanking = () => {
-                const itemText = items[currentIndex];
-                topRankingsDiv.innerHTML = `<span class="rank-number">${currentIndex + 1}.</span> ${itemText}`;
-                currentIndex = (currentIndex + 1) % items.length;
-            };
-    
-            // 2.5초마다 상위 랭킹 데이터 업데이트
-            setInterval(updateTopRanking, 2500);
-            updateTopRanking();
-    
-            window.toggleExpand = () => {
-                const isExpanded = expandContent.style.display === 'block';
-                expandContent.style.display = isExpanded ? 'none' : 'block';
-                searchItem.style.display = isExpanded ? 'flex' : 'none';
-            };
-        });
-    </script>
-    
+    <!-- 로딩 인디케이터 추가 -->
+    <div class="loading-indicator">Loading...</div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/static/js/sch_screen.js"></script>
+
 </body>
 </html>

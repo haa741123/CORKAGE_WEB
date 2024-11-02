@@ -19,6 +19,11 @@ def login_test():
 def home():
     return render_template('html/index.html')  # 홈화면
 
+@main_routes.route("/sch_screen")
+def sch_screen():
+    return render_template('html/search_screen.html')  # 검색 버튼 누를 시에 나오는 화면
+
+
 @main_routes.route("/sch_filter")
 def sch_filter():
     return render_template('html/sch_filter.html')  # 필터 페이지
