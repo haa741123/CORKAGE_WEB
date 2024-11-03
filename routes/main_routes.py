@@ -21,8 +21,11 @@ def home():
 
 @main_routes.route("/sch_screen")
 def sch_screen():
-    return render_template('html/search_screen.html')  # 검색 버튼 누를 시에 나오는 화면
+    return render_template('html/search_screen.html')  # 검색 버튼 누를 시에 나오는 페이지
 
+@main_routes.route('/search/<string:search_term>')      
+def sch_results(search_term):
+    return render_template('html/search_results.html', search_term=search_term) # 검색 결과 페이지
 
 @main_routes.route("/sch_filter")
 def sch_filter():

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+    <link rel="stylesheet" href="/static/css/search_results.css">
+    <title>검색 결과</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+            <h1><span id="term" class="highlight">"{{ search_term }}"</span>과 관련된 검색된 결과입니다.</h1>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section-container restaurant-results">
+            <h2>관련된 음식점 추천</h2>
+            <section class="grid-container restaurant-list"></section>
+        </section>
+
+        <section class="section-container related-functions">
+            <h2>관련된 기능 추천</h2>
+            <section class="grid-container function-list"></section>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const term = decodeURIComponent(window.location.pathname.split('/').pop());
+            const termEl = document.getElementById('term');
+            
+            if (termEl) termEl.textContent = term;
+
+            fetch(`/api/v1/search/${encodeURIComponent(term)}`)
+                .then(res => res.ok ? res.json() : Promise.reject(`HTTP error! status: ${res.status}`))
+                .then(data => showResults(data.restaurant_data, data.feature_recommendations))
+                .catch(err => console.error("Error fetching search results:", err));
+        });
+
+        function showResults(restData, featData) {
+            const restList = document.querySelector('.restaurant-list');
+            const featList = document.querySelector('.function-list');
+
+            if (!restList || !featList) {
+                console.error("Error: Required container elements not found.");
+                return;
+            }
+
+            if (restData && restData.length > 0) {
+                fillContainer(restList, restData, 'name', 'address', 'phone');
+            } else {
+                restList.innerHTML = "<p>관련된 음식점이 존재하지 않습니다.</p>";
+            }
+
+            if (featData && featData.length > 0) {
+                fillContainer(featList, featData, 'feature_name', 'description');
+            }
+        }
+
+        function fillContainer(container, data, title, ...fields) {
+            container.innerHTML = data.map(item => `
+                <div class="item">
+                    <h3>${item[title]}</h3>
+                    ${fields.map(field => `<p>${item[field]}</p>`).join('')}
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 from bs4 import BeautifulSoup
 import time
+import random
 
 # 전역변수 설정
 naver_res = pd.DataFrame(columns=['업체명', '업종', '주소', '별점', '메뉴', '가격'])
@@ -63,14 +64,20 @@ def chk_names_and_rating(driver):
 def click_menu_tab_and_extract_menu(driver):
     try:
         # "메뉴" 탭 클릭
-        menu_tab = driver.find_element(By.XPATH, "//a[span[text()='메뉴']]")
+        menu_tab = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "a._tab-menu span.veBoZ"))
+        )
         menu_tab.click()
-        time.sleep(3)  # 페이지가 완전히 로드되도록 대기
+        time.sleep(random.uniform(10, 15))  # 페이지 로딩을 위한 대기 시간
 
         # 메뉴와 가격 정보 추출
         menus_with_prices = []
         menu_items = driver.find_elements(By.XPATH, '//li[@class="E2jtL"]')
-        
+
+        if not menu_items:
+            print("메뉴 항목을 찾을 수 없습니다.")
+            return []
+
         for menu_item in menu_items:
             # 메뉴 이름과 가격 추출
             try:
@@ -87,7 +94,7 @@ def click_menu_tab_and_extract_menu(driver):
 
         return menus_with_prices
 
-    except NoSuchElementException:
+    except TimeoutException:
         print("메뉴 탭을 찾을 수 없습니다.")
         return []
 
@@ -111,7 +118,6 @@ def crawling_main(driver, elem, name_list, rating_list):
 
         # 업종 추출 (클래스명 변동에 대응)
         try:
-            # 클래스명이 변할 가능성이 있으므로 텍스트 구조로 접근
             category = soup.find('span', text=lambda t: t and "요리" in t).text
             category_list.append(category)
         except AttributeError:
@@ -139,30 +145,31 @@ def crawling_main(driver, elem, name_list, rating_list):
     naver_res.to_excel('./naver_crawling_result.xlsx')
     return True
 
-
 # 자동 스크롤 및 페이지 이동 함수
 def scroll_and_crawl(driver):
     global last_name
 
     while True:
-        time.sleep(1)
+        time.sleep(random.uniform(10, 20))  # 각 페이지 간 대기 시간을 10-20초 사이로 설정
         search_iframe(driver)
+        
+        # 이름과 별점 추출
         elem, name_list, rating_list = chk_names_and_rating(driver)
 
         if elem is None or name_list is None:
             print("더 이상 크롤링할 데이터가 없습니다.")
             break
 
-        if last_name == name_list[-1]:
+        if name_list and last_name == name_list[-1]:
             break
 
         while True:
             try:
                 elem[-1].click()
-                time.sleep(2)
+                time.sleep(random.uniform(10, 20))  # 클릭 후 대기 시간 추가
                 elem, name_list, rating_list = chk_names_and_rating(driver)
 
-                if last_name == name_list[-1]:
+                if name_list and last_name == name_list[-1]:
                     break
                 else:
                     last_name = name_list[-1]
@@ -175,14 +182,16 @@ def scroll_and_crawl(driver):
                 print("세부 정보 크롤링 실패, 프레임을 찾지 못했습니다.")
                 break
 
+        # 다음 페이지로 이동
         try:
-            next_button = driver.find_element(By.CSS_SELECTOR, 'a.eUTV2[aria-disabled="false"]')
-            if next_button:
-                next_button.click()
-                time.sleep(2)
-            else:
-                print("마지막 페이지입니다. 더 이상 페이지를 넘길 수 없습니다.")
-                break
+            next_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.eUTV2[aria-disabled="false"]'))
+            )
+            next_button.click()
+            time.sleep(random.uniform(10, 20))  # 다음 페이지로 넘어갈 때도 대기 시간 추가
+        except TimeoutException:
+            print("마지막 페이지입니다. 더 이상 페이지를 넘길 수 없습니다.")
+            break
         except NoSuchElementException:
             print("다음 페이지 버튼을 찾을 수 없습니다.")
             break
@@ -190,7 +199,6 @@ def scroll_and_crawl(driver):
 # 메인 실행 함수
 def main():
     driver = webdriver.Chrome()
-
     try:
         keyword = '콜키지 프리'
         url = f'https://map.naver.com/p/search/{keyword}'
@@ -201,7 +209,10 @@ def main():
     except TimeoutException:
         print("페이지 로딩에 실패했습니다.")
     finally:
-        driver.quit()
+        try:
+            driver.quit()
+        except Exception as e:
+            print(f"드라이버 종료 중 오류 발생: {str(e)}")
 
 if __name__ == "__main__":
     main()

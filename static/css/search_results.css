@@ -1,0 +1,104 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard Variable', sans-serif;
+}
+
+body {
+    background-color: #f8f8f8;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+header {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav h1 {
+    font-size: 1.2rem;
+    color: #333;
+    text-align: center;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+}
+
+main {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.highlight {
+    font-weight: bold;
+    color: rgb(209, 0, 0);
+}
+
+.section-container {
+    margin-top: 1.5rem;
+}
+
+.section-container h2 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    padding-left: 5px;
+    border-left: 4px solid #3498db;
+}
+
+.grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.item {
+    flex: 0 0 48%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.item:hover {
+    transform: translateY(-5px);
+}
+
+.item h3 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.item p {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #eeeeee;
+    font-size: 0.9rem;
+    color: #777;
+}
