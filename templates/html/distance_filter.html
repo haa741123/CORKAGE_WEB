@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"
+    />
+    <title>내 동네 설정</title>
+    <style>
+      body {
+        font-family: "Pretendard Variable", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+
+      /* 상단 헤더 */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: white;
+        box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .header h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+
+      .header .icon {
+        font-size: 20px;
+      }
+
+      /* 지도 컨테이너 */
+      .map-container {
+        position: relative;
+        height: calc(100vh - 250px);
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* 하단 UI */
+      .footer {
+        position: fixed;
+        bottom: 0;
+        width: 90%;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* 다른 요소 위에 위치하게 함 */
+      }
+
+      .footer h2 {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      /* 동네 선택 버튼 */
+      .location-selection {
+        display: flex;
+        gap: 10px;
+      }
+
+      .town {
+        font-size: 8px;
+      }
+
+      .town1 {
+        font-size: 8px;
+        margin-right: 79%;
+      }
+
+      .location-selection div {
+        flex-grow: 1;
+        padding: 10px;
+        border-radius: 20px;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      .selected {
+        margin-top: 10px;
+        background-color: #ff6c00; /* 주황색 */
+        color: white;
+      }
+
+      .unselected {
+        background-color: #f5f5f5; /* 회색 */
+        color: black;
+      }
+
+      /* 슬라이더 스타일 */
+      .slider-container {
+  margin-top: 20px;
+}
+
+.slider-distance {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.town, .town1 {
+  font-size: 8px;
+}
+
+#sliderValue {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background-color: #ddd;
+  border-radius: 5px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background-color: #ff6c00;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background-color: #ff6c00;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-ms-thumb {
+  width: 24px;
+  height: 24px;
+  background-color: #ff6c00;
+  border-radius: 50%;
+  cursor: pointer;
+}
+    </style>
+  </head>
+  <body>
+    <!-- 상단 헤더 -->
+    <div class="header">
+      <span class="icon">✕</span>
+      <h1>내 동네 설정</h1>
+      <span class="icon"></span>
+    </div>
+
+    <!-- 지도 영역 -->
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+
+    <!-- 하단 UI -->
+    <div class="footer">
+      <h2>내 동네</h2>
+
+      <!-- 동네 선택 버튼 -->
+      <div class="location-selection">
+        <div class="selected">내 동내를 설정해주세요</div>
+      </div>
+
+      <!-- 슬라이더 -->
+      <div class="slider-container">
+        <input
+          type="range"
+          class="slider"
+          id="distanceSlider"
+          min="0"
+          max="10"
+          step="1"
+          value="0"
+        />
+      </div>
+      <div class="slider-distance">
+        <span class="town1">가까운 동네</span>
+        <span class="town">먼 동네</span>
+      </div>
+      <div id="sliderValue"></div>
+
+    <!-- 카카오맵 API -->
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=212301aed0cac29616f97d494d63e9b0&libraries=services"
+    ></script>
+    <script>
+      var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+        mapOption = {
+          center: new kakao.maps.LatLng(37.4563, 126.7052), // 지도의 중심좌표 (인천)
+          level: 5, // 지도의 확대 레벨
+        };
+
+      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+      // 지도에 표시할 선을 생성합니다
+      var linePath = [
+        new kakao.maps.LatLng(37.498, 126.675),
+        new kakao.maps.LatLng(37.478, 126.725),
+        new kakao.maps.LatLng(37.4563, 126.7052),
+        new kakao.maps.LatLng(37.4563, 126.6552),
+      ];
+
+      var polyline = new kakao.maps.Polyline({
+        path: linePath,
+        strokeWeight: 4,
+        strokeColor: "#FF6C00",
+        strokeOpacity: 1,
+        strokeStyle: "solid",
+      });
+
+      polyline.setMap(map); // 선을 지도에 표시합니다
+
+      // 슬라이더 기능 구현
+        const slider = document.getElementById('distanceSlider');
+        const sliderValue = document.getElementById('sliderValue');
+
+    </script>
+  </body>
+</html>
