@@ -12,22 +12,17 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const password = document.getElementById("exampleInputPassword").value;
 
   try {
-    // owner 테이블에서 login_id로 사용자 정보 조회
     const { data: ownerData, error: ownerError } = await supabase
       .from("owner")
       .select("*")
       .eq("login_id", loginId)
       .single();
 
-    if (ownerError) {
-      if (ownerError.code === "PGRST116") {
-        throw new Error("사용자를 찾을 수 없습니다.");
-      }
-      throw ownerError;
-    }
-
-    if (!ownerData) {
-      throw new Error("사용자를 찾을 수 없습니다.");
+    if (ownerError || !ownerData) {
+      const errorMessage = ownerError?.code === "PGRST116"
+        ? "사용자를 찾을 수 없습니다."
+        : ownerError?.message || "사용자 정보 조회 중 오류가 발생했습니다.";
+      throw new Error(errorMessage);
     }
 
     // 비밀번호 확인 (실제 환경에서는 암호화된 비밀번호를 사용해야 합니다)
@@ -36,11 +31,10 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     }
 
     console.log("로그인 성공:", ownerData);
-    // 로그인 성공 시 세션 저장 및 리다이렉트
     localStorage.setItem("user", JSON.stringify(ownerData));
     window.location.href = "reservation_owner";
   } catch (error) {
     console.error("로그인 에러:", error.message);
-    alert("로그인 실패: " + error.message);
+    alert(`로그인 실패: ${error.message}`);
   }
 });

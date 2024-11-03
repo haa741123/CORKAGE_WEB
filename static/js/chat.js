@@ -90,7 +90,7 @@ const handleMessageSend = () => {
         $("#user-input").val("");
 
         if (userInput.includes("주류 추천")) {
-            const recommendation = await get_Recommend(userInput, '2');
+            const recommendation = await get_Recommend(userInput, '3692027697');
             displayMessage(recommendation.response, 'bot');
         } else if (answers[userInput]) {
             displayMessage(answers[userInput], 'bot');

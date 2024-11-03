@@ -18,7 +18,8 @@ let get_res_info = function () {
       address, 
       phone, 
       image_url, 
-      category_name, 
+      category_name,
+      tags,
       coordinates
     `
     )
@@ -32,9 +33,18 @@ let get_res_info = function () {
         return [];
       }
 
-      // 컬럼을 JS에서 재매핑
       const formattedData = data.map((item) => {
-        const [x, y] = item.coordinates.split(",").map((coord) => coord.trim());
+        // coordinates가 존재하고 문자열인지 확인
+        const [x, y] = (item.coordinates && typeof item.coordinates === 'string')
+          ? item.coordinates.split(",").map((coord) => coord.trim())
+          : [null, null];
+      
+        const regex = /[^{}"]+/g;
+        // item.tags를 사용하고, 존재하는지 확인
+        const formattedTags = item.tags && typeof item.tags === 'string'
+          ? item.tags.match(regex) || []
+          : [];
+      
         return {
           id: item.id,
           place_name: item.name,
@@ -42,6 +52,7 @@ let get_res_info = function () {
           phone: item.phone,
           image_url: item.image_url,
           category_name: item.category_name,
+          tags: formattedTags,
           x: x,
           y: y,
         };
@@ -238,7 +249,7 @@ let placesSearchCB = function (data, status) {
       allPlacesInfo += additionalPlacesInfo;
 
       // 결합된 결과를 DOM에 삽입
-      document.getElementById("restaurantInfo").innerHTML = allPlacesInfo;
+      document.getElementById("restaurantInfo").innerHTML = additionalPlacesInfo;
 
       // 유저 위치가 있으면 경계에 포함시킴
       if (userPosition) {
@@ -377,7 +388,7 @@ let generatePlaceInfo = function (place, index) {
   let categoryImageSrc = getImageSrc(place.category_name);
 
   return `
-    <div id="res_info_${index}" class="res_info" 
+    <div id="res_info_${index}" class="res_info" data-id="${place.id}"
         data-place_name="${place.place_name}"
         data-address_name="${place.address_name}"
         data-phone="${place.phone}"
@@ -388,24 +399,19 @@ let generatePlaceInfo = function (place, index) {
         <div class="row">
             <div class="col-4" style="padding-right: 1px;">
                 <div class="image-container">
-                    <img src="${place.image_url}" alt="${
-    place.place_name
-  }" class="cover-image">
+                    <img src="${place.image_url}" alt="${place.place_name}" class="cover-image">
                 </div>
             </div>
             <div class="col-8 info-container">
                 <p class="place-name">
-                    <img src="${categoryImageSrc}" alt="${
-    place.category_name
-  }" class="category-icon"> 
+                    <img src="${categoryImageSrc}" alt="${place.category_name}" class="category-icon"> 
                     ${place.place_name}
                     <span class="bookmark-icon">
                       <img src="/static/img/UnBookmark.png" alt="즐겨찾기 아이콘">
                     </span>
                 </p>
                 <div class="tag-container">
-                    <span class="tag red">콜키지 프리</span>
-                    <span class="tag black">3병 제한</span>
+                    <span class="tag red">${place.tags}</span>
                 </div>
                 <p class="description">"숙성된 자연산 사시미와 스시를 즐길..."</p>
                 <p class="rating">평점: 4.5</p>
@@ -467,14 +473,22 @@ const setBookmark = async (id, status) => {
   });
 };
 
-// 장소 정보 클릭 시 상세 페이지로 이동하는 함수
-document.addEventListener("click", function (event) {
-  let target = event.target.closest(".res_info");
 
+function navigateToRestaurant(event) {
+  let target = event.target.closest(".res_info");
   if (target) {
-    window.location.href = "/restaurant";
+    const restaurantId = target.dataset.id; // HTML 요소에 data-id 속성을 추가해야 합니다
+    if (restaurantId) {
+      const newUrl = `/restaurant/${restaurantId}`;
+      window.location.href = newUrl;
+    } else {
+      console.error("레스토랑 ID를 찾을 수 없습니다.");
+    }
   }
-});
+}
+
+// 이벤트 리스너 추가
+document.addEventListener("click", navigateToRestaurant);
 
 /** 지도에서 마커를 제거하는 함수 */
 let removeMarkers = function () {

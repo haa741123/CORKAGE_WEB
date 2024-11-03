@@ -19,6 +19,14 @@ def login_test():
 def home():
     return render_template('html/index.html')  # 홈화면
 
+@main_routes.route("/sch_screen")
+def sch_screen():
+    return render_template('html/search_screen.html')  # 검색 버튼 누를 시에 나오는 페이지
+
+@main_routes.route('/search/<string:search_term>')      
+def sch_results(search_term):
+    return render_template('html/search_results.html', search_term=search_term) # 검색 결과 페이지
+
 @main_routes.route("/sch_filter")
 def sch_filter():
     return render_template('html/sch_filter.html')  # 필터 페이지
@@ -35,9 +43,9 @@ def post():
 def edit_post():
     return render_template('html/edit_post.html')  # 게시물 작성 및 수정
 
-@main_routes.route("/restaurant")
-def restaurant():
-    return render_template('html/restaurant.html')  # 음식점 페이지
+@main_routes.route("/restaurant/<int:restaurant_id>")
+def restaurant(restaurant_id):
+    return render_template('html/restaurant.html', restaurant_id=restaurant_id)
 
 @main_routes.route("/mypage")
 def mypage():

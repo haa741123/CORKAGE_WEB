@@ -4,6 +4,7 @@ import requests
 from datetime import datetime, timedelta, timezone
 import logging
 from supabase import create_client
+from urllib.parse import quote
 
 LoginController = Blueprint('LoginController', __name__)
 
@@ -18,20 +19,22 @@ SECRET_KEY = 'AbMyTfPj/w869Xe6nGn7Mf+EyCAH0dS+SfCboVjjGJbeg3DVASFl1iU6TL9AEBTS6A
 # 카카오 API 정보
 REST_API_KEY = '6b5cc3ff382b0cb3ea15795729b3329f'
 CLIENT_SECRET = 'S9WK77WOT8w1l4p6sn4leDk2FSs1hppB'
-REDIRECT_URI = 'http://127.0.0.1:5000/auth/kakao/callback'
+# REDIRECT_URI = "https://corkage.store/auth/kakao/callback"  # 운영 환경
+REDIRECT_URI = "http://127.0.0.1:5000/auth/kakao/callback"  # 테스트 환경
 
 # 로그 설정
 logging.basicConfig(level=logging.INFO)
 
-# JWT 토큰 생성 함수
+# JWT 토큰 생성 함수 - 만료 시간 무제한 설정
 def create_jwt(user_id):
     try:
-        expiration = datetime.now(timezone.utc) + timedelta(hours=1)
-        token = jwt.encode({'id': user_id, 'exp': expiration}, SECRET_KEY, algorithm='HS256')
+        # 만료 시간을 설정하지 않음으로써 무기한 유효한 토큰 발급
+        token = jwt.encode({'id': user_id}, SECRET_KEY, algorithm='HS256')
         return token
     except Exception as e:
         logging.error(f"JWT 토큰 생성 오류: {e}")
         return None
+
 
 # 카카오 사용자 정보 가져오기 함수
 def get_kakao_user_info(access_token):
@@ -100,7 +103,8 @@ def kakao_callback():
             return redirect('/login')
 
         response = make_response(redirect('/auth/kakao/main_jwt'))
-        response.set_cookie('accessToken', jwt_token, httponly=True, secure=True)
+        response.set_cookie('accessToken', jwt_token, httponly=True, secure=True)   # 토큰 결과는 변조 방지 처리
+        response.set_cookie('user_id', quote(str(kakao_id)))                        # 주류 추천 결과를 얻기 위해서는 쿠키 값을 확인해야 되기 때문에 보안 처리 X
         return response
 
     except Exception as e:
@@ -176,6 +180,53 @@ def main():
     except jwt.InvalidTokenError:
         flash("유효하지 않은 로그인 세션입니다.", 'error')
         return redirect('/login')
+
+
+# 닉네임 변경 API
+@LoginController.route('/ch_nickname', methods=['POST'])
+def ch_nickname():
+    try:
+        # JWT 토큰으로부터 사용자 ID 가져오기
+        token = request.cookies.get('accessToken')
+        if not token:
+            flash("로그인이 필요합니다.", 'error')
+            return redirect('/login')
+
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['id']
+        except jwt.ExpiredSignatureError:
+            flash("로그인 세션이 만료되었습니다.", 'error')
+            return redirect('/login')
+        except jwt.InvalidTokenError:
+            flash("유효하지 않은 로그인 세션입니다.", 'error')
+            return redirect('/login')
+
+        # 요청으로부터 새 닉네임 가져오기
+        data = request.get_json()
+        new_nickname = data.get('nickname')
+        
+        if not new_nickname:
+            flash("닉네임을 입력해주세요.", 'error')
+            return jsonify({'success': False, 'message': "닉네임을 입력해주세요."}), 400
+
+        # 닉네임 중복 확인
+        nickname_check = supabase.table('users').select('*').eq('nickname', new_nickname).execute()
+        if len(nickname_check.data) > 0:
+            flash('이미 사용 중인 닉네임입니다.', 'error')
+            return jsonify({'success': False, 'message': "이미 사용 중인 닉네임입니다."}), 400
+
+        # 닉네임 변경
+        supabase.table('users').update({'nickname': new_nickname}).eq('id', user_id).execute()
+        flash("닉네임이 성공적으로 변경되었습니다.", 'success')
+        
+        return jsonify({'success': True, 'message': "닉네임이 변경되었습니다."})
+    
+    except Exception as e:
+        logging.error(f"닉네임 변경 중 오류 발생: {e}")
+        flash("닉네임 변경 중 문제가 발생했습니다.", 'error')
+        return jsonify({'success': False, 'message': "닉네임 변경 중 문제가 발생했습니다."}), 500
+
 
 
 # 로그아웃 처리

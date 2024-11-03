@@ -1,0 +1,293 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scrollbar-width: none; 
+}
+
+*::-webkit-scrollbar {
+    display: none; 
+}
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f9f9f9;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.loading-indicator {
+    display: none; /* 초기 상태는 숨김 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
+    color: #333;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+}
+
+.back-btn, .cart-btn {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+}
+
+.search-container {
+    flex: 1;
+}
+
+input[type="search"] {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.filters {
+    padding: 1rem;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.recent-searches {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid #525252;
+    border-radius: 20px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.tag span {
+    margin-right: 0.5rem;
+}
+
+.promotional-banner {
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.promo-card {
+    background: linear-gradient(45deg, #4A90E2, #357ABD);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.popular-searches, .restaurant-list {
+    padding: 1rem;
+}
+.restaurant-list {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.filters h2, .popular-searches h2{
+    font-size: 1.3rem;  
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.search-item {
+    background-color: white;
+    padding: 0.8rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+
+.search-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}        
+
+.restaurant-grid {
+    display: flex;
+    gap: 1rem; 
+    scroll-snap-type: x mandatory; 
+}
+
+
+.restaurant-card {
+    flex: 0 0 auto; 
+    width: 23.5rem; 
+    display: inline-block;
+    white-space: normal; 
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    scroll-snap-align: start; 
+    transition: transform 0.3s ease; 
+}
+
+.restaurant-card:hover {
+    transform: scale(1.02);
+}
+
+.restaurant-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 2px solid #ddd;
+}
+
+.restaurant-info {
+    padding: 1rem;
+}
+
+.rating {
+    color: #FFB800;
+    font-weight: bold;
+}
+
+.details {
+    display: flex;
+    gap: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.ad-section {
+    padding: 1rem;
+    background: #f8f8f8;
+    margin-top: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.expand-item {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+    gap: 4px;
+}
+
+.expand-content {
+    display: none;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+.expand-item i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.expanded .expand-content {
+    display: block;
+}
+
+.expanded .expand-item i {
+    transform: rotate(180deg);
+}
+
+.update-info {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.collapse {
+    cursor: pointer;
+    color: #555;
+}
+
+.search-item.expanded .expand-content {
+    display: block;
+}
+
+.search-rankings {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.columns {
+    display: flex;
+    gap: 1rem;
+}
+
+.left-column,
+.right-column {
+    width: 50%;
+}
+
+.search-rankings li {
+    padding: 0.4rem 0;
+    display: flex;
+    align-items: center;
+    
+}
+
+.rank-number {
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.search-rankings li .new {
+    font-size: 0.8rem;
+    background-color: #FF4081;
+    color: white;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+}
+
+
+.top-rankings {
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+}
