@@ -315,7 +315,7 @@ let displayMarker = function (place, index) {
             <div style="margin-right: 10px;">
               <img src="${getImageSrc(
                 place.category_name
-              )}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+              )}" style="width: 30px; height: 40px; border-radius: 50%; object-fit: cover;">
             </div>
             <div style="display: flex; flex-direction: column; text-align: left;">
               <span style="font-size: 14px; font-weight: bold; color: #D0273B;">${
