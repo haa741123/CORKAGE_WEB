@@ -31,6 +31,7 @@ def entry_iframe(driver):
 def chk_names_and_rating(driver):
     search_iframe(driver)
     try:
+        time.sleep(random.uniform(10, 15))
         elem = driver.find_elements(By.XPATH, '//*[@id="_pcmap_list_scroll_container"]/ul/li/div[1]/div/a[1]/div/div/span[1]')
         name_list = [e.text for e in elem]
 
@@ -68,29 +69,29 @@ def click_menu_tab_and_extract_menu(driver):
             EC.element_to_be_clickable((By.CSS_SELECTOR, "a._tab-menu span.veBoZ"))
         )
         menu_tab.click()
-        time.sleep(random.uniform(10, 15))  # 페이지 로딩을 위한 대기 시간
-
-        # 메뉴와 가격 정보 추출
+        
+        # 페이지 로딩 대기
+        time.sleep(2)  # 필요에 따라 대기 시간을 조절하세요.
+        
+        # BeautifulSoup로 HTML 파싱
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        
+        # 메뉴 항목 추출
         menus_with_prices = []
-        menu_items = driver.find_elements(By.XPATH, '//li[@class="E2jtL"]')
-
-        if not menu_items:
-            print("메뉴 항목을 찾을 수 없습니다.")
-            return []
-
-        for menu_item in menu_items:
-            # 메뉴 이름과 가격 추출
-            try:
-                menu_name = menu_item.find_element(By.XPATH, './/span[@class="lPzHi"]').text
-            except NoSuchElementException:
-                menu_name = "메뉴 이름 없음"
-
-            try:
-                menu_price = menu_item.find_element(By.XPATH, './/div[@class="GXS1X"]/em').text
-            except NoSuchElementException:
-                menu_price = "가격 정보 없음"
-
-            menus_with_prices.append((menu_name, menu_price))
+        menu_items = soup.select('li.E2jtL')
+        
+        for item in menu_items:
+            # 메뉴 이름
+            menu_name = item.select_one('.lPzHi').text if item.select_one('.lPzHi') else "메뉴 이름 없음"
+            
+            # 메뉴 설명
+            menu_description = item.select_one('.kPogF').text if item.select_one('.kPogF') else "설명 없음"
+            
+            # 가격
+            menu_price = item.select_one('.GXS1X em').text if item.select_one('.GXS1X em') else "가격 정보 없음"
+            
+            # 데이터 추가
+            menus_with_prices.append((menu_name, menu_description, menu_price))
 
         return menus_with_prices
 
@@ -102,8 +103,11 @@ def click_menu_tab_and_extract_menu(driver):
         print(f"오류 발생: {str(e)}")
         return []
 
+
+
 # 업체 세부 정보 크롤링 함수
 def crawling_main(driver, elem, name_list, rating_list):
+    time.sleep(random.uniform(10, 15))
     global naver_res
     addr_list = []
     category_list = []
@@ -184,6 +188,7 @@ def scroll_and_crawl(driver):
 
         # 다음 페이지로 이동
         try:
+            time.sleep(random.uniform(10, 15))
             next_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.eUTV2[aria-disabled="false"]'))
             )

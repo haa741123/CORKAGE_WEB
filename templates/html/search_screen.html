@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
-    <link rel="stylesheet" href="/static/css/sch_screen.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/sch_screen.css">
+    
     <title>검색 화면</title>
     <style>
         
@@ -25,10 +26,7 @@
         <section class="filters">
             <h2>최근 검색어</h2>    
             <div class="recent-searches">
-                <div class="tag"><span>삼겹살</span> ×</div>
-                <div class="tag"><span>콜키지 프리</span> ×</div>
-                <div class="tag"><span>와인바</span> ×</div>
-                <div class="tag"><span>일식</span> ×</div>
+                <!-- JS에서 데이터 채워놓음 -->
             </div>
         </section>
 
@@ -40,7 +38,7 @@
             <h2>인기 검색어</h2>
             <div class="search-grid">
                 <div class="search-item" onclick="toggleExpand(this)">
-                    <div class="top-rankings"></div>
+                    <div class="top_rankings"></div>
                     <span class="expand-item">
                         펼쳐서 보기 <i class="fas fa-chevron-down"></i>
                     </span>
@@ -77,18 +75,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/static/js/sch_screen.js"></script>
     <script>
-
-        const searchInput = document.querySelector('input[type="search"]');
-
-        searchInput.addEventListener('keypress', function (event) {
-            if (event.key === 'Enter') {
-                const searchTerm = searchInput.value.trim();
-                if (searchTerm) {
-                    // Redirect to the results page with the search term as a path parameter
-                    window.location.href = `/search/${encodeURIComponent(searchTerm)}`;
-                }
-            }
-        });
 
 
     </script>
