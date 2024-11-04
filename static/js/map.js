@@ -8,58 +8,30 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  * 음식점 리스트 불러오기
  * @returns
  */
-let get_res_info = function () {
-  return supabase
-    .from("corkage")
-    .select(
-      `
-      id, 
-      name, 
-      address, 
-      phone, 
-      image_url, 
-      category_name,
-      tags,
-      coordinates
-    `
-    )
-    .neq("category_name", "") // category_name이 빈 문자열이 아닌 데이터를 필터링
-    .limit(20) // 상위 20개 데이터만 가져옴
-    .then((response) => {
-      const { data, error } = response;
+let get_res_info = async function (latitude, longitude) {
+  const { data, error } = await supabase.rpc('get_nearest_restaurants', {
+    user_lat: latitude,
+    user_lon: longitude,
+    limit_count: 20
+  });
 
-      if (error) {
-        console.error("Supabase 데이터 가져오기 실패:", error);
-        return [];
-      }
+  if (error) {
+    console.error("Supabase 데이터 가져오기 실패:", error);
+    return [];
+  }
 
-      const formattedData = data.map((item) => {
-        // coordinates가 존재하고 문자열인지 확인
-        const [x, y] = (item.coordinates && typeof item.coordinates === 'string')
-          ? item.coordinates.split(",").map((coord) => coord.trim())
-          : [null, null];
-      
-        const regex = /[^{}"]+/g;
-        // item.tags를 사용하고, 존재하는지 확인
-        const formattedTags = item.tags && typeof item.tags === 'string'
-          ? item.tags.match(regex) || []
-          : [];
-      
-        return {
-          id: item.id,
-          place_name: item.name,
-          road_address_name: item.address,
-          phone: item.phone,
-          image_url: item.image_url,
-          category_name: item.category_name,
-          tags: formattedTags,
-          x: x,
-          y: y,
-        };
-      });
-
-      return formattedData;
-    });
+  return data.map(item => ({
+    id: item.id,
+    place_name: item.name,
+    road_address_name: item.address,
+    phone: item.phone,
+    image_url: item.image_url || "/static/img/res_sample_img.jpg",
+    category_name: item.category_name,
+    tags: item.tags,
+    x: item.x,
+    y: item.y,
+    distance: item.distance
+  }));
 };
 
 /** 사용자 위치를 가져오는 함수 */
@@ -103,7 +75,7 @@ async function processUserLocation() {
     document.getElementById("loading-screen").style.display = "flex";
 
     await showUserPosition(); // 사용자 위치를 지도에 표시
-    await searchPlaces("콜키지 프리");
+    await searchPlaces();
 
     async function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -203,12 +175,59 @@ let getImageSrc = function (categoryName) {
 };
 
 /** 키워드를 사용하여 장소를 검색하는 함수 */
-let searchPlaces = function (keyword) {
-  if (!isSearchInProgress) {
+let searchPlaces = async function (keyword) {
+  if (!isSearchInProgress && userPosition) {
     isSearchInProgress = true;
-    ps.keywordSearch(keyword, placesSearchCB);
+    try {
+      const restaurants = await get_res_info(userPosition.latitude, userPosition.longitude);
+      console.log("Fetched restaurants:", restaurants);  // 디버깅용
+      displayRestaurants(restaurants, keyword);
+    } catch (error) {
+      console.error("Error fetching restaurants:", error);
+    } finally {
+      isSearchInProgress = false;
+    }
   }
 };
+
+function displayRestaurants(restaurants, keyword) {
+  removeMarkers();
+  let bounds = new kakao.maps.LatLngBounds();
+  
+  console.log("Original restaurants:", restaurants);  // 디버깅용
+
+  const filteredRestaurants = keyword 
+    ? restaurants.filter(place => 
+        (place.category_name && place.category_name.includes(keyword)) || 
+        (place.tags && Array.isArray(place.tags) && place.tags.some(tag => tag.includes(keyword)))
+      )
+    : restaurants;
+  
+  console.log("Filtered restaurants:", filteredRestaurants);  // 디버깅용
+
+  filteredRestaurants.forEach((place, index) => {
+    if (place.x && place.y) {  // x와 y 좌표가 있는 경우에만 마커 표시
+      displayMarker(place, index);
+      bounds.extend(new kakao.maps.LatLng(place.y, place.x));
+    }
+  });
+  
+  let restaurantsInfo = filteredRestaurants.map((place, index) => generatePlaceInfo(place, index)).join('');
+  document.getElementById("restaurantInfo").innerHTML = restaurantsInfo;
+  
+  if (userPosition) {
+    let userLatLng = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
+    bounds.extend(userLatLng);
+  }
+  
+  if (!bounds.isEmpty()) {
+    map.setBounds(bounds);
+  }
+  
+  document.getElementById("infoContainer").style.display = "block";
+  
+  console.log("Displayed restaurants:", filteredRestaurants);  // 디버깅용
+}
 
 /** 장소 검색 결과를 처리하는 콜백 함수 - 수정하지마 제발 */
 let placesSearchCB = function (data, status) {
@@ -290,18 +309,19 @@ let displayMarker = function (place, index) {
 
       // 말풍선 스타일과 꼬리표를 자연스럽게 맞춤
       let content = `
-        <div style="position: relative;">
-          <div style="display: flex; align-items: center; padding: 10px 20px 10px 10px; background-color: #F8E9E9; border: 2px solid #EFC3C3; border-radius: 20px; box-shadow: 0px 2px 6px rgba(0,0,0,0.3);">
+        <div id="res_info_${index}" class="res_info_2" data-id="${place.id}">
+  <div style="position: relative;">
+          <div style="display: flex; align-items: center; padding: 7px 12px 7px 7px; background-color: #F8E9E9; border: 2px solid #EFC3C3; border-radius: 50px; box-shadow: 0px 2px 6px rgba(0,0,0,0.3);">
             <div style="margin-right: 10px;">
               <img src="${getImageSrc(
                 place.category_name
-              )}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+              )}" style="width: 30px; height: 40px; border-radius: 50%; object-fit: cover;">
             </div>
             <div style="display: flex; flex-direction: column; text-align: left;">
-              <span style="font-size: 14px; font-weight: bold; color: #D0273B;">${
+              <span style="font-size: 12px; font-weight: bold; color: #D0273B;">${
                 place.place_name
               }</span>
-              <span style="display: inline-block; font-size: 12px; color: #FFFFFF; background-color: #E1707A; padding: 2px 5px; border-radius: 5px; margin-top: 2px;">콜키지 프리</span>
+              <span style="display: inline-flex; align-items: center; justify-content: center; font-size: 8px; color: #FFFFFF; background-color: #E1707A; padding: 2px 0px; border-radius: 2px; margin-top: 2px; height: 14px;">콜키지 프리</span>
             </div>
           </div>
           <div style="position: absolute; bottom: -11px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 11px solid #F8E9E9; border-top-color: #EFC3C3; border-top: 11px solid #EFC3C3;"></div>
@@ -475,9 +495,9 @@ const setBookmark = async (id, status) => {
 
 
 function navigateToRestaurant(event) {
-  let target = event.target.closest(".res_info");
+  let target = event.target.closest(".res_info") || event.target.closest(".res_info_2");
   if (target) {
-    const restaurantId = target.dataset.id; // HTML 요소에 data-id 속성을 추가해야 합니다
+    const restaurantId = target.dataset.id;
     if (restaurantId) {
       const newUrl = `/restaurant/${restaurantId}`;
       window.location.href = newUrl;
