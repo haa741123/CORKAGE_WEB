@@ -311,17 +311,17 @@ let displayMarker = function (place, index) {
       let content = `
         <div id="res_info_${index}" class="res_info_2" data-id="${place.id}">
   <div style="position: relative;">
-          <div style="display: flex; align-items: center; padding: 10px 20px 10px 10px; background-color: #F8E9E9; border: 2px solid #EFC3C3; border-radius: 20px; box-shadow: 0px 2px 6px rgba(0,0,0,0.3);">
+          <div style="display: flex; align-items: center; padding: 7px 12px 7px 7px; background-color: #F8E9E9; border: 2px solid #EFC3C3; border-radius: 50px; box-shadow: 0px 2px 6px rgba(0,0,0,0.3);">
             <div style="margin-right: 10px;">
               <img src="${getImageSrc(
                 place.category_name
               )}" style="width: 30px; height: 40px; border-radius: 50%; object-fit: cover;">
             </div>
             <div style="display: flex; flex-direction: column; text-align: left;">
-              <span style="font-size: 14px; font-weight: bold; color: #D0273B;">${
+              <span style="font-size: 12px; font-weight: bold; color: #D0273B;">${
                 place.place_name
               }</span>
-              <span style="display: inline-block; font-size: 12px; color: #FFFFFF; background-color: #E1707A; padding: 2px 5px; border-radius: 5px; margin-top: 2px;">콜키지 프리</span>
+              <span style="display: inline-flex; align-items: center; justify-content: center; font-size: 8px; color: #FFFFFF; background-color: #E1707A; padding: 2px 0px; border-radius: 2px; margin-top: 2px; height: 14px;">콜키지 프리</span>
             </div>
           </div>
           <div style="position: absolute; bottom: -11px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 11px solid #F8E9E9; border-top-color: #EFC3C3; border-top: 11px solid #EFC3C3;"></div>
