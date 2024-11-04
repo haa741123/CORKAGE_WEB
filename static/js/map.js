@@ -309,7 +309,8 @@ let displayMarker = function (place, index) {
 
       // 말풍선 스타일과 꼬리표를 자연스럽게 맞춤
       let content = `
-        <div style="position: relative;">
+        <div id="res_info_${index}" class="res_info_2" data-id="${place.id}">
+  <div style="position: relative;">
           <div style="display: flex; align-items: center; padding: 10px 20px 10px 10px; background-color: #F8E9E9; border: 2px solid #EFC3C3; border-radius: 20px; box-shadow: 0px 2px 6px rgba(0,0,0,0.3);">
             <div style="margin-right: 10px;">
               <img src="${getImageSrc(
@@ -494,9 +495,9 @@ const setBookmark = async (id, status) => {
 
 
 function navigateToRestaurant(event) {
-  let target = event.target.closest(".res_info");
+  let target = event.target.closest(".res_info") || event.target.closest(".res_info_2");
   if (target) {
-    const restaurantId = target.dataset.id; // HTML 요소에 data-id 속성을 추가해야 합니다
+    const restaurantId = target.dataset.id;
     if (restaurantId) {
       const newUrl = `/restaurant/${restaurantId}`;
       window.location.href = newUrl;
