@@ -11,6 +11,16 @@ from modules.LoginController import LoginController
 app.register_blueprint(LoginController, url_prefix='/auth/kakao')  # 카카오 로그인
 
 
+# DB 관련 API
+try:
+    from modules.supabaseController import supabaseController
+    app.register_blueprint(supabaseController, url_prefix='/api/v1')  
+except ImportError as e:
+    logging.error(f"DB 오류 발생: {e}")
+except Exception as e:
+    logging.error(f"DB 오류 발생: {e}")
+
+
 # 주류 추천 API
 try:
     from modules.RecommendController import RecommendController

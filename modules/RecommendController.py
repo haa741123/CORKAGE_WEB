@@ -19,15 +19,20 @@ from fuzzywuzzy import fuzz, process
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from supabase import create_client, Client
+from dotenv import load_dotenv
+import os
 
 # Flask 블루프린트 설정
 RecommendController = Blueprint('RecommendController', __name__)
 
+# 환경 변수 로드
+load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-# Supabase 초기화
-SUPABASE_URL = 'https://kovzqlclzpduuxejjxwf.supabase.co'
-SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ'
+# Supabase 클라이언트 생성
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 # 설정 파일 로드
 CONFIG = {

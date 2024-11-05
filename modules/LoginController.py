@@ -5,22 +5,26 @@ from datetime import datetime, timedelta, timezone
 import logging
 from supabase import create_client
 from urllib.parse import quote
+from dotenv import load_dotenv
+import os
 
 LoginController = Blueprint('LoginController', __name__)
 
-# Supabase 초기화
-SUPABASE_URL = 'https://kovzqlclzpduuxejjxwf.supabase.co'
-SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ'
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# JWT 시크릿 키
-SECRET_KEY = 'AbMyTfPj/w869Xe6nGn7Mf+EyCAH0dS+SfCboVjjGJbeg3DVASFl1iU6TL9AEBTS6AKoY0Ewij0QP2GA2d+Jng=='
+# 환경 변수 로드
+load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")    # JWT 시크릿 키
 
 # 카카오 API 정보
-REST_API_KEY = '6b5cc3ff382b0cb3ea15795729b3329f'
-CLIENT_SECRET = 'S9WK77WOT8w1l4p6sn4leDk2FSs1hppB'
-# REDIRECT_URI = "https://corkage.store/auth/kakao/callback"  # 운영 환경
-REDIRECT_URI = "http://127.0.0.1:5000/auth/kakao/callback"  # 테스트 환경
+REST_API_KEY = os.getenv("REST_API_KEY")    
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")    
+REDIRECT_URI = os.getenv("REDIRECT_URI")
+
+
+# Supabase 클라이언트 생성
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 # 로그 설정
 logging.basicConfig(level=logging.INFO)

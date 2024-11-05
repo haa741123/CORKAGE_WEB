@@ -1,49 +1,51 @@
-// Supabase 설정
-const supabaseUrl = 'https://kovzqlclzpduuxejjxwf.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
-
-// 페이지네이션 설정 및 상태 관리 객체
-const pagination = {
-    pageSize: 10,  // 페이지 당 표시할 레스토랑 수
-    currentPage: 0,  // 현재 페이지
-    totalItems: 0,  // 전체 레스토랑 개수
-    cache: {}  // 페이지 데이터를 캐싱할 객체
-};
 
 /**
- * Supabase에서 값이 모두 존재하는 레스토랑 수를 가져오는 함수
+ * 메모를 업데이트하는 함수
+ * @param {number} restaurantId 레스토랑 id
+ * @param {string} memoContent 메모 내용
  */
-const Restaurant_Count = async () => {
-    const { data, error } = await supabase
-        .rpc('get_corkage_bookmarks');  // 저장된 RPC 호출
-
-    if (error) {
-        console.error('DB 에러:', error);
-        return 0;
+const updateMemo = async (restaurantId, memoContent) => {
+    if (!restaurantId || !memoContent) {
+        console.error('메모 내용이 존재하지 않음:', restaurantId, memoContent);
+        return;
     }
 
-    return data.length;  // 데이터의 길이를 반환
+    try {
+        // Flask API에 메모 업데이트 요청
+        const response = await fetch('/api/v1/update_memo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ restaurant_id: restaurantId, memo: memoContent })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            console.error('메모 업데이트 실패:', data.error);
+            return;
+        }
+
+        // 업데이트 성공 시 알림 메시지 표시
+        Swal.fire({
+            icon: 'success',
+            title: '메모가 업데이트되었습니다.',
+            showConfirmButton: false,
+            timer: 1500,  // 1.5초 후 자동으로 사라짐
+            timerProgressBar: true,
+            customClass: {
+                popup: 'swal2-toast'
+            }
+        });
+    } catch (error) {
+        console.error('네트워크 에러:', error);
+    }
 };
 
 
 
-/**
- * Supabase에서 현재 페이지에 해당하는 데이터를 가져오는 함수
- * 지정한 컬럼만 받아오도록 수정: name, image_url, tags, description, rating, bookmark
- * @returns {Array} 현재 페이지에 해당하는 레스토랑 리스트
- */
-const fetchPagedRestaurants = async (end_limit, start) => {
-    const { data, error } = await supabase
-        .rpc('fetch_paged_restaurants', { end_limit, start });
 
-    if (error) {
-        console.error('DB 에러:', error);
-        return [];
-    }
-
-    return data;
-};
 
 
 
@@ -70,47 +72,126 @@ const removeBookmark = async (id) => {
         buttonsStyling: false
     }).then(async (result) => {
         if (result.isConfirmed) {
-            // 북마크 상태를 false로 업데이트
-            const { error } = await supabase
-                .from('bookmark')  // bookmark 테이블을 업데이트
-                .update({ status: false })  // status 컬럼을 false로 변경
-                .eq('restaurant_id', id);
+            try {
+                // Flask API에 북마크 상태 업데이트 요청
+                const response = await fetch('/api/v1/remove_bookmark', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ restaurant_id: id })
+                });
+                
+                const data = await response.json();
 
-            if (error) {
-                console.error('DB 에러:', error);
-                return;
-            }
-
-            // 북마크 제거 후 현재 페이지 데이터 다시 가져오기
-            const currentPage = pagination.currentPage;  // 현재 페이지 값 저장
-            pagination.totalItems = await Restaurant_Count();  // 전체 북마크 개수 다시 카운트
-
-            // 총 북마크 개수가 줄었으므로 마지막 페이지에서 데이터를 확인
-            const totalPages = Math.ceil(pagination.totalItems / pagination.pageSize);
-            if (currentPage > totalPages - 1) {
-                pagination.currentPage = totalPages - 1;  // 마지막 페이지로 이동
-            }
-
-            // 리스트 및 페이지네이션을 다시 렌더링
-            renderList(pagination.currentPage);
-            renderPagination();
-
-            // 토스트 스타일의 알림 메시지 표시
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: '북마크가 해지되었습니다.',
-                showConfirmButton: false,
-                timer: 1500,  // 1.5초 후 자동으로 사라짐
-                timerProgressBar: true,
-                customClass: {
-                    popup: 'swal2-toast'
+                if (data.error) {
+                    console.error('API 에러:', data.error);
+                    return;
                 }
-            });
+
+                // 북마크 제거 후 현재 페이지 데이터 다시 가져오기
+                const currentPage = pagination.currentPage;
+                pagination.totalItems = await Restaurant_Count();  // 전체 북마크 개수 다시 카운트
+
+                const totalPages = Math.ceil(pagination.totalItems / pagination.pageSize);
+                if (currentPage > totalPages - 1) {
+                    pagination.currentPage = totalPages - 1;
+                }
+
+                // 리스트 및 페이지네이션을 다시 렌더링
+                renderList(pagination.currentPage);
+                renderPagination();
+
+                // 토스트 스타일의 알림 메시지 표시
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '북마크가 해지되었습니다.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'swal2-toast'
+                    }
+                });
+            } catch (error) {
+                console.error('네트워크 에러:', error);
+            }
         }
     });
 };
+
+
+
+
+
+
+
+// 페이지네이션 설정 및 상태 관리 객체
+const pagination = {
+    pageSize: 10,  // 페이지 당 표시할 레스토랑 수
+    currentPage: 0,  // 현재 페이지
+    totalItems: 0,  // 전체 레스토랑 개수
+    cache: {}  // 페이지 데이터를 캐싱할 객체
+};
+
+/**
+ * 레스토랑의 총 개수를 Flask API에서 가져오는 함수
+ */
+const Restaurant_Count = async () => {
+    try {
+        const response = await fetch('/api/v1/restaurant_count', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        
+        if (data.error) {
+            console.error('API 에러:', data.error);
+            return 0;
+        }
+
+        return data.count || 0;  // 총 개수를 반환
+    } catch (error) {
+        console.error('네트워크 에러:', error);
+        return 0;
+    }
+};
+
+/**
+ * Flask API에서 현재 페이지에 해당하는 데이터를 가져오는 함수
+ * 지정한 컬럼만 받아오도록 수정: name, image_url, tags, description, rating, bookmark
+ * @returns {Array} 현재 페이지에 해당하는 레스토랑 리스트
+ */
+const fetchPagedRestaurants = async (end_limit, start) => {
+    try {
+        const response = await fetch('/api/v1/paged_restaurants', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ end_limit, start })
+        });
+        const data = await response.json();
+
+        if (data.error) {
+            console.error('API 에러:', data.error);
+            return [];
+        }
+
+        return data.restaurants || [];  // 레스토랑 리스트 반환
+    } catch (error) {
+        console.error('네트워크 에러:', error);
+        return [];
+    }
+};
+
+
+
+
 
 
 
@@ -128,6 +209,16 @@ const renderList = async (page) => {
 
     count.text(pagination.totalItems); // 레스토랑 총 개수 표시
     list.empty();
+
+    // 레스토랑이 없는 경우 예외 처리
+    if (pagination.totalItems === '0' || restaurants.length === 0) {
+        const noDataMessage = $('<p>')
+            .addClass('no-data-message')
+            .text('표시할 레스토랑이 없습니다.');
+        
+        list.append(noDataMessage);
+        return;
+    }
     
     const fragment = $(document.createDocumentFragment());
 
@@ -211,42 +302,6 @@ const renderList = async (page) => {
     list.append(fragment);
     
 };
-
-
-/**
- * 메모를 업데이트하는 함수
- * @param {number} restaurantId 레스토랑 id
- * @param {string} memoContent 메모 내용
- */
-const updateMemo = async (restaurantId, memoContent) => {
-    if (!restaurantId || !memoContent) {
-        console.error('메모 내용이 존재하지 않음:', restaurantId, memoContent);
-        return;
-    }
-
-    const { data, error } = await supabase
-        .from('bookmark')  // 'bookmark' 테이블을 업데이트
-        .update({ memo: memoContent })  // 'memo' 컬럼에 메모 내용을 업데이트
-        .eq('restaurant_id', restaurantId);  // 특정 레스토랑의 id에 해당하는 행을 업데이트
-
-    if (error) {
-        console.error('메모 업데이트 실패:', error);
-        return;
-    }
-
-    // 업데이트 성공 시 알림 메시지 표시
-    Swal.fire({
-        icon: 'success',
-        title: '메모가 업데이트되었습니다.',
-        showConfirmButton: false,
-        timer: 1500,  // 1.5초 후 자동으로 사라짐
-        timerProgressBar: true,
-        customClass: {
-            popup: 'swal2-toast'
-        }
-    });
-};
-
 
 
 /**
