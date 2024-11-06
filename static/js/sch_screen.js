@@ -149,6 +149,7 @@ const fetchRecentSearches = async () => {
         if (!response.ok) throw new Error('데이터 요청 실패');
         
         const searches = await response.json();
+        console.log(searches)
         const recentSearchesContainer = document.querySelector('.recent-searches');
         recentSearchesContainer.innerHTML = searches.map(search => `
             <div class="tag" onclick="window.location.href='/search/${encodeURIComponent(search.term)}'">
