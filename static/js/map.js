@@ -12,7 +12,7 @@ let get_res_info = async function (latitude, longitude) {
   const { data, error } = await supabase.rpc('get_nearest_restaurants', {
     user_lat: latitude,
     user_lon: longitude,
-    limit_count: 20
+    limit_count: 30
   });
 
   if (error) {
@@ -30,7 +30,8 @@ let get_res_info = async function (latitude, longitude) {
     tags: item.tags,
     x: item.x,
     y: item.y,
-    distance: item.distance
+    distance: item.distance,
+    price: item.price
   }));
 };
 
@@ -193,40 +194,28 @@ let searchPlaces = async function (keyword) {
 function displayRestaurants(restaurants, keyword) {
   removeMarkers();
   let bounds = new kakao.maps.LatLngBounds();
-  
-  console.log("Original restaurants:", restaurants);  // 디버깅용
+  console.log("Displaying restaurants:", restaurants); // 디버깅용
 
-  const filteredRestaurants = keyword 
-    ? restaurants.filter(place => 
-        (place.category_name && place.category_name.includes(keyword)) || 
-        (place.tags && Array.isArray(place.tags) && place.tags.some(tag => tag.includes(keyword)))
-      )
-    : restaurants;
-  
-  console.log("Filtered restaurants:", filteredRestaurants);  // 디버깅용
-
-  filteredRestaurants.forEach((place, index) => {
-    if (place.x && place.y) {  // x와 y 좌표가 있는 경우에만 마커 표시
+  restaurants.forEach((place, index) => {
+    if (place.x && place.y) {
       displayMarker(place, index);
       bounds.extend(new kakao.maps.LatLng(place.y, place.x));
     }
   });
-  
-  let restaurantsInfo = filteredRestaurants.map((place, index) => generatePlaceInfo(place, index)).join('');
+
+  let restaurantsInfo = restaurants.map((place, index) => generatePlaceInfo(place, index)).join('');
   document.getElementById("restaurantInfo").innerHTML = restaurantsInfo;
-  
+
   if (userPosition) {
     let userLatLng = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
     bounds.extend(userLatLng);
   }
-  
+
   if (!bounds.isEmpty()) {
     map.setBounds(bounds);
   }
-  
+
   document.getElementById("infoContainer").style.display = "block";
-  
-  console.log("Displayed restaurants:", filteredRestaurants);  // 디버깅용
 }
 
 /** 장소 검색 결과를 처리하는 콜백 함수 - 수정하지마 제발 */
@@ -579,3 +568,68 @@ function closeModal() {
   $backgroundElements.removeClass("blur-background");
   $("script[src='/static/js/filter.js']").remove();
 }
+
+// 레스토랑 정보를 지우는 함수
+function clearRestaurantInfo() {
+  document.getElementById("restaurantInfo").innerHTML = "";
+}
+
+
+// 필터 적용 버튼 클릭 이벤트 리스너
+$(".btn-apply").on("click", function (e) {
+  e.preventDefault();
+
+  // 필터 값 가져오기
+  let maxDistance = parseFloat($("#distanceSlider").val()) || 10; // 기본값 10km
+  let selectedFood = Array.from($(".filter-buttons[data-category='food'] .btn.active")).map(btn => $(btn).data("value"));
+  let selectedTime = Array.from($(".filter-buttons[data-category='time'] .btn.active")).map(btn => $(btn).data("value"));
+  let selectedScore = Array.from($(".filter-buttons[data-category='score'] .btn.active")).map(btn => $(btn).data("value"));
+
+  // 기존 마커와 정보 제거
+  removeMarkers();
+  clearRestaurantInfo();
+
+  // 필터 적용 함수 호출
+  applyFilters(maxDistance, selectedFood, selectedTime, selectedScore);
+
+  // 모달 닫기
+  closeModal();
+});
+
+// 필터 적용 함수
+async function applyFilters(maxDistance, food, time, score) {
+  if (!userPosition) {
+    console.error("사용자 위치 정보를 받지 못했습니다.");
+    return;
+  }
+
+  try {
+    const restaurants = await get_res_info(userPosition.latitude, userPosition.longitude);
+    console.log("Fetched restaurants:", restaurants); // 디버깅용
+
+    const filteredRestaurants = restaurants.filter(restaurant => {
+      // distance는 미터 단위로 반환되므로 km로 변환
+      const restaurantDistance = restaurant.distance / 1000;
+      
+      return (
+        restaurantDistance <= maxDistance &&
+        (food.length === 0 || food.includes(restaurant.category_name)) &&
+        (time.length === 0 || (restaurant.opening_hours && time.some(t => restaurant.opening_hours.includes(t)))) &&
+        (score.length === 0 || (restaurant.rating && score.includes(Math.floor(restaurant.rating).toString() + '점')))
+      );
+    });
+
+    console.log("Filtered restaurants:", filteredRestaurants); // 디버깅용
+    displayRestaurants(filteredRestaurants);
+  } catch (error) {
+    console.error("Error fetching or filtering restaurants:", error);
+  }
+}
+
+let distanceSlider = document.getElementById('distanceSlider');
+let distanceText = document.getElementById('distanceText');
+
+distanceSlider.addEventListener('input', function() {
+    let distance = this.value;
+    distanceText.textContent = `1km ~ ${distance}km`;
+});

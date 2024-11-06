@@ -6,19 +6,18 @@
         <div class="container">
             <form id="filterForm" action="/submit_filters" method="POST">
                 <div class="filter-section">
-                    <h5>콜키지 가격대</h5>
-                    <p class="text-center" id="priceText">콜키지 프리 ~ 2만원</p>
+                    <h5>거리 설정</h5>
+                    <p class="text-center" id="distanceText">0km ~ 10km</p>
                     <div class="slider-container">
                         <div class="slider-track"></div>
                         <div class="slider-range" id="sliderRange"></div>
-                        <input type="range" class="slider" id="minSlider" min="0" max="100000" step="10000" value="0" />
-                        <input type="range" class="slider" id="maxSlider" min="0" max="100000" step="10000" value="20000" />
+                        <input type="range" class="slider" id="distanceSlider" min="0.5" max="10" step="0.5" value="0.5" />
                         <div class="price-labels">
-                            <span style="color: #a6a4a5;">0원</span>
-                            <span style="color: #a6a4a5; padding-left: 7dvh;">5만원</span>
-                            <span style="color: #a6a4a5;">10만원 이상</span>
+                            <span style="color: #a6a4a5;">가까운 곳</span>
+                            <span style="color: #a6a4a5;">먼 곳</span>         
                         </div>
                     </div>
+                </div>
 
                     <h5>음식종류</h5>
                     <div class="filter-buttons" data-category="food">
