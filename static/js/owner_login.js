@@ -1,40 +1,64 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+// 비밀번호 해싱 함수
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
-const supabaseUrl = "https://kovzqlclzpduuxejjxwf.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// 로그인 시도 횟수와 제한 시간 설정
+let loginAttempts = 0;
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_TIME = 30000;  // 30초 잠금
 
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  // 로그인 시도 횟수 확인
+  if (loginAttempts >= MAX_ATTEMPTS) {
+      alert("너무 많은 로그인 시도로 인해 잠시 후 다시 시도하세요.");
+      return;
+  }
+
   const loginId = document.getElementById("exampleInputEmail").value;
   const password = document.getElementById("exampleInputPassword").value;
 
+  // 비밀번호 해싱
+  const hashedPassword = await hashPassword(password);
+
   try {
-    const { data: ownerData, error: ownerError } = await supabase
-      .from("owner")
-      .select("*")
-      .eq("login_id", loginId)
-      .single();
+      // 로그인 요청 전송
+      const response = await fetch('/api/v1/login', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ login_id: loginId, login_passwd: hashedPassword })
+      });
 
-    if (ownerError || !ownerData) {
-      const errorMessage = ownerError?.code === "PGRST116"
-        ? "사용자를 찾을 수 없습니다."
-        : ownerError?.message || "사용자 정보 조회 중 오류가 발생했습니다.";
-      throw new Error(errorMessage);
-    }
+      const data = await response.json();
 
-    // 비밀번호 확인 (실제 환경에서는 암호화된 비밀번호를 사용해야 합니다)
-    if (ownerData.login_passwd !== password) {
-      throw new Error("비밀번호가 일치하지 않습니다.");
-    }
+      // 서버에서 에러가 반환된 경우
+      if (data.error) {
+          throw new Error(data.error);
+      }
 
-    console.log("로그인 성공:", ownerData);
-    localStorage.setItem("user", JSON.stringify(ownerData));
-    window.location.href = "reservation_owner";
+      // 로그인 성공 시 사용자 정보를 sessionStorage에 저장
+      sessionStorage.setItem("user", JSON.stringify(data.ownerData));
+      window.location.href = "reservation_owner";
   } catch (error) {
-    console.error("로그인 에러:", error.message);
-    alert(`로그인 실패: ${error.message}`);
+      console.error("로그인 에러:", error.message);
+      alert(`로그인 실패: ${error.message}`);
+      
+      // 로그인 실패 시 시도 횟수 증가
+      loginAttempts += 1;
+
+      // 최대 시도 횟수에 도달하면 잠금
+      if (loginAttempts >= MAX_ATTEMPTS) {
+          alert("로그인 시도가 너무 많습니다. 30초 후 다시 시도하세요.");
+          setTimeout(() => {
+              loginAttempts = 0;  // 잠금 해제
+          }, LOCKOUT_TIME);
+      }
   }
 });

@@ -1,10 +1,49 @@
-// Supabase 초기화
-const supabaseUrl = "https://kovzqlclzpduuxejjxwf.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ";
-
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 let items = [];
 let currIdx = 0;
+
+/** 인기 맛집 데이터 가져오기 및 표시 */
+const fetchPopularRestaurants = async () => {
+    try {
+        // Flask API로 요청 전송
+        const response = await fetch('/api/v1/popular_restaurants', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ limit: 10 })  // 제한 개수 설정
+        });
+
+        const data = await response.json();
+
+        // 오류가 있을 경우 처리
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        const popularRestaurants = data.restaurants || [];
+        const popularList = document.querySelector('.restaurant-grid');
+        
+        // 데이터 표시
+        popularList.innerHTML = popularRestaurants.map(restaurant => `
+            <article class="restaurant-card">
+                <img src="${restaurant.image_url || '/static/img/res_sample_img.jpg'}" alt="${restaurant.name}" loading="lazy">
+                <div class="restaurant-info">
+                    <h3>${restaurant.name}</h3>
+                    <div class="rating">★ ${restaurant.rating}</div>
+                    <div class="restaurant-tags">${parseTags(restaurant.tags)}</div>
+                    <p>${restaurant.description || '설명이 없습니다.'}</p>
+                </div>
+            </article>
+        `).join('');
+    } catch (error) {
+        console.error('인기 맛집 데이터 가져오기 오류:', error.message);
+    }
+};
+
+
+
+
+
 
 /** 초기화 함수: 페이지의 주요 설정과 데이터를 로드합니다. */
 const init = async () => {
@@ -86,33 +125,6 @@ window.toggleExpand = () => {
     searchItem.style.display = isExpanded ? 'flex' : 'none';
 };
 
-/** 인기 맛집 데이터 가져오기 및 표시 */
-const fetchPopularRestaurants = async () => {
-    try {
-        const { data: popularRestaurants, error } = await supabase
-            .from('corkage')
-            .select('rating, id, coordinates, phone, address, category_name, image_url, description, tags, name')
-            .order('rating', { ascending: false })
-            .limit(10);
-
-        if (error) throw error;
-
-        const popularList = document.querySelector('.restaurant-grid');
-        popularList.innerHTML = popularRestaurants.map(restaurant => `
-            <article class="restaurant-card">
-                <img src="${restaurant.image_url || '/static/img/res_sample_img.jpg'}" alt="${restaurant.name}" loading="lazy">
-                <div class="restaurant-info">
-                    <h3>${restaurant.name}</h3>
-                    <div class="rating">★ ${restaurant.rating}</div>
-                    <div class="restaurant-tags">${parseTags(restaurant.tags)}</div>
-                    <p>${restaurant.description || '설명이 없습니다.'}</p>
-                </div>
-            </article>
-        `).join('');
-    } catch (error) {
-        console.error('인기 맛집 데이터 가져오기 오류:', error.message);
-    }
-};
 
 /** 태그 데이터 파싱 */
 const parseTags = (tags) => {
@@ -137,6 +149,7 @@ const fetchRecentSearches = async () => {
         if (!response.ok) throw new Error('데이터 요청 실패');
         
         const searches = await response.json();
+        console.log(searches)
         const recentSearchesContainer = document.querySelector('.recent-searches');
         recentSearchesContainer.innerHTML = searches.map(search => `
             <div class="tag" onclick="window.location.href='/search/${encodeURIComponent(search.term)}'">

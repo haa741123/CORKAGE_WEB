@@ -2,12 +2,19 @@ import logging
 from flask import Blueprint, request, render_template, jsonify
 import requests
 from supabase import create_client
+from dotenv import load_dotenv
+import os
 
 SearchController = Blueprint('SearchController', __name__)
 
-SUPABASE_URL = "https://kovzqlclzpduuxejjxwf.supabase.co"
-SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ"
-supabase = create_client(SUPABASE_URL, SUPABASE_API_KEY)
+# 환경 변수 로드
+load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Supabase 클라이언트 생성
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 @SearchController.route('/search/<string:search_term>')
 def search_results(search_term):

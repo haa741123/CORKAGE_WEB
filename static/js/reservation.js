@@ -5,12 +5,6 @@ const supabaseAnonKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// URL에서 음식점 ID를 추출하는 함수
-function getRestaurantIdFromUrl() {
-  const path = window.location.pathname;
-  const parts = path.split('/');
-  return parts[parts.length - 1];
-}
 
 // Supabase에서 음식점 정보를 가져오는 함수
 async function fetchRestaurantInfo(id) {
@@ -85,7 +79,7 @@ async function fetchRestaurantInfo(id) {
         ],
       };
 
-      // 메뉴 데이터를 로드하는 함수 (DOM 조작 최적화)
+// 메뉴 데이터를 로드하는 함수 (DOM 조작 최적화)
 async function loadMenu() {
   try {
     const menuContainer = $("#menu-container");
@@ -110,6 +104,15 @@ async function loadMenu() {
     $("#menu-container").html('<p>메뉴를 불러오는 데 실패했습니다.</p>');
   }
 }
+
+
+// URL에서 음식점 ID를 추출하는 함수
+function getRestaurantIdFromUrl() {
+  const path = window.location.pathname;
+  const parts = path.split('/');
+  return parts[parts.length - 1];
+}
+
 
 // 사진 데이터를 로드하는 함수 (DOM 조작 최적화)
 async function loadPhotos() {
