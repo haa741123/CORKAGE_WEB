@@ -142,6 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     getUserLocation();
+    loadSavedFilterResults();
 
     $("#my_loc_img").on("click", function () {
       if (userPosition) {
@@ -578,6 +579,13 @@ $btn.on("click", function () {
   loadScript("/static/js/filter.js");
 });
 
+// 모달 외부 클릭 시 닫기
+$(window).on("click", function (e) {
+  if ($(e.target).is("#filterModal")) {
+    closeModal();
+  }
+});
+
 // 모달창을 닫는 함수
 function closeModal() {
   $modal.hide();
@@ -633,7 +641,6 @@ async function applyFilters(maxDistance, food, time, score) {
     console.log("Fetched restaurants:", restaurants); // 디버깅용
 
     const filteredRestaurants = restaurants.filter((restaurant) => {
-      // distance는 미터 단위로 반환되므로 km로 변환
       const restaurantDistance = restaurant.distance / 1000;
 
       return (
@@ -649,11 +656,71 @@ async function applyFilters(maxDistance, food, time, score) {
     });
 
     console.log("Filtered restaurants:", filteredRestaurants); // 디버깅용
-    displayRestaurants(filteredRestaurants);
+
+    // 필터링된 결과를 로컬 스토리지에 저장
+    localStorage.setItem('filteredRestaurants', JSON.stringify(filteredRestaurants));
+    localStorage.setItem('filterCriteria', JSON.stringify({maxDistance, food, time, score}));
+
+    if (filteredRestaurants.length === 0) {
+      showNoResultsMessage();
+    } else {
+      displayRestaurants(filteredRestaurants);
+      adjustMapZoom(maxDistance);
+    }
   } catch (error) {
     console.error("Error fetching or filtering restaurants:", error);
+    showErrorMessage("레스토랑 정보를 가져오는 중 오류가 발생했습니다.");
   }
 }
+
+
+
+// 결과가 없을 때 메시지를 표시하는 함수
+function showNoResultsMessage() {
+  Swal.fire({
+    title: '검색 결과가 없습니다',
+    text: '다른 필터 조건으로 다시 검색해 보세요.',
+    icon: 'info',
+    confirmButtonText: '확인'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 모달을 다시 열기
+      $modal.show();
+      $backgroundElements.addClass("blur-background");
+    }
+  });
+}
+
+// 에러 메시지를 표시하는 함수
+function showErrorMessage(message) {
+  Swal.fire({
+    title: '오류',
+    text: message,
+    icon: 'error',
+    confirmButtonText: '확인'
+  });
+}
+
+// 지도 확대 레벨 조절 함수
+function adjustMapZoom(maxDistance) {
+  let zoomLevel;
+  
+  if (maxDistance <= 1) {
+    zoomLevel = 5;
+  } else if (maxDistance <= 3) {
+    zoomLevel = 6;
+  } else if (maxDistance <= 5) {
+    zoomLevel = 7;
+  } else if (maxDistance <= 10) {
+    zoomLevel = 8;
+  } else {
+    zoomLevel = 9;
+  }
+
+  map.setLevel(zoomLevel);
+}
+
+
 
 let distanceSlider = document.getElementById("distanceSlider");
 let distanceText = document.getElementById("distanceText");
@@ -662,3 +729,52 @@ distanceSlider.addEventListener("input", function () {
   let distance = this.value;
   distanceText.textContent = `1km ~ ${distance}km`;
 });
+// 지도 확대 레벨 조절 함수
+function adjustMapZoom(maxDistance) {
+  let zoomLevel;
+  
+  if (maxDistance <= 1) {
+    zoomLevel = 5;
+  } else if (maxDistance <= 3) {
+    zoomLevel = 6;
+  } else if (maxDistance <= 5) {
+    zoomLevel = 7;
+  } else if (maxDistance <= 10) {
+    zoomLevel = 8;
+  } else {
+    zoomLevel = 9;
+  }
+
+  map.setLevel(zoomLevel);
+}
+
+function loadSavedFilterResults() {
+  const savedRestaurants = localStorage.getItem('filteredRestaurants');
+  const savedCriteria = localStorage.getItem('filterCriteria');
+
+  if (savedRestaurants && savedCriteria) {
+    const filteredRestaurants = JSON.parse(savedRestaurants);
+    const {maxDistance, food, time, score} = JSON.parse(savedCriteria);
+
+    // 필터 UI 업데이트
+    $("#distanceSlider").val(maxDistance);
+    $("#distanceText").text(`1km ~ ${maxDistance}km`);
+    
+    $(".filter-buttons[data-category='food'] .btn").removeClass('active');
+    food.forEach(f => $(`.filter-buttons[data-category='food'] .btn[data-value="${f}"]`).addClass('active'));
+
+    $(".filter-buttons[data-category='time'] .btn").removeClass('active');
+    time.forEach(t => $(`.filter-buttons[data-category='time'] .btn[data-value="${t}"]`).addClass('active'));
+
+    $(".filter-buttons[data-category='score'] .btn").removeClass('active');
+    score.forEach(s => $(`.filter-buttons[data-category='score'] .btn[data-value="${s}"]`).addClass('active'));
+
+    // 결과 표시
+    if (filteredRestaurants.length > 0) {
+      displayRestaurants(filteredRestaurants);
+      adjustMapZoom(maxDistance);
+    } else {
+      showNoResultsMessage();
+    }
+  }
+}
