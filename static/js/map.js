@@ -605,6 +605,7 @@ $(".btn-apply").on("click", function (e) {
   let selectedScore = Array.from(
     $(".filter-buttons[data-category='score'] .btn.active")
   ).map((btn) => $(btn).data("value"));
+  
 
   // 기존 마커와 정보 제거
   removeMarkers();
