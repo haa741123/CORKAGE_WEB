@@ -34,6 +34,7 @@ let get_res_info = async function (latitude, longitude) {
     y: item.y,
     distance: item.distance,
     price: item.price,
+    dcscription: item.description,
   }));
 };
 
@@ -437,8 +438,8 @@ let generatePlaceInfo = function (place, index) {
                 <div class="tag-container">
                     <span class="tag red">${place.tags}</span>
                 </div>
-                <p class="description">"숙성된 자연산 사시미와 스시를 즐길..."</p>
-                <p class="rating">평점: 4.5</p>
+                <p class="description">${place.description}</p>
+                <p class="rating">평점: ${place.rating}</p>
             </div>
         </div>
     </div>
