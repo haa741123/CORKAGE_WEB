@@ -9,10 +9,10 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  * @returns
  */
 let get_res_info = async function (latitude, longitude) {
-  const { data, error } = await supabase.rpc('get_nearest_restaurants', {
+  const { data, error } = await supabase.rpc("get_nearest_restaurants", {
     user_lat: latitude,
     user_lon: longitude,
-    limit_count: 30
+    limit_count: 30,
   });
 
   if (error) {
@@ -20,18 +20,20 @@ let get_res_info = async function (latitude, longitude) {
     return [];
   }
 
-  return data.map(item => ({
+  return data.map((item) => ({
     id: item.id,
     place_name: item.name,
     road_address_name: item.address,
     phone: item.phone,
     image_url: item.image_url || "/static/img/res_sample_img.jpg",
     category_name: item.category_name,
-    tags: item.tags,
+    tags: item.tags
+      ? item.tags.replace(/[{}]/g, "").replace(/"/g, "").split(",")
+      : [],
     x: item.x,
     y: item.y,
     distance: item.distance,
-    price: item.price
+    price: item.price,
   }));
 };
 
@@ -72,28 +74,27 @@ async function handleFlutterLocation(latitude, longitude) {
 
 // 위치 정보 처리 및 지도 업데이트 함수
 async function processUserLocation() {
-    // 로딩 화면 표시
-    document.getElementById("loading-screen").style.display = "flex";
+  // 로딩 화면 표시
+  document.getElementById("loading-screen").style.display = "flex";
 
-    await showUserPosition(); // 사용자 위치를 지도에 표시
-    await searchPlaces();
+  await showUserPosition(); // 사용자 위치를 지도에 표시
+  await searchPlaces();
 
-    async function delay(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
+  async function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
-    async function moveMap() {
-        await delay(1000); // 1초 대기
-        map.setLevel(10); // 지도를 10레벨로 유지
-        await moveMyloc(); // 비동기 함수 moveMyloc 실행
-    }
+  async function moveMap() {
+    await delay(1000); // 1초 대기
+    map.setLevel(10); // 지도를 10레벨로 유지
+    await moveMyloc(); // 비동기 함수 moveMyloc 실행
+  }
 
-    await moveMap();
+  await moveMap();
 
-    // 로딩 화면 숨김
-    document.getElementById("loading-screen").style.display = "none";
+  // 로딩 화면 숨김
+  document.getElementById("loading-screen").style.display = "none";
 }
-
 
 // 초기 위치 정보 요청
 getUserLocation();
@@ -180,8 +181,11 @@ let searchPlaces = async function (keyword) {
   if (!isSearchInProgress && userPosition) {
     isSearchInProgress = true;
     try {
-      const restaurants = await get_res_info(userPosition.latitude, userPosition.longitude);
-      console.log("Fetched restaurants:", restaurants);  // 디버깅용
+      const restaurants = await get_res_info(
+        userPosition.latitude,
+        userPosition.longitude
+      );
+      console.log("Fetched restaurants:", restaurants); // 디버깅용
       displayRestaurants(restaurants, keyword);
     } catch (error) {
       console.error("Error fetching restaurants:", error);
@@ -203,11 +207,16 @@ function displayRestaurants(restaurants, keyword) {
     }
   });
 
-  let restaurantsInfo = restaurants.map((place, index) => generatePlaceInfo(place, index)).join('');
+  let restaurantsInfo = restaurants
+    .map((place, index) => generatePlaceInfo(place, index))
+    .join("");
   document.getElementById("restaurantInfo").innerHTML = restaurantsInfo;
 
   if (userPosition) {
-    let userLatLng = new kakao.maps.LatLng(userPosition.latitude, userPosition.longitude);
+    let userLatLng = new kakao.maps.LatLng(
+      userPosition.latitude,
+      userPosition.longitude
+    );
     bounds.extend(userLatLng);
   }
 
@@ -257,7 +266,9 @@ let placesSearchCB = function (data, status) {
       allPlacesInfo += additionalPlacesInfo;
 
       // 결합된 결과를 DOM에 삽입
-      document.getElementById("restaurantInfo").innerHTML = additionalPlacesInfo;
+      document.getElementById(
+        "restaurantInfo"
+      ).innerHTML = additionalPlacesInfo;
 
       // 유저 위치가 있으면 경계에 포함시킴
       if (userPosition) {
@@ -408,12 +419,16 @@ let generatePlaceInfo = function (place, index) {
         <div class="row">
             <div class="col-4" style="padding-right: 1px;">
                 <div class="image-container">
-                    <img src="${place.image_url}" alt="${place.place_name}" class="cover-image">
+                    <img src="${place.image_url}" alt="${
+    place.place_name
+  }" class="cover-image">
                 </div>
             </div>
             <div class="col-8 info-container">
                 <p class="place-name">
-                    <img src="${categoryImageSrc}" alt="${place.category_name}" class="category-icon"> 
+                    <img src="${categoryImageSrc}" alt="${
+    place.category_name
+  }" class="category-icon"> 
                     ${place.place_name}
                     <span class="bookmark-icon">
                       <img src="/static/img/UnBookmark.png" alt="즐겨찾기 아이콘">
@@ -482,9 +497,9 @@ const setBookmark = async (id, status) => {
   });
 };
 
-
 function navigateToRestaurant(event) {
-  let target = event.target.closest(".res_info") || event.target.closest(".res_info_2");
+  let target =
+    event.target.closest(".res_info") || event.target.closest(".res_info_2");
   if (target) {
     const restaurantId = target.dataset.id;
     if (restaurantId) {
@@ -574,16 +589,21 @@ function clearRestaurantInfo() {
   document.getElementById("restaurantInfo").innerHTML = "";
 }
 
-
 // 필터 적용 버튼 클릭 이벤트 리스너
 $(".btn-apply").on("click", function (e) {
   e.preventDefault();
 
   // 필터 값 가져오기
   let maxDistance = parseFloat($("#distanceSlider").val()) || 10; // 기본값 10km
-  let selectedFood = Array.from($(".filter-buttons[data-category='food'] .btn.active")).map(btn => $(btn).data("value"));
-  let selectedTime = Array.from($(".filter-buttons[data-category='time'] .btn.active")).map(btn => $(btn).data("value"));
-  let selectedScore = Array.from($(".filter-buttons[data-category='score'] .btn.active")).map(btn => $(btn).data("value"));
+  let selectedFood = Array.from(
+    $(".filter-buttons[data-category='food'] .btn.active")
+  ).map((btn) => $(btn).data("value"));
+  let selectedTime = Array.from(
+    $(".filter-buttons[data-category='time'] .btn.active")
+  ).map((btn) => $(btn).data("value"));
+  let selectedScore = Array.from(
+    $(".filter-buttons[data-category='score'] .btn.active")
+  ).map((btn) => $(btn).data("value"));
 
   // 기존 마커와 정보 제거
   removeMarkers();
@@ -604,18 +624,25 @@ async function applyFilters(maxDistance, food, time, score) {
   }
 
   try {
-    const restaurants = await get_res_info(userPosition.latitude, userPosition.longitude);
+    const restaurants = await get_res_info(
+      userPosition.latitude,
+      userPosition.longitude
+    );
     console.log("Fetched restaurants:", restaurants); // 디버깅용
 
-    const filteredRestaurants = restaurants.filter(restaurant => {
+    const filteredRestaurants = restaurants.filter((restaurant) => {
       // distance는 미터 단위로 반환되므로 km로 변환
       const restaurantDistance = restaurant.distance / 1000;
-      
+
       return (
         restaurantDistance <= maxDistance &&
         (food.length === 0 || food.includes(restaurant.category_name)) &&
-        (time.length === 0 || (restaurant.opening_hours && time.some(t => restaurant.opening_hours.includes(t)))) &&
-        (score.length === 0 || (restaurant.rating && score.includes(Math.floor(restaurant.rating).toString() + '점')))
+        (time.length === 0 ||
+          (restaurant.opening_hours &&
+            time.some((t) => restaurant.opening_hours.includes(t)))) &&
+        (score.length === 0 ||
+          (restaurant.rating &&
+            score.includes(Math.floor(restaurant.rating).toString() + "점")))
       );
     });
 
@@ -626,10 +653,10 @@ async function applyFilters(maxDistance, food, time, score) {
   }
 }
 
-let distanceSlider = document.getElementById('distanceSlider');
-let distanceText = document.getElementById('distanceText');
+let distanceSlider = document.getElementById("distanceSlider");
+let distanceText = document.getElementById("distanceText");
 
-distanceSlider.addEventListener('input', function() {
-    let distance = this.value;
-    distanceText.textContent = `1km ~ ${distance}km`;
+distanceSlider.addEventListener("input", function () {
+  let distance = this.value;
+  distanceText.textContent = `1km ~ ${distance}km`;
 });
