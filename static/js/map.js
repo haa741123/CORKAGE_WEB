@@ -408,6 +408,10 @@ let generatePlaceInfo = function (place, index) {
 
   let categoryImageSrc = getImageSrc(place.category_name);
 
+  let displayName = place.place_name.length > 10 
+                      ? place.place_name.slice(0, 10) + "…" 
+                      : place.place_name;
+
   return `
     <div id="res_info_${index}" class="res_info" data-id="${place.id}"
         data-place_name="${place.place_name}"
@@ -420,17 +424,13 @@ let generatePlaceInfo = function (place, index) {
         <div class="row">
             <div class="col-4" style="padding-right: 1px;">
                 <div class="image-container">
-                    <img src="${place.image_url}" alt="${
-    place.place_name
-  }" class="cover-image">
+                    <img src="${place.image_url}" alt="${ place.place_name}" class="cover-image">
                 </div>
             </div>
             <div class="col-8 info-container">
                 <p class="place-name">
-                    <img src="${categoryImageSrc}" alt="${
-    place.category_name
-  }" class="category-icon"> 
-                    ${place.place_name}
+                    ${displayName}
+                    <img src="${categoryImageSrc}" alt="${ place.category_name }" class="category-icon"> 
                     <span class="bookmark-icon">
                       <img src="/static/img/UnBookmark.png" alt="즐겨찾기 아이콘">
                     </span>
