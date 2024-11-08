@@ -468,6 +468,7 @@ $(document).ready(function () {
   });
 });
 
+// 예약 insert
 async function insertReservation(formattedDate, formattedTime, selectedPeople) {
   try {
     const response = await fetch('/api/v1/insert_Reservation', {

@@ -272,6 +272,7 @@ def get_restaurant_info():
         return jsonify({"error": str(e)}), 500
 
 
+# 예약 insert
 @supabaseController.route('/insert_Reservation', methods=['POST'])
 def insert_reservation():
     from flask import request, jsonify
@@ -357,7 +358,7 @@ def get_nearest_restaurants():
 
 
 
-
+# 북마크 업데이트
 @supabaseController.route('/update_Bookmark_Status', methods=['POST'])
 def update_bookmark_status():
     from flask import request, jsonify
@@ -381,3 +382,5 @@ def update_bookmark_status():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
