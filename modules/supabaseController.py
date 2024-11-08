@@ -195,3 +195,189 @@ def fetch_popular_restaurants():
     except Exception as e:
         print("인기 맛집 데이터 가져오는 중 예외 발생:", str(e))
         return jsonify({'error': str(e)}), 500    
+    
+
+
+#--------------------------------------------------------------------------------------  
+# (사장님 화면) 예약 정보를 가져오는 API
+@supabaseController.route('/get_Reservations', methods=['POST'])
+def get_Reservations():
+    from flask import request, jsonify
+    import datetime
+
+    try:
+        # 요청 데이터 받기
+        data = request.json
+        page = data.get("page", 1)
+        items_per_page = data.get("itemsPerPage", 6)
+        start_date = data.get("startDate", None)
+        end_date = data.get("endDate", None)
+
+        # 페이지네이션을 위한 범위 설정
+        offset = (page - 1) * items_per_page
+        limit = items_per_page
+
+        # 날짜 필터링 기본값 (지난 30일)
+        if not start_date or not end_date:
+            thirty_days_ago = (datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')
+            start_date = thirty_days_ago
+
+        # Supabase 쿼리 생성
+        query = supabase_client.table("reservations") \
+            .select("id, reservation_date, reservation_time, people_count, created_at", count="exact") \
+            .order("created_at", desc=True) \
+            .range(offset, offset + limit - 1)
+
+        # 날짜 필터링 추가
+        if start_date:
+            query = query.gte("reservation_date", start_date)
+        if end_date:
+            query = query.lte("reservation_date", end_date)
+
+        # 쿼리 실행
+        response = query.execute()
+        data = response.data
+        count = response.count
+
+        return jsonify({"data": data, "count": count})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+#--------------------------------------------------------------------------------------  
+# (음식점 세부 화면) Supabase에서 음식점 정보를 가져오는 함수
+@supabaseController.route('/get_Restaurant_Info', methods=['POST'])
+def get_restaurant_info():
+    from flask import request, jsonify
+
+    try:
+        # 요청에서 음식점 ID를 가져옴
+        data = request.json
+        restaurant_id = data.get("id")
+        if not restaurant_id:
+            return jsonify({"error": "음식점 ID가 제공되지 않았습니다."}), 400
+
+        # Supabase 쿼리를 통해 음식점 정보 조회
+        response = supabase_client.table("corkage") \
+            .select("id, name, phone, address, description, rating, coordinates") \
+            .eq("id", restaurant_id) \
+            .single() \
+            .execute()
+
+        return jsonify({"data": response.data})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@supabaseController.route('/insert_Reservation', methods=['POST'])
+def insert_reservation():
+    from flask import request, jsonify
+
+    try:
+        # 클라이언트에서 보낸 데이터 가져오기
+        data = request.json
+        reservation_date = data.get("reservation_date")
+        reservation_time = data.get("reservation_time")
+        people_count = data.get("people_count")
+
+        # 필수 필드가 누락되었는지 확인
+        if not (reservation_date and reservation_time and people_count):
+            return jsonify({"error": "모든 필수 정보가 제공되지 않았습니다."}), 400
+
+        # Supabase에 데이터 삽입
+        response = supabase_client.table("reservations").insert([
+            {
+                "reservation_date": reservation_date,
+                "reservation_time": reservation_time,
+                "people_count": people_count
+            }
+        ]).execute()
+
+        return jsonify({"message": "예약이 성공적으로 추가되었습니다.", "data": response.data})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+#--------------------------------------------------------------------------------------  
+# (지도 화면) 음식점 리스트
+@supabaseController.route('/get_Nearest_Restaurants', methods=['POST'])
+def get_nearest_restaurants():
+    from flask import request, jsonify
+
+    try:
+        # 클라이언트에서 보낸 데이터 가져오기
+        data = request.json
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+        limit_count = data.get("limit_count", 30)
+
+        # 필수 필드가 누락되었는지 확인
+        if latitude is None or longitude is None:
+            return jsonify({"error": "위도와 경도가 제공되지 않았습니다."}), 400
+
+        # Supabase에서 저장 프로시저 호출
+        response = supabase_client.rpc("get_nearest_restaurants", {
+            "user_lat": latitude,
+            "user_lon": longitude,
+            "limit_count": limit_count
+        }).execute()
+
+        data = response.data
+        if not data:
+            return jsonify({"data": [], "message": "데이터가 없습니다."}), 200
+
+        # 데이터 가공
+        restaurants = [
+            {
+                "id": item.get("id"),
+                "place_name": item.get("name", ""),
+                "road_address_name": item.get("address", ""),
+                "phone": item.get("phone", ""),
+                "image_url": item.get("image_url", "/static/img/res_sample_img.jpg"),
+                "category_name": item.get("category_name", ""),
+                "tags": item.get("tags", "").replace("{", "").replace("}", "").replace('"', '').split(",") if item.get("tags") else [],
+                "x": item.get("x", ""),
+                "y": item.get("y", ""),
+                "distance": item.get("distance", ""),
+                "price": item.get("price", ""),
+                "description": item.get("description", "")
+            }
+            for item in data
+        ]
+
+        return jsonify({"data": restaurants})
+
+    except Exception as e:
+        print(f"API 오류 발생: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+@supabaseController.route('/update_Bookmark_Status', methods=['POST'])
+def update_bookmark_status():
+    from flask import request, jsonify
+
+    try:
+        # 클라이언트에서 보낸 데이터 가져오기
+        data = request.json
+        restaurant_id = data.get("restaurant_id")
+        status = data.get("status", False)
+
+        # 필수 필드가 누락되었는지 확인
+        if not restaurant_id:
+            return jsonify({"error": "음식점 ID가 제공되지 않았습니다."}), 400
+
+        # Supabase 테이블 업데이트 쿼리
+        response = supabase_client.table("bookmark").update({
+            "status": status
+        }).eq("restaurant_id", restaurant_id).execute()
+
+        return jsonify({"message": "북마크 상태가 업데이트되었습니다.", "data": response.data})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

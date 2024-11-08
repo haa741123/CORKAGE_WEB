@@ -1,13 +1,8 @@
-// Supabase 설정
-const supabaseUrl = 'https://kovzqlclzpduuxejjxwf.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
-
 let currentPage = 1;
 const itemsPerPage = 6;
 
 /**
- * 예약 정보를 가져오는 비동기 함수
+ * Flask API를 통해 예약 정보를 가져오는 비동기 함수
  * @param {number} page - 현재 페이지 번호
  * @param {string} startDate - 시작 날짜 (옵션)
  * @param {string} endDate - 종료 날짜 (옵션)
@@ -15,30 +10,28 @@ const itemsPerPage = 6;
  */
 const fetchReservations = async (page = 1, startDate = null, endDate = null) => {
   try {
-    const query = supabase
-      .from("reservations")
-      .select("id, reservation_date, reservation_time, people_count, created_at", { count: "exact" })
-      .order("created_at", { ascending: false })
-      .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
+    const response = await fetch('/api/v1/get_Reservations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ page, itemsPerPage, startDate, endDate })
+    });
 
-    if (startDate && endDate) {
-      query.gte("reservation_date", startDate).lte("reservation_date", endDate);
+    const result = await response.json();
+    if (response.ok) {
+      console.log(result.data);
+      return { data: result.data, count: result.count };
     } else {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      query.gte("reservation_date", thirtyDaysAgo.toISOString().split("T")[0]);
+      console.error("API 오류:", result.error);
+      return { data: null, count: 0 };
     }
-
-    const { data, error, count } = await query;
-    if (error) throw error;
-
-    console.log(data);
-    return { data, count };
   } catch (error) {
     console.error("예약 정보 가져오기 오류:", error);
     return { data: null, count: 0 };
   }
 };
+
 
 /**
  * 예약 정보를 화면에 표시하는 함수

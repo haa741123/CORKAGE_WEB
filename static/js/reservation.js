@@ -1,83 +1,84 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-// Supabase 설정
-const supabaseUrl = "https://kovzqlclzpduuxejjxwf.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 
 // Supabase에서 음식점 정보를 가져오는 함수
 async function fetchRestaurantInfo(id) {
   try {
-    const { data, error } = await supabase
-      .from('corkage')
-      .select('id, name, phone, address, description, rating, coordinates')
-      .eq('id', id)
-      .single();
+    const response = await fetch('/api/v1/get_Restaurant_Info', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id })
+    });
 
-    if (error) throw error;
+    const result = await response.json();
 
-    return data;
+    if (response.ok) {
+      return result.data;
+    } else {
+      console.error('API 오류:', result.error);
+      return null;
+    }
   } catch (error) {
     console.error('음식점 정보를 가져오는 중 오류 발생:', error);
     return null;
   }
 }
-      // 나중에 DB로부터 받아올 데이터들....
-      const restaurantData = {
-        menu: [
-          {
-            name: "스시",
-            description:
-              "정통 일본식 스시 세트. 신선한 재료로 만든 최고급 스시를 즐겨보세요.",
-            price: "₩30,000",
-            image: "/static/img/sushi.jpg",
-          },
-          {
-            name: "사시미",
-            description:
-              "신선한 회 세트. 최고의 품질로 신선함을 유지한 사시미를 제공합니다.",
-            price: "₩35,000",
-            image: "/static/img/sashimi.jpg",
-          },
-          {
-            name: "롤",
-            description:
-              "다양한 재료로 만든 롤. 신선한 재료와 독특한 맛이 특징입니다.",
-            price: "₩25,000",
-            image: "/static/img/roll.jpg",
-          },
-          {
-            name: "튀김",
-            description:
-              "바삭한 일본식 튀김. 고소한 맛과 바삭한 식감이 일품입니다.",
-            price: "₩20,000",
-            image: "/static/img/tempura.jpg",
-          },
-        ],
-        photos: [
-          "/static/img/res_sample_img.jpg",
-          "/static/img/res_sample_img.jpg",
-          "/static/img/res_sample_img.jpg",
-        ],
-        reviews: [
-          {
-            rating: 5,
-            text: "맛있어요!",
-            author: "사용자1",
-          },
-          {
-            rating: 4.5,
-            text: "서비스가 매우 좋았습니다.",
-            author: "사용자2",
-          },
-          {
-            rating: 4.5,
-            text: "다시 가고 싶어요!",
-            author: "사용자3",
-          },
-        ],
-      };
+
+// 나중에 DB로부터 받아올 데이터들....
+const restaurantData = {
+  menu: [
+    {
+      name: "스시",
+      description:
+        "정통 일본식 스시 세트. 신선한 재료로 만든 최고급 스시를 즐겨보세요.",
+      price: "₩30,000",
+      image: "/static/img/sushi.jpg",
+    },
+    {
+      name: "사시미",
+      description:
+        "신선한 회 세트. 최고의 품질로 신선함을 유지한 사시미를 제공합니다.",
+      price: "₩35,000",
+      image: "/static/img/sashimi.jpg",
+    },
+    {
+      name: "롤",
+      description:
+        "다양한 재료로 만든 롤. 신선한 재료와 독특한 맛이 특징입니다.",
+      price: "₩25,000",
+      image: "/static/img/roll.jpg",
+    },
+    {
+      name: "튀김",
+      description:
+        "바삭한 일본식 튀김. 고소한 맛과 바삭한 식감이 일품입니다.",
+      price: "₩20,000",
+      image: "/static/img/tempura.jpg",
+    },
+  ],
+  photos: [
+    "/static/img/res_sample_img.jpg",
+    "/static/img/res_sample_img.jpg",
+    "/static/img/res_sample_img.jpg",
+  ],
+  reviews: [
+    {
+      rating: 5,
+      text: "맛있어요!",
+      author: "사용자1",
+    },
+    {
+      rating: 4.5,
+      text: "서비스가 매우 좋았습니다.",
+      author: "사용자2",
+    },
+    {
+      rating: 4.5,
+      text: "다시 가고 싶어요!",
+      author: "사용자3",
+    },
+  ],
+};
 
 // 메뉴 데이터를 로드하는 함수 (DOM 조작 최적화)
 async function loadMenu() {
@@ -461,25 +462,41 @@ $(document).ready(function () {
       `예약 정보 - 날짜: ${formattedDate}, 시간: ${formattedTime}, 인원수: ${selectedPeople}`
     );
 
-    // Supabase에 데이터 삽입
-    const { data, error } = await supabase.from("reservations").insert([
-      {
-        reservation_date: formattedDate,
-        reservation_time: formattedTime,
-        people_count: selectedPeople,
-      },
-    ]);
-
-    if (error) {
-      console.error("예약 중 에러 발생 다시 시도해주세요:", error);
-      alert("예약 중 에러가 발생했습니다. 다시 시도해주세요.");
-    } else {
-      console.log("예약 완료!:", data);
-      alert("예약이 성공적으로 완료되었습니다!");
-      $("#calendarModal").modal("hide");
-    }
+    // 테이블에 insert
+    insertReservation(formattedDate, formattedTime, selectedPeople);
+    
   });
 });
+
+async function insertReservation(formattedDate, formattedTime, selectedPeople) {
+  try {
+    const response = await fetch('/api/v1/insert_Reservation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        reservation_date: formattedDate,
+        reservation_time: formattedTime,
+        people_count: selectedPeople
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      console.log("예약 성공:", result.message);
+      alert("예약이 성공적으로 완료되었습니다!");
+      $("#calendarModal").modal("hide");
+    } else {
+      console.error("API 오류:", result.error);
+      alert("임시적으로 오류가 발생했습니다. 다시 문제가 발생하는 경우 문의를 해주시면 감사하겠습니다.");
+      $("#calendarModal").modal("hide");
+    }
+  } catch (error) {
+    console.error("예약 삽입 중 오류 발생:", error);
+  }
+}
 
 // 달력을 초기화하는 함수
 function initializeCustomCalendar() {

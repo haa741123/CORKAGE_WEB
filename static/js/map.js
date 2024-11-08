@@ -1,42 +1,31 @@
-// Supabase 클라이언트 초기화
-const SUPABASE_URL = "https://kovzqlclzpduuxejjxwf.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvdnpxbGNsenBkdXV4ZWpqeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg1NTE4NTEsImV4cCI6MjAzNDEyNzg1MX0.A4Vn0QJMKnMe4HAZnT-aEa2r0fL4jHOpKoRHmbls8fQ";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 /**
  * 음식점 리스트 불러오기
  * @returns
  */
-let get_res_info = async function (latitude, longitude) {
-  const { data, error } = await supabase.rpc("get_nearest_restaurants", {
-    user_lat: latitude,
-    user_lon: longitude,
-    limit_count: 30,
-  });
+async function get_res_info(latitude, longitude) {
+  try {
+    const response = await fetch('/api/v1/get_Nearest_Restaurants', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ latitude, longitude, limit_count: 30 })
+    });
 
-  if (error) {
-    console.error("Supabase 데이터 가져오기 실패:", error);
+    const result = await response.json();
+
+    if (response.ok) {
+      console.log("Fetched restaurants:", result.data);
+      return result.data;
+    } else {
+      console.error("API 오류:", result.error);
+      return [];
+    }
+  } catch (error) {
+    console.error("음식점 리스트를 가져오는 중 오류 발생:", error);
     return [];
   }
-
-  return data.map((item) => ({
-    id: item.id,
-    place_name: item.name,
-    road_address_name: item.address,
-    phone: item.phone,
-    image_url: item.image_url || "/static/img/res_sample_img.jpg",
-    category_name: item.category_name,
-    tags: item.tags
-      ? item.tags.replace(/[{}]/g, "").replace(/"/g, "").split(",")
-      : [],
-    x: item.x,
-    y: item.y,
-    distance: item.distance,
-    price: item.price,
-    dcscription: item.description,
-  }));
-};
+}
 
 /** 사용자 위치를 가져오는 함수 */
 let getUserLocation = function () {
@@ -470,18 +459,9 @@ const setBookmark = async (id, status) => {
     buttonsStyling: false,
   }).then(async (result) => {
     if (result.isConfirmed) {
-      // 북마크 테이블에 데이터가 존재하지 않은 경우 북마크 테이블에 데이터 생성 (user_id, restaurant_id, status)
 
-      // 북마크 테이블에 데이터가 존재하고 status가 true인 상태에서 버튼을 누른 경우 북마크 상태를 false로 업데이트
-      const { error } = await supabase
-        .from("bookmark") // bookmark 테이블을 업데이트
-        .update({ status: false }) // status 컬럼을 false로 변경
-        .eq("restaurant_id", id);
-
-      if (error) {
-        console.error("DB 에러:", error);
-        return;
-      }
+      updateBookmarkStatus(id, false);
+      
       // 토스트 스타일의 알림 메시지 표시
       Swal.fire({
         toast: true,
@@ -498,6 +478,29 @@ const setBookmark = async (id, status) => {
     }
   });
 };
+
+// 북마크 업데이트
+async function updateBookmarkStatus(id, status) {
+  try {
+    const response = await fetch('/api/v1/update_Bookmark_Status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ restaurant_id: id, status })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      console.log("북마크 상태 업데이트 성공:", result.message);
+    } else {
+      console.error("API 오류:", result.error);
+    }
+  } catch (error) {
+    console.error("북마크 상태 업데이트 중 오류 발생:", error);
+  }
+}
 
 function navigateToRestaurant(event) {
   let target =
