@@ -33,7 +33,8 @@ logging.basicConfig(level=logging.INFO)
 def create_jwt(user_id):
     try:
         # 만료 시간을 설정하지 않음으로써 무기한 유효한 토큰 발급
-        token = jwt.encode({'id': user_id}, SECRET_KEY, algorithm='HS256')
+        expiration = datetime.now(timezone.utc) + timedelta(minutes=30)
+        token = jwt.encode({'id': user_id, 'exp': expiration}, SECRET_KEY, algorithm='HS256')
         return token
     except Exception as e:
         logging.error(f"JWT 토큰 생성 오류: {e}")
@@ -116,25 +117,21 @@ def kakao_callback():
         flash("로그인 도중 문제가 발생했습니다.", 'error')
         return redirect('/login')
     
-@LoginController.route('/set_flutter_token')    
+
+@LoginController.route('/set_flutter_token')
 def set_flutter_token():
     try:
-        # 쿼리 파라미터에서 accessToken과 user_id를 가져옴
         access_token = request.args.get('accessToken')
         user_id = request.args.get('user_id')
-
         if access_token and user_id:
-            # Flutter 웹뷰로 전달할 URL로 리디렉션
             redirect_url = f"webview://auth_complete?accessToken={quote(access_token)}&user_id={user_id}"
             return redirect(redirect_url)
         else:
             flash("필요한 정보가 부족합니다.", 'error')
             return redirect('/login')
-
     except Exception as e:
         logging.error(f"Flutter 토큰 설정 중 에러 발생: {e}")
         return redirect('/login')
-
 
 # 회원가입 API
 @LoginController.route('/signup', methods=['POST'])
