@@ -7,6 +7,8 @@ from supabase import create_client
 from urllib.parse import quote
 from dotenv import load_dotenv
 import os
+from flask import jsonify, redirect
+from urllib.parse import quote
 
 LoginController = Blueprint('LoginController', __name__)
 
@@ -58,12 +60,10 @@ def kakao_callback():
     try:
         code = request.args.get('code')
         if not code:
-            flash("로그인 도중 문제가 발생했습니다.", 'error')
-            return redirect('/login')
+            return jsonify({"error": "Authorization code not found"}), 400
 
         # 카카오에서 Access Token 발급
         token_url = 'https://kauth.kakao.com/oauth/token'
-        headers = {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'}
         data = {
             'grant_type': 'authorization_code',
             'client_id': REST_API_KEY,
@@ -71,69 +71,33 @@ def kakao_callback():
             'code': code,
             'client_secret': CLIENT_SECRET
         }
+        token_response = requests.post(token_url, data=data).json()
 
-        token_response = requests.post(token_url, headers=headers, data=data).json()
+        if 'access_token' not in token_response:
+            return jsonify({"error": "Failed to obtain access token"}), 400
 
-        # Access Token 발급 실패 시 처리
-        if 'error' in token_response:
-            flash(f"Access token 오류: {token_response.get('error_description', '알 수 없는 오류')}", 'error')
-            return redirect('/login')
-
-        access_token = token_response.get('access_token')
+        access_token = token_response['access_token']
 
         # 사용자 정보 가져오기
         user_info = get_kakao_user_info(access_token)
         if not user_info:
-            flash("로그인 도중 문제가 발생했습니다.", 'error')
-            return redirect('/login')
+            return jsonify({"error": "Failed to get user info"}), 400
 
         kakao_id = user_info.get('id')
-        kakao_email = user_info.get('kakao_account', {}).get('email')
-
-        if not kakao_id or not kakao_email:
-            flash("필수 유저 정보를 가져오지 못했습니다.", 'error')
-            return redirect('/login')
-
-        # Supabase에서 유저 정보 확인
-        user_check = supabase.table('users').select('*').eq('id', kakao_id).execute()
-
-        if not user_check.data:
-            return render_template('html/signup.html', email=kakao_email, kakao_id=kakao_id)
-
-        # 유저가 존재하면 자동 로그인 처리
+        
+        # JWT 토큰 생성
         jwt_token = create_jwt(kakao_id)
         if not jwt_token:
-            flash("토큰 생성 실패", 'error')
-            return redirect('/login')
+            return jsonify({"error": "Failed to create JWT token"}), 500
 
-        response = make_response(redirect('/auth/kakao/main_jwt'))
-        response.set_cookie('accessToken', jwt_token, httponly=True, secure=True)   # 토큰 결과는 변조 방지 처리
-        response.set_cookie('user_id', quote(str(kakao_id)))                        # 주류 추천 결과를 얻기 위해서는 쿠키 값을 확인해야 되기 때문에 보안 처리 X
-        return response
-
-    except Exception as e:
-        logging.error(f"로그인 처리 중 에러 발생: {e}")
-        flash("로그인 도중 문제가 발생했습니다.", 'error')
-        return redirect('/login')
-    
-@LoginController.route('/set_flutter_token')    
-def set_flutter_token():
-    try:
-        # 쿼리 파라미터에서 accessToken과 user_id를 가져옴
-        access_token = request.args.get('accessToken')
-        user_id = request.args.get('user_id')
-
-        if access_token and user_id:
-            # Flutter 웹뷰로 전달할 URL로 리디렉션
-            redirect_url = f"webview://auth_complete?accessToken={quote(access_token)}&user_id={user_id}"
-            return redirect(redirect_url)
-        else:
-            flash("필요한 정보가 부족합니다.", 'error')
-            return redirect('/login')
+        return jsonify({
+            "accessToken": jwt_token,
+            "user_id": kakao_id
+        })
 
     except Exception as e:
-        logging.error(f"Flutter 토큰 설정 중 에러 발생: {e}")
-        return redirect('/login')
+        logging.error(f"Kakao callback error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # 회원가입 API
@@ -265,3 +229,40 @@ def logout():
         logging.error(f"로그아웃 처리 중 에러 발생: {e}")
         flash("로그아웃 처리 중 문제가 발생했습니다.", 'error')
         return redirect('/main_jwt')
+
+@LoginController.route('/validate_token', methods=['GET'])
+def validate_token():
+    token = request.headers.get('Authorization')
+    if not token:
+        return jsonify({'valid': False}), 401
+    
+    try:
+        token = token.split(' ')[1]  # "Bearer " 제거
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        return jsonify({'valid': True}), 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({'valid': False, 'error': 'Token has expired'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'valid': False, 'error': 'Invalid token'}), 401
+
+
+@LoginController.route('/auth/kakao/main_jwt')
+def main_jwt():
+    token = request.cookies.get('accessToken')
+    user_id = request.cookies.get('user_id')
+    print(f"Received cookies - accessToken: {token}, user_id: {user_id}")
+    if not token or not user_id:
+        return jsonify({'error': '로그인이 필요합니다.'}), 401
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        response = jsonify({
+            'accessToken': token,
+            'user_id': user_id
+        })
+        response.set_cookie('accessToken', token, httponly=True, secure=True, samesite='None', domain='corkage.store', path='/')
+        response.set_cookie('user_id', user_id, httponly=True, secure=True, samesite='None', domain='corkage.store', path='/')
+        return response
+    except jwt.ExpiredSignatureError:
+        return jsonify({'error': '로그인 세션이 만료되었습니다.'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'error': '유효하지 않은 로그인 세션입니다.'}), 401

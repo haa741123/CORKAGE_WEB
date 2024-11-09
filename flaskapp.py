@@ -1,9 +1,16 @@
 import logging
 from flask import Flask
 from routes.main_routes import main_routes
+import os
 
 app = Flask(__name__)
 app.register_blueprint(main_routes)
+app.secret_key = os.urandom(24)
+CORS(app, supports_credentials=True)
+
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 
 
 # LoginController 모듈 임포트 및 등록
