@@ -2,6 +2,10 @@ import logging
 from flask import Flask
 from routes.main_routes import main_routes
 import os
+from flask_cors import CORS
+
+# Flask CORS 설정 추가
+
 
 app = Flask(__name__)
 app.register_blueprint(main_routes)

@@ -8,7 +8,7 @@ from urllib.parse import quote
 from dotenv import load_dotenv
 import os
 from flask import jsonify, redirect
-from urllib.parse import quote
+
 
 LoginController = Blueprint('LoginController', __name__)
 
@@ -110,8 +110,8 @@ def kakao_callback():
             return redirect('/login')
 
         response = make_response(redirect('/auth/kakao/main_jwt'))
-        response.set_cookie('accessToken', jwt_token, httponly=True, secure=True)   # 토큰 결과는 변조 방지 처리
-        response.set_cookie('user_id', quote(str(kakao_id)))                        # 주류 추천 결과를 얻기 위해서는 쿠키 값을 확인해야 되기 때문에 보안 처리 X
+        response.set_cookie('accessToken', jwt_token, httponly=True, secure=True, samesite='None')
+        response.set_cookie('user_id', quote(str(kakao_id)), httponly=False, secure=True, samesite='None')
         return response
 
     except Exception as e:
@@ -121,20 +121,34 @@ def kakao_callback():
     
 
 # 플러터에서 요청을 보낼 수 있도록 API 설계
-@LoginController.route('/set_flutter_token', methods=['POST'])
+@LoginController.route('/auth/kakao/set_flutter_token', methods=['POST'])
 def set_flutter_token():
     try:
+        # 쿠키 가져오기
         access_token = request.cookies.get('accessToken')
         user_id = request.cookies.get('user_id')
 
-        if not access_token or not user_id:
-            return jsonify({'error': '토큰 또는 사용자 ID가 없습니다.'}), 401
+        # 쿠키가 없을 경우 처리
+        if not access_token:
+            logging.error("accessToken을 가져올 수 없습니다.")
+            return jsonify({"error": "accessToken이 없습니다."}), 401
+        if not user_id:
+            logging.error("user_id를 가져올 수 없습니다.")
+            return jsonify({"error": "user_id가 없습니다."}), 401
 
-        return jsonify({ "accessToken": access_token, "user_id": user_id }),200
+        logging.info(f"토큰 정보: {access_token}")
+        logging.info(f"유저 ID: {user_id}")
+
+        return jsonify({
+            "accessToken": access_token,
+            "user_id": user_id
+        }), 200
 
     except Exception as e:
         logging.error(f"Flutter 토큰 설정 중 에러 발생: {e}")
-        return redirect('/login')
+        return jsonify({"error": "서버 오류가 발생했습니다."}), 500
+
+    
 
 # 회원가입 API
 @LoginController.route('/signup', methods=['POST'])
