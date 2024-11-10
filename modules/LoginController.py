@@ -124,9 +124,12 @@ def kakao_callback():
 @LoginController.route('/set_flutter_token', methods=['POST'])
 def set_flutter_token():
     try:
-        access_token = request.args.get('accessToken')
-        user_id = request.args.get('user_id')
-        
+        access_token = request.cookies.get('accessToken')
+        user_id = request.cookies.get('user_id')
+
+        if not access_token or not user_id:
+            return jsonify({'error': '토큰 또는 사용자 ID가 없습니다.'}), 401
+
         return jsonify({ "accessToken": access_token, "user_id": user_id }),200
 
     except Exception as e:
