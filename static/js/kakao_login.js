@@ -29,8 +29,6 @@ dots[0].classList.add('active');
 
 
 
-
-
 const REST_API_KEY = '6b5cc3ff382b0cb3ea15795729b3329f';
 
 // 테스트 환경

@@ -11,7 +11,6 @@ app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 
-
 # LoginController 모듈 임포트 및 등록
 from modules.LoginController import LoginController
 app.register_blueprint(LoginController, url_prefix='/auth/kakao')  # 카카오 로그인

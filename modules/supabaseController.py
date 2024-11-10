@@ -48,7 +48,6 @@ def get_restaurants():
     
     except Exception as e:
         # 예외 발생 시 상세 메시지 출력
-        print("예외 발생:", str(e))
         return jsonify({'error': f"예기치 않은 오류 발생: {str(e)}"}), 500
 
 #--------------------------------------------------------------------------------------
@@ -62,7 +61,6 @@ def restaurant_count():
         count = len(response.data) if response.data else 0
         return jsonify({'count': count}), 200
     except Exception as e:
-        print("총 레스토랑 수 가져오는 중 예외 발생:", str(e))
         return jsonify({'error': str(e)}), 500
 
 
@@ -86,7 +84,6 @@ def fetch_paged_restaurants():
         else:
             return jsonify({'restaurants': []}), 200
     except Exception as e:
-        print("레스토랑 데이터 가져오는 중 예외 발생:", str(e))
         return jsonify({'error': str(e)}), 500
     
 # 북마크 해지
@@ -108,7 +105,6 @@ def remove_bookmark():
         return jsonify({'message': '북마크가 해지되었습니다.'}), 200
     
     except Exception as e:
-        print("북마크 해지 중 예외 발생:", str(e))
         return jsonify({'error': str(e)}), 500
     
 
@@ -132,7 +128,6 @@ def update_memo():
         return jsonify({'message': '메모가 업데이트되었습니다.'}), 200
     
     except Exception as e:
-        print("메모 업데이트 중 예외 발생:", str(e))
         return jsonify({'error': str(e)}), 500
 
 #--------------------------------------------------------------------------------------
@@ -169,7 +164,6 @@ def owner_login():
         return jsonify({'ownerData': owner_data}), 200
 
     except Exception as e:
-        print("로그인 중 예외 발생:", str(e))
         return jsonify({'error': '로그인 처리 중 오류가 발생했습니다.'}), 500
     
     
@@ -193,7 +187,6 @@ def fetch_popular_restaurants():
         return jsonify({'restaurants': response.data}), 200
 
     except Exception as e:
-        print("인기 맛집 데이터 가져오는 중 예외 발생:", str(e))
         return jsonify({'error': str(e)}), 500    
     
 

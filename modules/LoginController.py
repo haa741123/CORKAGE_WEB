@@ -128,8 +128,8 @@ def set_flutter_token():
         user_id = request.args.get('user_id')
 
         response = make_response(redirect('/auth/kakao/main_jwt'))
-        response.set_cookie('accessToken', access_token, httponly=True, secure=True)
-        response.set_cookie('user_id', quote(str(user_id)), httponly=True, secure=True)
+        response.set_cookie('accessToken', access_token, httponly=True)
+        response.set_cookie('user_id', quote(str(user_id)), httponly=True)
         return response
 
     except Exception as e:
@@ -286,7 +286,7 @@ def validate_token():
 def main_jwt():
     token = request.cookies.get('accessToken')
     user_id = request.cookies.get('user_id')
-    print(f"Received cookies - accessToken: {token}, user_id: {user_id}")
+    
     if not token or not user_id:
         return jsonify({'error': '로그인이 필요합니다.'}), 401
     try:
