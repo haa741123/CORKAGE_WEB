@@ -6,7 +6,6 @@ import os
 app = Flask(__name__)
 app.register_blueprint(main_routes)
 app.secret_key = os.urandom(24)
-CORS(app, supports_credentials=True)
 
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
