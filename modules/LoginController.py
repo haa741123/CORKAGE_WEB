@@ -126,11 +126,8 @@ def set_flutter_token():
     try:
         access_token = request.args.get('accessToken')
         user_id = request.args.get('user_id')
-
-        response = make_response(redirect('/auth/kakao/main_jwt'))
-        response.set_cookie('accessToken', access_token, httponly=True)
-        response.set_cookie('user_id', quote(str(user_id)), httponly=True)
-        return response
+        
+        return jsonify({ "accessToken": access_token, "user_id": user_id }),200
 
     except Exception as e:
         logging.error(f"Flutter 토큰 설정 중 에러 발생: {e}")
