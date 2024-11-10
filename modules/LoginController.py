@@ -121,7 +121,7 @@ def kakao_callback():
     
 
 # 플러터에서 요청을 보낼 수 있도록 API 설계
-@LoginController.route('/set_flutter_token')
+@LoginController.route('/set_flutter_token', methods=['POST'])
 def set_flutter_token():
     try:
         access_token = request.args.get('accessToken')
