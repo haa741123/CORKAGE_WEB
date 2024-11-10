@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 import os
 from flask import jsonify, redirect
 
-
 LoginController = Blueprint('LoginController', __name__)
 
 # 환경 변수 로드
@@ -98,56 +97,60 @@ def kakao_callback():
             return redirect('/login')
 
         # Supabase에서 유저 정보 확인
-        user_check = supabase.table('users').select('*').eq('id', kakao_id).execute()
+        user_data = supabase.table('users').select('*').eq('id', kakao_id).execute()
 
-        if not user_check.data:
+        if not user_data.data:
             return render_template('html/signup.html', email=kakao_email, kakao_id=kakao_id)
+
+        nickname = user_data.data[0]['nickname']
 
         # 유저가 존재하면 자동 로그인 처리
         jwt_token = create_jwt(kakao_id)
         if not jwt_token:
             flash("토큰 생성 실패", 'error')
             return redirect('/login')
-
-        response = make_response(redirect('/auth/kakao/main_jwt'))
-        response.set_cookie('accessToken', jwt_token, httponly=True, secure=True, samesite='None')
-        response.set_cookie('user_id', quote(str(kakao_id)), httponly=False, secure=True, samesite='None')
-        return response
-
+        
+        # 로그인 성공 시 토큰과 유저 아이디를 함께 응답
+        return jsonify({
+            "status": "success",
+            "message": "로그인 성공",
+            "token": jwt_token,     # 토큰값
+            "user_id": kakao_id,    # 유저 아이디
+            "nickname": nickname    # 유저 닉네임
+        }), 200
+    
     except Exception as e:
         logging.error(f"로그인 처리 중 에러 발생: {e}")
         flash("로그인 도중 문제가 발생했습니다.", 'error')
         return redirect('/login')
     
+    
+# 메인 로그인 처리
+@LoginController.route('/main_jwt')
+def main():
+    token = request.cookies.get('accessToken')
 
-# 플러터에서 요청을 보낼 수 있도록 API 설계
-@LoginController.route('/auth/kakao/set_flutter_token', methods=['POST'])
-def set_flutter_token():
+    if not token:
+        flash("로그인이 필요합니다.", 'error')
+        return redirect('/login')
+
     try:
-        # 쿠키 가져오기
-        access_token = request.cookies.get('accessToken')
-        user_id = request.cookies.get('user_id')
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        user_data = supabase.table('users').select('*').eq('id', user_id).execute()
 
-        # 쿠키가 없을 경우 처리
-        if not access_token:
-            logging.error("accessToken을 가져올 수 없습니다.")
-            return jsonify({"error": "accessToken이 없습니다."}), 401
-        if not user_id:
-            logging.error("user_id를 가져올 수 없습니다.")
-            return jsonify({"error": "user_id가 없습니다."}), 401
-
-        logging.info(f"토큰 정보: {access_token}")
-        logging.info(f"유저 ID: {user_id}")
-
-        return jsonify({
-            "accessToken": access_token,
-            "user_id": user_id
-        }), 200
-
-    except Exception as e:
-        logging.error(f"Flutter 토큰 설정 중 에러 발생: {e}")
-        return jsonify({"error": "서버 오류가 발생했습니다."}), 500
-
+        if user_data.data:
+            nickname = user_data.data[0]['nickname']
+            return render_template('html/main.html', nickname=nickname)
+        else:
+            flash("유저 정보를 찾을 수 없습니다.", 'error')
+            return redirect('/login')
+    except jwt.ExpiredSignatureError:
+        flash("로그인 세션이 만료되었습니다.", 'error')
+        return redirect('/login')
+    except jwt.InvalidTokenError:
+        flash("유효하지 않은 로그인 세션입니다.", 'error')
+        return redirect('/login')
     
 
 # 회원가입 API
@@ -190,33 +193,6 @@ def signup():
     except Exception as e:
         logging.error(f"회원가입 처리 중 에러 발생: {e}")
         flash("회원가입 중 문제가 발생했습니다.", 'error')
-        return redirect('/login')
-
-# 메인 로그인 처리
-@LoginController.route('/main_jwt')
-def main():
-    token = request.cookies.get('accessToken')
-
-    if not token:
-        flash("로그인이 필요합니다.", 'error')
-        return redirect('/login')
-
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        user_id = payload['id']
-        user_data = supabase.table('users').select('*').eq('id', user_id).execute()
-
-        if user_data.data:
-            nickname = user_data.data[0]['nickname']
-            return render_template('html/main.html', nickname=nickname)
-        else:
-            flash("유저 정보를 찾을 수 없습니다.", 'error')
-            return redirect('/login')
-    except jwt.ExpiredSignatureError:
-        flash("로그인 세션이 만료되었습니다.", 'error')
-        return redirect('/login')
-    except jwt.InvalidTokenError:
-        flash("유효하지 않은 로그인 세션입니다.", 'error')
         return redirect('/login')
 
 
@@ -279,40 +255,3 @@ def logout():
         logging.error(f"로그아웃 처리 중 에러 발생: {e}")
         flash("로그아웃 처리 중 문제가 발생했습니다.", 'error')
         return redirect('/main_jwt')
-
-@LoginController.route('/validate_token', methods=['GET'])
-def validate_token():
-    token = request.headers.get('Authorization')
-    if not token:
-        return jsonify({'valid': False}), 401
-    
-    try:
-        token = token.split(' ')[1]  # "Bearer " 제거
-        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        return jsonify({'valid': True}), 200
-    except jwt.ExpiredSignatureError:
-        return jsonify({'valid': False, 'error': 'Token has expired'}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({'valid': False, 'error': 'Invalid token'}), 401
-
-
-@LoginController.route('/auth/kakao/main_jwt')
-def main_jwt():
-    token = request.cookies.get('accessToken')
-    user_id = request.cookies.get('user_id')
-    
-    if not token or not user_id:
-        return jsonify({'error': '로그인이 필요합니다.'}), 401
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-        response = jsonify({
-            'accessToken': token,
-            'user_id': user_id
-        })
-        response.set_cookie('accessToken', token, httponly=True, secure=True, samesite='None', domain='corkage.store', path='/')
-        response.set_cookie('user_id', user_id, httponly=True, secure=True, samesite='None', domain='corkage.store', path='/')
-        return response
-    except jwt.ExpiredSignatureError:
-        return jsonify({'error': '로그인 세션이 만료되었습니다.'}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({'error': '유효하지 않은 로그인 세션입니다.'}), 401
