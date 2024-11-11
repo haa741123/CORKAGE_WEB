@@ -8,7 +8,7 @@
 }
 
 body {
-  font-family: 'Pretendard Variable', sans-serif;
+  font-family: "Pretendard Variable", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -24,7 +24,7 @@ body {
 
 .user-greeting {
   font-weight: 400;
-  color: #5E5B5D;
+  color: #5e5b5d;
   margin-bottom: -10px;
 }
 
@@ -41,14 +41,17 @@ body {
   align-items: center;
   background-color: #000000;
   padding: 30px;
-  border-top-right-radius: 45px; 
+  border-top-right-radius: 45px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   color: #fff;
   margin-bottom: 20px;
-  margin-left: -4vw; /* 왼쪽 여백 제거 */
-  margin-right: -2vw; /* 오른쪽 여백 제거 */
-  width: calc(100% + 6vw); /* 전체 너비를 늘려 양쪽으로 확장 */
+  margin-left: -4vw;
+  margin-right: -2vw;
+  width: calc(100% + 6vw);
   box-sizing: border-box;
+  font-family: "Nanum Myeongjo", serif;
+  font-size: 18px;
+  word-break: keep-all; /* Added this line */
 }
 
 .wine-info {
@@ -64,7 +67,7 @@ body {
   width: 150%;
   height: auto;
   border-radius: 8px;
-  filter: drop-shadow(0 6px 15px rgba(255, 255, 255, 0.4)); 
+  filter: drop-shadow(0 6px 15px rgba(255, 255, 255, 0.4));
   margin-left: -35%;
 }
 
@@ -77,9 +80,9 @@ body {
 
 .best-prompt {
   margin-bottom: 0;
-  font-family: 'Pretendard Variable';
+  font-family: "Pretendard Variable";
   font-weight: 400;
-  color: #5E5B5D;
+  color: #5e5b5d;
 }
 
 .popular-restaurants h3 {
@@ -111,7 +114,7 @@ body {
   border-radius: 12px;
   margin-bottom: 8px;
 }
-.restaurant-item p{
+.restaurant-item p {
   font-weight: 800;
   font-size: 12px;
   text-overflow: ellipsis;
