@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>알림센터</title>
+    <!-- Pretendard 폰트 CDN 추가 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <!-- Font Awesome CDN 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 상단 헤더 -->
+        <header>
+            <button class="back-btn" onclick="location.href='/mypage'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>알림센터</h1>
+        </header>
+
+        <!-- 메인 알림 -->
+        <main>
+            <section class="main-notification">
+                <div class="notification-card">
+                    <h2>🍷 콜키지 프로모션 안내</h2>
+                    <p>지금 예약하면 콜키지 프리! 11월 한정 이벤트</p>
+                    <span class="time">2시간 전</span>
+                </div>
+            </section>
+
+            <!-- 알림 목록 -->
+            <section class="notification-list" id="notification-list">
+                <div class="notification-item">
+                    <h3>🍽️ 신규 제휴 레스토랑 추가</h3>
+                    <p>콜키지 무료 제휴 레스토랑이 추가되었습니다. 지금 확인해보세요!</p>
+                    <span class="time">11월 10일 16:03</span>
+                </div>
+                <div class="notification-item">
+                    <h3>📢 예약 알림</h3>
+                    <p>스시쥬고야 예약이 내일입니다. 잊지 말고 방문하세요!</p>
+                    <span class="time">11월 10일 11:40</span>
+                </div>
+            </section>
+
+            <!-- 이전 알림 보기 버튼 -->
+            <button class="previous-btn" id="load-more-btn">이전 알림 보기</button>
+
+            <!-- 최근 알림 제한 안내 문구 -->
+            <p class="alert-message" id="alert-message" style="display: none;">최근 30일 동안의 알림만 확인하실 수 있습니다.</p>
+        </main>
+    </div>
+
+    <script src="/static/js/notifications.js"></script>
+</body>
+</html>
