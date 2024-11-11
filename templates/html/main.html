@@ -7,38 +7,32 @@
     <title>콜키지 메인 페이지</title>
 </head>
 <body>
-
-    <!-- 사용자 이름 섹션 -->
     <div class="container">
-        <p class="user-greeting"><strong>{{ nickname }}</strong>님에게 어울리는 주류</p>
+        <!-- 사용자 이름 섹션 -->
+        <p class="user-greeting"><strong>{{ nickname }}</strong>님, 모처럼의 주말인 오늘</p>
         <p class="wine-prompt">이 와인 어때요?</p>
-    </div>
-    
-    <!-- 와인 추천 섹션 -->
-    <div class="wine-recommendation">
-        <div class="wine-info">
-            <p id="drink_name"></p>
-            <p id="drink_desc"></p>
-            <!-- <p id="wine_rating">⭐ <strong>4.7</strong> (1,234)</p> -->
-        </div>
-        <div class="wine-image">
-            <img id="wine-image" src="/static/img/wine_img.png" alt="Wine Image">
-        </div>
-    </div>    
-
-    <div class="container">
-        <!-- 인기 맛집 리스트 -->
-        <div class="popular-restaurants">
-            <h3>콜키지 가능한 인기 맛집 10선</h3>
-            <div class="restaurant-list"></div>
-        </div>
+        
+        <!-- 와인 추천 섹션 -->
+        <div class="wine-recommendation">
+            <div class="wine-info">
+                <p id="drink_name"></p>
+                <p id="drink_desc"></p>
+            </div>
+            <div class="wine-image">
+                <img id="wine-image" src="/static/img/wine_img.png" alt="Wine Image">
+            </div>
+        </div>    
 
         <!-- 유저들의 BEST픽 -->
         <div class="popular-restaurants">
-            <h3>유저들의 BEST픽</h3>
-            <p class="best-prompt">가장 추천을 많이 받은 게시물을 구경해보세요!</p>
+            <p class="best-prompt">콜키지 가능한</p>
+            <h3>인기 맛집 10선</h3>
             <div class="restaurant-list"></div>
         </div>
+
+        <section class="card advertisement">
+            광고
+        </section>
     </div>
 
     <!-- jQuery and JavaScript -->

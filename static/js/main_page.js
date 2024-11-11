@@ -1,101 +1,110 @@
-$(document).ready(async function () {
+let latitude, longitude;
+let userPosition;
+
+// 근처 음식점 데이터를 가져오는 함수
+async function fetchNearbyRestaurants() {
+  try {
+    const response = await fetch('/api/v1/get_Nearest_Restaurants', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ latitude, longitude, limit_count: 10 })
+    });
+
+    if (!response.ok) {
+      throw new Error('서버 응답이 실패했습니다.');
+    }
+
+    const result = await response.json();
+    displayNearbyRestaurants(result.data);
+  } catch (error) {
+    console.error('근처 음식점 데이터를 가져오는 중 오류 발생:', error);
+  }
+}
+
+function displayNearbyRestaurants(restaurants) {
+    const container = $('.popular-restaurants .restaurant-list');
+    container.empty();
+  
+    restaurants.forEach(restaurant => {
+      let tagsArray = [];
+      if (restaurant.tags) {
+        if (typeof restaurant.tags === 'string') {
+          try {
+            tagsArray = JSON.parse(restaurant.tags.replace(/^{/, '[').replace(/}$/, ']').replace(/\\/g, ''));
+          } catch (e) {
+            tagsArray = restaurant.tags.split(',').map(tag => tag.trim());
+          }
+        } else if (Array.isArray(restaurant.tags)) {
+          tagsArray = restaurant.tags;
+        } else {
+          console.error('Unsupported tags format:', restaurant.tags);
+        }
+      }
+  
+      const tagsHtml = tagsArray
+        .map(tag => `<span class="tag red">${tag}</span>`)
+        .join('');
+
+      const item = `
+        <div class="restaurant-item">
+          <img src="${restaurant.image_url || '/static/img/res_sample_img.jpg'}" alt="${restaurant.place_name}">
+          <p class="restaurant-name">${restaurant.place_name}</p>
+          <div class="restaurant-tags">${tagsHtml}</div>
+        </div>
+      `;
+      container.append(item);
+    });
+  }
+
+// 사용자 위치 정보를 처리하는 함수
+async function processUserLocation() {
+  if (userPosition) {
+    latitude = userPosition.latitude;
+    longitude = userPosition.longitude;
     try {
-        // Flask에서 인기 맛집 리스트 가져오기
-        const popularResponse = await $.ajax({
-            url: '/api/v1/main_page',
-            type: 'POST',
-            data: { type: 'popular' }, // 인기 맛집 리스트를 구분하기 위한 파라미터
-            dataType: 'json'
-        });
-
-        const popularRestaurants = popularResponse.data;
-        const popularList = $('.popular-restaurants:first .restaurant-list');
-        popularList.empty();
-
-        popularRestaurants.forEach(restaurant => {
-            let tagsArray = [];
-            if (restaurant.tags) {
-                const formattedTags = restaurant.tags
-                    .replace(/^{/, '[')
-                    .replace(/}$/, ']')
-                    .replace(/\\/g, '');
-
-                try {
-                    tagsArray = JSON.parse(formattedTags);
-                } catch (e) {
-                    console.error('tags를 파싱하는 중 오류 발생:', e.message);
-                }
-            }
-
-            const tagsHtml = tagsArray
-                .map(tag => `<span class="tag red">${tag}</span>`)
-                .join('');
-
-            const item = `
-                <div class="restaurant-item">
-                    <img src="${restaurant.image_url || '/static/img/res_sample_img.jpg'}" alt="${restaurant.name}">
-                    <p class="restaurant-name">${restaurant.name}</p>
-                    <div class="restaurant-tags">${tagsHtml}</div>
-                </div>
-            `;
-            popularList.append(item);
-        });
+      await fetchNearbyRestaurants();
     } catch (error) {
-        console.error('인기 맛집 데이터를 가져오는 중 오류 발생:', error.message);
+      console.error('음식점 데이터를 가져오는 중 오류 발생:', error);
     }
+  } else {
+    console.log("사용자 위치 정보가 아직 없습니다.");
+  }
+}
 
-    try {
-        // Flask에서 유저들의 BEST픽 가져오기
-        const bestResponse = await $.ajax({
-            url: '/api/v1/main_page',
-            type: 'POST',
-            data: { type: 'best' }, // 유저들의 BEST픽을 구분하기 위한 파라미터
-            dataType: 'json'
-        });
+/** 사용자 위치를 가져오는 함수 */
+let getUserLocation = function () {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        userPosition = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+        await processUserLocation();
+      },
+      async (error) => {
+        console.log("브라우저에서 위치 정보를 받아올 수 없음", error);
+        console.log("Flutter에서 위치 정보를 기다리는 중...");
+      }
+    );
+  } else {
+    console.log(
+      "브라우저 지오로케이션에 액세스할 수 없습니다. Flutter 위치를 기다리는 중..."
+    );
+  }
+};
 
-        const bestRestaurants = bestResponse.data;
-        const bestList = $('.popular-restaurants:last .restaurant-list');
-        bestList.empty();
-
-        bestRestaurants.forEach(restaurant => {
-            let tagsArray = [];
-            if (restaurant.tags) {
-                const formattedTags = restaurant.tags
-                    .replace(/^{/, '[')
-                    .replace(/}$/, ']')
-                    .replace(/\\/g, '');
-
-                try {
-                    tagsArray = JSON.parse(formattedTags);
-                } catch (e) {
-                    console.error('tags를 파싱하는 중 오류 발생:', e.message);
-                }
-            }
-
-            const tagsHtml = tagsArray
-                .map(tag => `<span class="tag red">${tag}</span>`)
-                .join('');
-
-            const item = `
-                <div class="restaurant-item">
-                    <img src="${restaurant.image_url || '/static/img/res_sample_img.jpg'}" alt="${restaurant.name}">
-                    <p class="restaurant-name">${restaurant.name}</p>
-                    <div class="restaurant-tags">${tagsHtml}</div>
-                </div>
-            `;
-            bestList.append(item);
-        });
-    } catch (bestError) {
-        console.error('유저 추천 음식점을 가져오는 중 오류 발생:', bestError.message);
-    }
-});
-
-
-
-
-
-
-
+// Flutter에서 전달된 위치 정보를 처리하는 함수
+async function handleFlutterLocation(lat, long) {
+  userPosition = {
+    latitude: lat,
+    longitude: long,
+  };
+  console.log("Flutter에서 제공한 사용자 위치:", userPosition);
+  await processUserLocation();
+}
 
 // 와인 추천 API 호출 함수
 const fetchRec = async (action, uid) => {
@@ -118,7 +127,6 @@ const updateWineInfo = (data) => {
     r = data.response;
     $('#drink_name').text(r.drink_name);
     $('#drink_desc').text(r.drink_desc);
-    // $('#wine_rating').html(`⭐ <strong>${r.rating}</strong>`);
     $('#wine-image').attr('src', r.image_url);
 };
 
@@ -140,14 +148,17 @@ const getCookie = (name) => {
     return parts.length === 2 ? parts.pop().split(';').shift() : null;
 };
 
-$(document).ready(() => {
-    const action = 'rec_wine_list';
-    const uid = getCookie('user_id');
-    if (uid) {
-        loadRec(action, uid);
-    } else {
-        console.error("user_id 쿠키가 존재하지 않습니다.");
-    }
-});
+// 초기화 함수
+function initializePage() {
+  getUserLocation();
+  const action = 'rec_wine_list';
+  const uid = getCookie('user_id');
+  if (uid) {
+    loadRec(action, uid);
+  } else {
+    console.error("user_id 쿠키가 존재하지 않습니다.");
+  }
+}
 
-
+// 페이지 로드 시 초기화
+$(document).ready(initializePage);

@@ -17,13 +17,15 @@ body {
 }
 
 .container {
-  padding-left: 2vw;
+  padding-left: 4vw;
   padding-right: 2vw;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
 }
 
 .user-greeting {
-  font-weight: bolder;
+  font-weight: 400;
   color: #5E5B5D;
+  margin-bottom: -10px;
 }
 
 .wine-prompt {
@@ -37,11 +39,16 @@ body {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: #1c1c1c;
+  background-color: #000000;
   padding: 30px;
   border-top-right-radius: 45px; 
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   color: #fff;
+  margin-bottom: 20px;
+  margin-left: -4vw; /* 왼쪽 여백 제거 */
+  margin-right: -2vw; /* 오른쪽 여백 제거 */
+  width: calc(100% + 6vw); /* 전체 너비를 늘려 양쪽으로 확장 */
+  box-sizing: border-box;
 }
 
 .wine-info {
@@ -63,22 +70,32 @@ body {
 
 .popular-restaurants {
   background-color: #ffffff;
-  padding-left: 5vw;
-  padding-right: 5vw;
+  padding-right: 3vw;
   border-radius: 12px;
   margin-bottom: 12vw;
 }
 
+.best-prompt {
+  margin-bottom: 0;
+  font-family: 'Pretendard Variable';
+  font-weight: 400;
+  color: #5E5B5D;
+}
+
 .popular-restaurants h3 {
   font-size: 1.4em;
+  margin-top: 5px;
   margin-bottom: 3vw;
   color: #333;
+  font-weight: 800;
 }
 
 .restaurant-list {
   display: flex;
+  height: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+  padding-bottom: 40px;
 }
 
 .restaurant-item {
@@ -88,26 +105,35 @@ body {
 }
 
 .restaurant-item img {
-  width: 100%;
-  height: auto;
+  width: 90%;
+  height: 70%;
+  margin-left: -10px;
   border-radius: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+}
+.restaurant-item p{
+  font-weight: 800;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .restaurant-name {
   font-size: 10px;
   text-align: left;
   margin-top: 3px;
+  margin-left: 2px;
 }
 
 .restaurant-tags {
   text-align: left;
+  margin-left: 2px;
 }
 
 .tag {
-  margin-top: 2px;
   font-size: 10px;
-  padding: 2px 6px;
+  padding: 4px 8px;
   border-radius: 4px;
   margin-right: 5px;
   color: white;
@@ -145,5 +171,20 @@ button:hover {
 
   .wine-image {
     max-width: 30%;
+  }
+  .advertisement {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+  }
+  .card {
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    margin-right: 10px;
   }
 }
