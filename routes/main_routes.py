@@ -67,6 +67,10 @@ def login_owner():
 def main():
     return render_template('html/main.html')  # 메인 페이지
 
+@main_routes.route("/noti")
+def noti_screen():
+    return render_template('html/noti_screen.html')  # 메인 페이지
+
 
 
 # 허용된 파일 확장자 정의

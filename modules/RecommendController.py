@@ -18,7 +18,7 @@ from sklearn.neighbors import NearestNeighbors
 from fuzzywuzzy import fuzz, process
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from supabase import create_client, Client
+from supabase import create_client
 from dotenv import load_dotenv
 import os
 
@@ -44,23 +44,27 @@ CONFIG = {
     'DRINK_NOT_FOUND': "죄송합니다, 해당 주류에 대한 정보를 찾을 수 없습니다.",
     'NO_RECOMMENDATIONS': "죄송합니다, 추천할 주류를 찾을 수 없습니다.",
     'UNKNOWN_COMMAND': "죄송합니다, 이해하지 못했습니다.",
-    'TEST_DATE': '2024-11-02'
+    'TEST_DATE': '2024-11-02'  # 테스트용 날짜
 }
 
 # 로깅 설정
 logging.basicConfig(level=logging.DEBUG)
 
-# 전역 변수 선언
+# 전역 변수 선언: 데이터프레임과 모델을 저장
 usr_info_df, wine_info_df = None, None
 tfidf_vectorizer, wine_features = None, None
 knn, user_item_matrix = None, None
 
-# 데이터 로드 및 전처리 함수
+"""
+Supabase에서 사용자 정보와 주류 데이터를 가져와서 전처리
+주류 설명을 벡터화하고, KNN 알고리즘을 사용해 유사도 계산을 위한 준비
+"""
 def load_and_preprocess_data():
+    
     global usr_info_df, wine_info_df, tfidf_vectorizer, wine_features, knn, user_item_matrix
 
     try:
-        # Supabase에서 데이터 가져오기
+        # 사용자 및 주류 데이터 가져오기
         user_data = supabase.table("user_preferences").select("*").execute()
         drink_data = supabase.table("drinks").select("*").execute()
 
@@ -68,10 +72,11 @@ def load_and_preprocess_data():
         usr_info_df = pd.DataFrame(user_data.data)
         wine_info_df = pd.DataFrame(drink_data.data)
 
-        # 데이터 전처리
+        # 주류 이름 및 설명을 전처리 (특수문자 제거 및 소문자로 변환)
         wine_info_df['cleaned_name'] = wine_info_df['name'].str.replace(r'[^\w\s]', '').str.strip().str.lower()
         wine_info_df['cleaned_description'] = wine_info_df['description'].str.replace(r'[^\w\s]', '').str.strip().str.lower()
 
+        # 주류 설명을 TF-IDF 벡터화하여 텍스트 특징 추출
         tfidf_vectorizer = TfidfVectorizer()
         wine_features = tfidf_vectorizer.fit_transform(wine_info_df['cleaned_description'])
 
@@ -169,22 +174,29 @@ def get_single_rec_for_user(user_data):
         return CONFIG['NO_RECOMMENDATIONS']
     
 
-# Flask 라우트: 사용자 요청에 따라 주류 추천 리스트 반환
+"""
+클라이언트 요청에 따라 주류 추천을 제공하는 API 엔드포인트
+사용자 ID와 메시지를 입력받아, 해당 사용자에게 맞춤형 주류를 추천
+"""
 @RecommendController.route("/recommendations", methods=['POST'])
 def get_recommendations():
     data = request.get_json()
     user_id = data.get('user_id')
     user_message = data.get('message')
 
+    # 유효하지 않은 명령어 처리
     if user_message not in ["주류 추천", "rec_wine_list"]:
         return jsonify({"response": CONFIG['UNKNOWN_COMMAND']})
 
+    # 유효하지 않은 사용자 ID 처리
     if not user_id:
         return jsonify({"response": CONFIG['INVALID_USER_ID']}), 400
 
+    # 사용자 데이터 로드 및 추천 생성
     user_data = get_user_data(user_id)
     if user_data.empty:
         return jsonify({"response": CONFIG['USER_NOT_FOUND']})
 
+    # 주류 추천 방식 선택
     bot_response = get_recommendations_for_user(user_data) if user_message == "주류 추천" else get_single_rec_for_user(user_data)
     return jsonify({"response": bot_response})
