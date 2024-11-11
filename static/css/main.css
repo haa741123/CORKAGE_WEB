@@ -176,18 +176,24 @@ button:hover {
     max-width: 30%;
   }
   .advertisement {
-    height: 80px;
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #999;
   }
+
   .card {
     align-items: center;
     background-color: #fff;
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    padding: 15px;
     margin-right: 10px;
+  }
+
+  .img {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    max-height: 100%; /* Ensure it doesn't exceed the height of the container */
   }
 }
