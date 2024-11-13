@@ -106,7 +106,7 @@ body {
 
 .restaurant-item img {
   width: 90%;
-  height: 70%;
+  height: 50%;
   margin-left: -10px;
   border-radius: 12px;
   margin-bottom: 8px;
@@ -173,7 +173,7 @@ button:hover {
     max-width: 30%;
   }
   .advertisement {
-    height: 80px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
