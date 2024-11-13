@@ -26,6 +26,55 @@ const data = {
     ]
 };
 
+// URL 경로에 따라 관련 데이터만 필터링 (맥주 완료함 & 와인, 칵테일, 위스키, 보드카, 진도 만들어야됨)
+const currentPath = decodeURIComponent(window.location.pathname);  // URL 디코딩
+let filteredData = data;
+
+if (currentPath.includes("맥주")) {
+    console.log('맥주 관련 데이터 필터링');
+    // 맥주와 관련된 노드만 필터링
+    filteredData = {
+        nodes: data.nodes.filter(d => d.id === "Beer" || ["Lager", "Pale Ale", "Stout", "IPA", "Pilsner", "Porter"].includes(d.id)),
+        links: data.links.filter(l => l.source === "Beer" || l.target === "Beer")
+    };
+} else if (currentPath.includes("와인")) {
+    console.log('와인 관련 데이터 필터링');
+    // 와인과 관련된 노드만 필터링
+    filteredData = {
+        nodes: data.nodes.filter(d => d.id === "Wine" || ["Red Wine", "White Wine", "Rosé", "Sparkling", "Dessert Wine"].includes(d.id)),
+        links: data.links.filter(l => l.source === "Wine" || l.target === "Wine")
+    };
+} else if (currentPath.includes("칵테일")) {
+    console.log('칵테일 관련 데이터 필터링');
+    // 칵테일과 관련된 노드만 필터링
+    filteredData = {
+        nodes: data.nodes.filter(d => d.id === "Cocktail" || ["Martini", "Margarita", "Mojito", "Old Fashioned", "Negroni", "Mimosa"].includes(d.id)),
+        links: data.links.filter(l => l.source === "Cocktail" || l.target === "Cocktail")
+    };
+} else if (currentPath.includes("위스키")) {
+    console.log('위스키 관련 데이터 필터링');
+    // 위스키와 관련된 노드만 필터링
+    filteredData = {
+        nodes: data.nodes.filter(d => d.id === "Whiskey" || ["Scotch", "Bourbon", "Irish Whiskey", "Japanese Whiskey"].includes(d.id)),
+        links: data.links.filter(l => l.source === "Whiskey" || l.target === "Whiskey")
+    };
+} else if (currentPath.includes("보드카")) {
+    console.log('보드카 관련 데이터 필터링');
+    // 보드카와 관련된 노드만 필터링
+    filteredData = {
+        nodes: data.nodes.filter(d => d.id === "Vodka" || ["Plain Vodka", "Flavored Vodka"].includes(d.id)),
+        links: data.links.filter(l => l.source === "Vodka" || l.target === "Vodka")
+    };
+} else if (currentPath.includes("진")) {
+    console.log('진 관련 데이터 필터링');
+    // 진과 관련된 노드만 필터링
+    filteredData = {
+        nodes: data.nodes.filter(d => d.id === "Gin" || ["London Dry", "Old Tom", "Navy Strength"].includes(d.id)),
+        links: data.links.filter(l => l.source === "Gin" || l.target === "Gin")
+    };
+}
+
+
 const svg = d3.select("svg"),
       width = window.innerWidth,
       height = window.innerHeight * 0.8;
@@ -49,14 +98,14 @@ const svgGroup = svg.append("g");
 const link = svgGroup.append("g")
     .attr("class", "links")
     .selectAll("line")
-    .data(data.links)
+    .data(filteredData.links)
     .enter().append("line")
     .attr("class", "link");
 
 const node = svgGroup.append("g")
     .attr("class", "nodes")
     .selectAll("g")
-    .data(data.nodes)
+    .data(filteredData.nodes)
     .enter().append("g")
     .call(d3.drag()
         .on("start", (event, d) => {
@@ -103,8 +152,8 @@ node.append("text")
     .attr("text-anchor", "middle")
     .text(d => d.id);
 
-const simulation = d3.forceSimulation(data.nodes)
-    .force("link", d3.forceLink(data.links).id(d => d.id).distance(width < 600 ? 60 : 50))
+const simulation = d3.forceSimulation(filteredData.nodes)
+    .force("link", d3.forceLink(filteredData.links).id(d => d.id).distance(width < 600 ? 60 : 50))
     .force("charge", d3.forceManyBody().strength(width < 600 ? -50 : -100))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
