@@ -487,15 +487,40 @@ async function insertReservation(formattedDate, formattedTime, selectedPeople) {
 
     if (response.ok) {
       console.log("예약 성공:", result.message);
-      alert("예약이 성공적으로 완료되었습니다!");
-      $("#calendarModal").modal("hide");
+      Swal.fire({
+        icon: 'success',
+        title: '예약 완료!',
+        text: '예약이 성공적으로 완료되었습니다.',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: '확인'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $("#calendarModal").modal("hide");
+        }
+      });
     } else {
       console.error("API 오류:", result.error);
-      alert("임시적으로 오류가 발생했습니다. 다시 문제가 발생하는 경우 문의를 해주시면 감사하겠습니다.");
-      $("#calendarModal").modal("hide");
+      Swal.fire({
+        icon: 'error',
+        title: '오류 발생',
+        text: '임시적으로 오류가 발생했습니다. 다시 문제가 발생하는 경우 문의를 해주시면 감사하겠습니다.',
+        confirmButtonColor: '#d33',
+        confirmButtonText: '확인'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $("#calendarModal").modal("hide");
+        }
+      });
     }
   } catch (error) {
-    console.error("예약 삽입 중 오류 발생:", error);
+    console.error("예약 처리 중 오류 발생:", error);
+    Swal.fire({
+      icon: 'error',
+      title: '오류 발생',
+      text: '예약 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+      confirmButtonColor: '#d33',
+      confirmButtonText: '확인'
+    });
   }
 }
 

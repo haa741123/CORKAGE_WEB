@@ -95,10 +95,15 @@ body {
 
 .restaurant-list {
   display: flex;
-  height: 100%;
   overflow-x: auto;
   scrollbar-width: none;
   padding-bottom: 40px;
+  text-decoration: none;
+}
+
+.restaurant-link {
+  text-decoration: none;
+  color: inherit;
 }
 
 .restaurant-item {
@@ -108,25 +113,24 @@ body {
 }
 
 .restaurant-item img {
-  width: 90%;
-  height: 50%;
+  width: 144px;
+  height: 144px;
   margin-left: -10px;
   border-radius: 12px;
   margin-bottom: 8px;
-}
-.restaurant-item p {
-  font-weight: 800;
-  font-size: 12px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
 }
 
 .restaurant-name {
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 800;
   text-align: left;
   margin-top: 3px;
   margin-left: 2px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .restaurant-tags {
@@ -140,60 +144,10 @@ body {
   border-radius: 4px;
   margin-right: 5px;
   color: white;
+  display: inline-block;
+  margin-bottom: 5px;
 }
 
 .tag.red {
   background-color: #e1707a;
-}
-
-button {
-  padding: 12px 25px;
-  background-color: #ff3b3b;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #ff6565;
-}
-
-/* 반응형 미디어 쿼리 */
-@media (max-width: 768px) {
-  .wine-recommendation {
-    flex-direction: row;
-  }
-
-  .wine-info {
-    text-align: left;
-    max-width: 60%;
-  }
-
-  .wine-image {
-    max-width: 30%;
-  }
-  .advertisement {
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-  }
-
-  .card {
-    align-items: center;
-    background-color: #fff;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    margin-right: 10px;
-  }
-
-  .img {
-    width: 100%;
-    height: auto; /* Maintain aspect ratio */
-    max-height: 100%; /* Ensure it doesn't exceed the height of the container */
-  }
 }
