@@ -201,21 +201,11 @@ def signup():
 def ch_nickname():
     try:
         # JWT 토큰으로부터 사용자 ID 가져오기
-        token = request.cookies.get('accessToken')
-        if not token:
+        userid = request.cookies.get('user_id')
+        if not userid:
             flash("로그인이 필요합니다.", 'error')
             return redirect('/login')
-
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-            user_id = payload['id']
-        except jwt.ExpiredSignatureError:
-            flash("로그인 세션이 만료되었습니다.", 'error')
-            return redirect('/login')
-        except jwt.InvalidTokenError:
-            flash("유효하지 않은 로그인 세션입니다.", 'error')
-            return redirect('/login')
-
+        
         # 요청으로부터 새 닉네임 가져오기
         data = request.get_json()
         new_nickname = data.get('nickname')
@@ -231,7 +221,7 @@ def ch_nickname():
             return jsonify({'success': False, 'message': "이미 사용 중인 닉네임입니다."}), 400
 
         # 닉네임 변경
-        supabase.table('users').update({'nickname': new_nickname}).eq('id', user_id).execute()
+        supabase.table('users').update({'nickname': new_nickname}).eq('id', userid).execute()
         flash("닉네임이 성공적으로 변경되었습니다.", 'success')
         
         return jsonify({'success': True, 'message': "닉네임이 변경되었습니다."})
