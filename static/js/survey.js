@@ -8,29 +8,28 @@ document.getElementById("close-guide").addEventListener("click", () => {
 // 음료 종류를 나타내는 노드와 노드 간의 관계를 나타내는 링크
 const data = {
     nodes: [
-        { id: "Beer" }, { id: "Lager" }, { id: "Pale Ale" }, { id: "Stout" }, { id: "IPA" }, { id: "Pilsner" }, { id: "Porter" },
-        { id: "Wine" }, { id: "Red Wine" }, { id: "White Wine" }, { id: "Rosé" }, { id: "Sparkling" }, { id: "Dessert Wine" },
-        { id: "Cocktail" }, { id: "Martini" }, { id: "Margarita" }, { id: "Mojito" }, { id: "Old Fashioned" }, { id: "Negroni" }, { id: "Mimosa" },
-        { id: "Whiskey" }, { id: "Scotch" }, { id: "Bourbon" }, { id: "Irish Whiskey" }, { id: "Japanese Whiskey" },
-        { id: "Vodka" }, { id: "Plain Vodka" }, { id: "Flavored Vodka" },
-        { id: "Gin" }, { id: "London Dry" }, { id: "Old Tom" }, { id: "Navy Strength" }
+        { id: "맥주" }, { id: "라거" }, { id: "페일에일" }, { id: "스타우트" }, { id: "IPA" }, { id: "필스너" }, { id: "포터" },
+        { id: "와인" }, { id: "레드와인" }, { id: "화이트와인" }, { id: "로제" }, { id: "스파클링와인" }, { id: "디저트와인" },
+        { id: "칵테일" }, { id: "마티니" }, { id: "마가리타" }, { id: "모히토" }, { id: "올드패션드" }, { id: "네그로니" }, { id: "미모사" },
+        { id: "위스키" }, { id: "스카치위스키" }, { id: "버번위스키" }, { id: "아이리시위스키" }, { id: "일본위스키" },
+        { id: "보드카" }, { id: "플레인보드카" }, { id: "플레이버보드카" },
+        { id: "진" }, { id: "런던드라이진" }, { id: "올드톰진" }, { id: "네이비스트렝스진" }
     ],
     links: [
-        { source: "Beer", target: "Lager" }, { source: "Beer", target: "Pale Ale" }, { source: "Beer", target: "Stout" },
-        { source: "Beer", target: "IPA" }, { source: "Beer", target: "Pilsner" }, { source: "Beer", target: "Porter" },
-        { source: "Wine", target: "Red Wine" }, { source: "Wine", target: "White Wine" }, { source: "Wine", target: "Rosé" },
-        { source: "Wine", target: "Sparkling" }, { source: "Wine", target: "Dessert Wine" },
-        { source: "Cocktail", target: "Martini" }, { source: "Cocktail", target: "Margarita" }, { source: "Cocktail", target: "Mojito" },
-        { source: "Cocktail", target: "Old Fashioned" }, { source: "Cocktail", target: "Negroni" }, { source: "Cocktail", target: "Mimosa" },
-        { source: "Whiskey", target: "Scotch" }, { source: "Whiskey", target: "Bourbon" }, { source: "Whiskey", target: "Irish Whiskey" },
-        { source: "Whiskey", target: "Japanese Whiskey" },
-        { source: "Vodka", target: "Plain Vodka" }, { source: "Vodka", target: "Flavored Vodka" },
-        { source: "Gin", target: "London Dry" }, { source: "Gin", target: "Old Tom" }, { source: "Gin", target: "Navy Strength" }
+        { source: "맥주", target: "라거" }, { source: "맥주", target: "페일에일" }, { source: "맥주", target: "스타우트" },
+        { source: "맥주", target: "IPA" }, { source: "맥주", target: "필스너" }, { source: "맥주", target: "포터" },
+        { source: "와인", target: "레드와인" }, { source: "와인", target: "화이트와인" }, { source: "와인", target: "로제" },
+        { source: "와인", target: "스파클링와인" }, { source: "와인", target: "디저트와인" },
+        { source: "칵테일", target: "마티니" }, { source: "칵테일", target: "마가리타" }, { source: "칵테일", target: "모히토" },
+        { source: "칵테일", target: "올드패션드" }, { source: "칵테일", target: "네그로니" }, { source: "칵테일", target: "미모사" },
+        { source: "위스키", target: "스카치위스키" }, { source: "위스키", target: "버번위스키" }, 
+        { source: "위스키", target: "아이리시위스키"},  {source:"위스키",target:"일본위스키"},
+        {source:"보드카",target:"플레인보드카"},  {source:"보드카",target:"플레이버보드카"},
+        {"source":"진","target":"런던드라이진"}, {"source":"진","target":"올드톰진"}, {"source":"진","target":"네이비스트렝스진"}
     ]
 };
 
-// 특정 종류의 노드와 링크 필터링 함수
-// 'mainNode'는 필터링할 주요 노드, 'relatedNodes'는 관련된 노드 배열
+// 특정 종류의 노드와 링크 필터링 함수 (필터링할 주요 노드: mainNode, 관련된 노드 배열: relatedNodes)
 const filterData = (mainNode, relatedNodes) => ({
     nodes: data.nodes.filter(d => d.id === mainNode || relatedNodes.includes(d.id)),
     links: data.links.filter(l => l.source === mainNode || l.target === mainNode)
@@ -41,12 +40,12 @@ let filteredData = data;
 
 // URL 경로에 따른 데이터 필터링
 const categories = {
-    "맥주": ["Lager", "Pale Ale", "Stout", "IPA", "Pilsner", "Porter"],
-    "와인": ["Red Wine", "White Wine", "Rosé", "Sparkling", "Dessert Wine"],
-    "칵테일": ["Martini", "Margarita", "Mojito", "Old Fashioned", "Negroni", "Mimosa"],
-    "위스키": ["Scotch", "Bourbon", "Irish Whiskey", "Japanese Whiskey"],
-    "보드카": ["Plain Vodka", "Flavored Vodka"],
-    "진": ["London Dry", "Old Tom", "Navy Strength"]
+    맥주:["라거","페일에일","스타우트","IPA","필스너","포터"],
+    와인:["레드와인","화이트와인","로제","스파클링와인","디저트와인"],
+    칵테일:["마티니","마가리타","모히토","올드패션드","네그로니","미모사"],
+    위스키:["스카치위스키","버번위스키","아이리시위스키","일본위스키"],
+    보드카:["플레인보드카","플레이버보드카"],
+    진:["런던드라이진","올드톰진","네이비스트렝스진"]
 };
 
 // 현재 URL 경로가 특정 카테고리를 포함하는 경우 관련 데이터를 필터링
@@ -111,19 +110,19 @@ const node = svgGroup.append("g")
     );
 
 // 노드 색상 매핑    
-const colorMap = {
-    "Beer": "#FFD700", 
-    "Lager": "#FFA500", "Pale Ale": "#FFA500", "Stout": "#FFA500", "IPA": "#FFA500", "Pilsner": "#FFA500", "Porter": "#FFA500",
-    "Wine": "#8B0000", 
-    "Red Wine": "#800000", "White Wine": "#800000", "Rosé": "#800000", "Sparkling": "#800000", "Dessert Wine": "#800000",
-    "Cocktail": "#FF69B4",
-    "Martini": "#FF6347", "Margarita": "#FF6347", "Mojito": "#FF6347", "Old Fashioned": "#FF6347", "Negroni": "#FF6347", "Mimosa": "#FF6347",
-    "Whiskey": "#A52A2A",
-    "Scotch": "#D2691E", "Bourbon": "#D2691E", "Irish Whiskey": "#D2691E", "Japanese Whiskey": "#D2691E",
-    "Vodka": "#C0C0C0",
-    "Plain Vodka": "#B0C4DE", "Flavored Vodka": "#B0C4DE",
-    "Gin": "#4682B4",
-    "London Dry": "#5F9EA0", "Old Tom": "#5F9EA0", "Navy Strength": "#5F9EA0"
+const colorMap={
+    맥주:"#FFD700",
+    라거:"#FFA500", 페일에일:"#FFA500", 스타우트:"#FFA500", IPA:"#FFA500", 필스너:"#FFA500", 포터:"#FFA500",
+    와인:"#8B0000",
+    레드와인:"#800000", 화이트와인:"#800000", 로제:"#800000", 스파클링와인:"#800000", 디저트와인:"#800000",
+    칵테일:"#FF69B4",
+    마티니:"#FF6347", 마가리타:"#FF6347", 모히토:"#FF6347", 올드패션드:"#FF6347", 네그로니:"#FF6347", 미모사:"#FF6347",
+    위스키:"#A52A2A",
+    스카치위스키:"#D2691E", 버번위스키:"#D2691E", 아이리시위스키:"#D2691E", 일본위스키:"#D2691E",
+    보드카:"#C0C0C0",
+    플레인보드카:"#B0C4DE", 플레이버보드카:"#B0C4DE",
+    진:"#4682B4",
+    런던드라이진:"#5F9EA0", 올드톰진:"#5F9EA0", 네이비스트렝스진:"#5F9EA0"
 };
 
 // 노드에 원형 추가 및 클릭 이벤트 설정
