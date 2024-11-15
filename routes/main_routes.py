@@ -22,6 +22,10 @@ def sch_screen():
 def sch_results(search_term):
     return render_template('html/search_results.html', search_term=search_term) # 검색 결과 페이지
 
+@main_routes.route('/ch_name/<string:user_name>')      
+def ch_name(user_name):
+    return render_template('html/ch_name.html', user_name=user_name)  # 닉네임 변경 페이지
+
 @main_routes.route("/sch_filter")
 def sch_filter():
     return render_template('html/sch_filter.html')  # 필터 페이지
@@ -54,7 +58,6 @@ def drink_info():
 def bookmark():
     return render_template('html/bookmark.html')  # 북마크한 음식점 리스트
 
-
 @main_routes.route("/reservation_owner")
 def reservation_owner():
     return render_template('html/reservation_owner.html')  # 예약 정보 페이지
@@ -72,6 +75,13 @@ def noti_screen():
     return render_template('html/noti_screen.html')  # 메인 페이지
 
 
+@main_routes.route("/taste_survey")
+def taste_survey():
+    return render_template('html/taste_survey.html')  # 주류 취향 선택 페이지
+
+@main_routes.route('/drink_survey/<string:drink>') 
+def drink_survey(drink):
+    return render_template('html/drink_survey.html', drink=drink)  # 좋아하는 주류 선택 페이지
 
 # 허용된 파일 확장자 정의
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
