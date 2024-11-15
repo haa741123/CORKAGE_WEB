@@ -346,7 +346,6 @@ def get_nearest_restaurants():
         return jsonify({"data": restaurants})
 
     except Exception as e:
-        print(f"API 오류 발생: {e}")
         return jsonify({"error": str(e)}), 500
 
 
