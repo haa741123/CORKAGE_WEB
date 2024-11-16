@@ -124,7 +124,6 @@ async function set_User_Taste(fav_taste, ConnChar = '') {
         
         return result;
     } catch (error) {
-        console.error('Error submitting user preferences:', error);
         throw error;
     }
 }
