@@ -38,6 +38,8 @@ const filterData = (mainNode, relatedNodes) => ({
 const currentPath = decodeURIComponent(window.location.pathname);
 let filteredData = data;
 
+
+
 // URL 경로에 따른 데이터 필터링
 const categories = {
     맥주:["라거","페일에일","스타우트","IPA","필스너","포터"],
@@ -54,6 +56,8 @@ Object.keys(categories).forEach(category => {
         filteredData = filterData(category, categories[category]);
     }
 });
+
+
 
 // SVG 설정 및 크기 조정
 const svg = d3.select("svg"),

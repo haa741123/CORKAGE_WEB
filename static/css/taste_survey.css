@@ -1,0 +1,141 @@
+body {
+    font-family: 'Pretendard Variable', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffffff;
+}
+
+.slider {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    width: 100vw; /* 뷰포트 너비에 맞춤 */
+    height: 100%;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;  
+}
+
+.slider::-webkit-scrollbar {
+    display: none; 
+}
+
+.screen {
+    flex-shrink: 0;
+    width: 100vw; /* 뷰포트 너비에 맞춤 */
+    scroll-snap-align: start;
+    text-align: center;
+}
+
+.question {
+    margin-top: 30vh;
+    font-size: 22px;
+    color: #333333;
+}
+
+.options {
+    margin-top: 40px;
+}
+
+.option-button {
+    display: block;
+    width: 80%;
+    max-width: 300px;
+    padding: 15px 0;
+    margin: 10px auto;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.option-button.selected {
+    border-color: #D0273B;
+    color: #D0273B;
+}
+
+/* 인디케이터 스타일 */
+.indicator {
+    display: flex;
+    justify-content: center;
+    margin-top: 17vh; /* 기본 여백 */
+    margin-bottom: 20px; 
+}
+
+.indicator div {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ccc; 
+    margin: 0 5px; 
+}
+
+.indicator div.active {
+    background-color: #D0273B; 
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ccc; 
+    margin: 0 5px; 
+}
+
+.dot.active {
+    background-color: #D0273B; 
+}
+
+.next-button {
+    bottom : env(safe-area-inset-bottom,0) !important;
+    left :0 !important;
+    width :100% !important; 
+    padding-bottom :15px !important;
+    padding-top :15px !important;
+    background-color: #D0273B !important;
+    color:white !important;
+    text-align:center !important;
+}
+
+/* 반응형 레이아웃 */
+@media (max-width: 480px) { /* 작은 화면 (모바일) */
+    .question {
+        font-size: 20px; /* 작은 폰트 크기 */
+    }
+    .option-button {
+        font-size: 16px; /* 버튼 폰트 크기 축소 */
+        padding: 10px; /* 버튼 패딩 축소 */
+    }
+    .indicator {
+        margin-top: 10vh; /* 더 작은 여백 */
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) { /* 중간 화면 (태블릿) */
+    .question {
+        font-size: 20px; /* 중간 폰트 크기 */
+    }
+    .option-button {
+        font-size: 18px; /* 중간 버튼 폰트 크기 */
+        padding: 12px; /* 중간 버튼 패딩 */
+    }
+    .indicator {
+        margin-top: 15vh; /* 중간 여백 */
+    }
+}
+
+@media (min-width: 769px) { /* 큰 화면 (데스크탑) */
+    .question {
+        font-size: 22px; /* 기본 폰트 크기 유지 */
+    }
+    .option-button {
+        font-size: 20px; /* 큰 버튼 폰트 크기 */
+        padding: 15px; /* 기본 버튼 패딩 유지 */
+    }
+}
