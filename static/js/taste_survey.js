@@ -44,16 +44,9 @@ const onScroll = () => {
 // 스크롤 이벤트에 디바운스 적용
 slider.addEventListener('scroll', () => {
     if (!isScrolling) {
-        window.requestAnimationFrame(onScroll); // 애니메이션 프레임에서 onScroll 호출
+        window.requestAnimationFrame(onScroll);
     }
-    isScrolling = true; // 스크롤 플래그 설정
-
-    clearTimeout(debounceTimeout); // 기존 타임아웃 취소
-    debounceTimeout = setTimeout(() => {
-        if (isScrolling) {
-            onScroll(); // 타임아웃 후 onScroll 호출
-        }
-    }, 100); // 100ms 디바운스
+    isScrolling = true;
 });
 
 // 첫 번째 도트를 활성화 상태로 초기화
@@ -88,8 +81,19 @@ nextButton.addEventListener('click', function () {
     }
 
     if (nextButton.textContent === '완료') {
-        console.log("선택된 옵션들:", selectedOptions);
         
+        let ConnChar = '';
+        if (selectedOptions[0] === "와인" || selectedOptions[0] === "칵테일") {
+            ConnChar = '한'
+        } else if (selectedOptions[0] === "진" || selectedOptions[0] === "위스키" || selectedOptions[0] === "보드카") {
+            ConnChar = '의'
+        } else if (selectedOptions[0] === "맥주") {
+            ConnChar = '이 높은'
+        }
+
+        console.log(`${selectedOptions[1]}${ConnChar} ${selectedOptions[0]}`);  // 사용자 취향 기반의 주류 추천을 해주기 위해 조사 결과를 바탕으로 글을 생성함
+        set_User_Taste(selectedOptions[1], ConnChar);
+
         if (selectedOptions[0] && selectedOptions[0].length > 0) {
             // window.location.href = `/drink_survey/${encodeURIComponent(selectedOptions[0])}`;
         } else {
@@ -102,6 +106,28 @@ nextButton.addEventListener('click', function () {
         slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
     }
 });
+
+// 주류 취향 업데이트
+async function set_User_Taste(fav_taste, ConnChar = '') {
+    try {
+        const response = await fetch('/api/v1/set_user_taste', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', 
+            body: JSON.stringify({ fav_taste: fav_taste })    
+        });
+
+        const result = await response.json();
+        console.log('좋아하는 맛 저장 완료:', result);
+        
+        return result;
+    } catch (error) {
+        console.error('Error submitting user preferences:', error);
+        throw error;
+    }
+}
 
 /** 
  * 첫 번째 질문에서 선택한 주류에 따라 두 번째 질문(당도)을 업데이트하는 함수 

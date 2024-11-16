@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from supabase import create_client
 from flask import jsonify, Blueprint, request
 import hashlib
+import datetime
 
 # 블루프린트 생성
 supabaseController = Blueprint('supabaseController', __name__)
@@ -195,8 +196,6 @@ def fetch_popular_restaurants():
 # (사장님 화면) 예약 정보를 가져오는 API
 @supabaseController.route('/get_Reservations', methods=['POST'])
 def get_Reservations():
-    from flask import request, jsonify
-    import datetime
 
     try:
         # 요청 데이터 받기
@@ -243,7 +242,6 @@ def get_Reservations():
 # (음식점 세부 화면) Supabase에서 음식점 정보를 가져오는 함수
 @supabaseController.route('/get_Restaurant_Info', methods=['POST'])
 def get_restaurant_info():
-    from flask import request, jsonify
 
     try:
         # 요청에서 음식점 ID를 가져옴
@@ -268,7 +266,6 @@ def get_restaurant_info():
 # 예약 insert
 @supabaseController.route('/insert_Reservation', methods=['POST'])
 def insert_reservation():
-    from flask import request, jsonify
 
     try:
         # 클라이언트에서 보낸 데이터 가져오기
@@ -300,7 +297,6 @@ def insert_reservation():
 # (지도 화면) 음식점 리스트
 @supabaseController.route('/get_Nearest_Restaurants', methods=['POST'])
 def get_nearest_restaurants():
-    from flask import request, jsonify
 
     try:
         # 클라이언트에서 보낸 데이터 가져오기
@@ -353,7 +349,6 @@ def get_nearest_restaurants():
 # 북마크 업데이트
 @supabaseController.route('/update_Bookmark_Status', methods=['POST'])
 def update_bookmark_status():
-    from flask import request, jsonify
 
     try:
         # 클라이언트에서 보낸 데이터 가져오기
@@ -376,3 +371,36 @@ def update_bookmark_status():
         return jsonify({"error": str(e)}), 500
     
 
+#--------------------------------------------------------------------------------------  
+# (취향 조사 화면) 사용자 주류 취향 insert, update
+@supabaseController.route('/set_user_taste', methods=['POST'])
+def set_user_taste():
+    user_id = request.cookies.get('user_id')  
+    try:
+        
+        data = request.get_json()
+
+        if not user_id:
+            return jsonify({"error": "유저 아이디 값이 존재하지 않습니다."}), 400
+        if not data or 'fav_taste' not in data:
+            return jsonify({"error": "데이터가 존재하지 않습니다."}), 400
+
+        # 사용자가 좋아하는 맛
+        fav_taste = data.get("fav_taste")
+
+        response = supabase_client.from_('user_preferences').upsert({
+            'user_id': user_id,
+            'favorite_taste': fav_taste
+        }).execute()
+
+        if not response:
+            return jsonify({"error": "저장에 실패했습니다."}), 400
+
+        if response:
+            # 로그인 성공 시 토큰과 유저 아이디를 함께 응답
+            return jsonify({
+                "status": "success"
+            }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
