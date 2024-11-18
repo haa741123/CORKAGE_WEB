@@ -19,12 +19,22 @@ from werkzeug.utils import secure_filename
 import google.generativeai as genai
 from google.ai.generativelanguage_v1beta.types import content
 from flask import make_response
+from dotenv import load_dotenv
+from supabase import create_client
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
+    
+# 환경 변수 로드
+load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Supabase 클라이언트 생성
+supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)    
 
 # 로깅 설정
 log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -210,6 +220,47 @@ def delete_image(image_path):
     else:
         logging.warning(f'파일을 찾을 수 없습니다: {image_path}')
 
+
+
+
+
+# DB에서 주류 정보를 조회
+def get_wine_info_from_db(extracted_text):
+    try:
+        # Supabase에서 주류 이름을 검색하는 쿼리
+        response = supabase_client.table('drinks') \
+                .select('id, name, description, type, alcohol_content, pairing_food, body, sweetness') \
+                .eq('name', extracted_text) \
+                .execute()
+
+        wine_info = response.data
+
+        # 데이터가 비어있는지 확인
+        if not wine_info or len(wine_info) == 0:
+            logging.info(f"DB에 '{extracted_text}'에 해당하는 주류 정보가 없습니다.")
+            return None
+
+        # 데이터가 존재할 경우 반환
+        logging.info(f"DB에서 주류 정보 찾음: {wine_info}")
+        return {
+            "ProductName": wine_info[0].get('name', '정보 없음'),
+            "ProductType": wine_info[0].get('type', '정보 없음'),
+            "description": wine_info[0].get('description', '정보 없음'),
+            "alcohol": wine_info[0].get('alcohol_content', '정보 없음'),
+            "PairingFood": wine_info[0].get('pairing_food', '정보 없음'),
+            "Body": wine_info[0].get('body', '정보 없음'),
+            "Sweetness": wine_info[0].get('sweetness', '정보 없음')
+        }
+
+    except Exception as e:
+        # 예외 처리 및 로그 기록
+        logging.error(f"DB 조회 중 오류 발생: {str(e)}")
+        return None
+
+
+
+
+
 # 주류 인식 API 엔드포인트
 @WineDetectionController.route('/detect', methods=['POST'])
 def detect_vin():
@@ -271,22 +322,27 @@ def detect_vin():
             log_message = f"OCR 결과 (Maker-Name): {extracted_text}"
             logging.info(log_message)
 
-            # Google Gemini API를 통해 주류 정보 요청
-            chat = gemini_model.start_chat()
-            response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in JSON format with the fields: ProductName, description, alcohol, PairingFood, Body, Sweetness. Translate the content into Korean if possible.")
-            wine_info = response.text
+            # 1. DB에서 주류 정보 확인 (Supabase 사용)
+            wine_info_json = get_wine_info_from_db(extracted_text)
 
-            try:
-                wine_info_json = json.loads(wine_info)
-            except json.JSONDecodeError as e:
-                logging.error(f"Failed to parse Gemini API response as JSON: {str(e)}")
-                return jsonify({"error": "Google Gemini API 응답이 JSON 형식이 아닙니다."}), 500
+            # 2. DB에 정보가 없으면 Gemini 모델 호출
+            if not wine_info_json:
+                logging.info("DB에 정보가 없어 Google Gemini API 호출")
+                chat = gemini_model.start_chat()
+                response = chat.send_message(f"\"{extracted_text}\" Provide this wine information in JSON format with the fields: ProductName, description, alcohol, PairingFood, Body, Sweetness. Translate the content into Korean if possible.")
+                wine_info = response.text
 
-            # 필수 필드 체크 및 기본 값 할당
-            required_fields = ["ProductName", "description", "alcohol", "PairingFood", "Body", "Sweetness"]
-            for field in required_fields:
-                if field not in wine_info_json:
-                    wine_info_json[field] = "데이터가 제공되지 않았습니다."
+                try:
+                    wine_info_json = json.loads(wine_info)
+                except json.JSONDecodeError as e:
+                    logging.error(f"Failed to parse Gemini API response as JSON: {str(e)}")
+                    return jsonify({"error": "Google Gemini API 응답이 JSON 형식이 아닙니다."}), 500
+
+                # 필수 필드 체크 및 기본 값 할당
+                required_fields = ["ProductName", "description", "alcohol", "PairingFood", "Body", "Sweetness"]
+                for field in required_fields:
+                    if field not in wine_info_json:
+                        wine_info_json[field] = "데이터가 제공되지 않았습니다."
 
             # JSON 파일 저장
             json_filepath = save_extracted_text_to_json(extracted_text, user_id)
@@ -335,17 +391,17 @@ def watch_ad():
 
 @WineDetectionController.route('/get_ocr_result', methods=['GET'])
 def get_ocr_result():
-    logging.info("Received request for OCR result")
+    logging.info("OCR 결과 요청을 받았습니다.")
     ocr_result = session.get('ocr_result', {})
     if not ocr_result:
-        logging.warning("No OCR result found in session")
-        return jsonify({"error": "No OCR result found", "session_data": dict(session)}), 404
+        logging.warning("세션에 OCR 결과가 없습니다.")
+        return jsonify({"error": "세션에 OCR 결과가 없습니다."}), 404
     
     if 'timestamp' in ocr_result:
         result_time = datetime.fromisoformat(ocr_result['timestamp'])
         if (datetime.now() - result_time).total_seconds() > 3600:
-            logging.warning("OCR result has expired")
-            return jsonify({"error": "OCR result has expired"}), 410
+            logging.warning("OCR 결과가 만료되었습니다.")
+            return jsonify({"error": "OCR 결과가 만료되었습니다."}), 410
     
-    logging.info(f"Returning OCR result: {ocr_result}")
+    logging.info(f"OCR 결과 반환: {ocr_result}")
     return jsonify(ocr_result)

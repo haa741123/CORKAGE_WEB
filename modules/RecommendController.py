@@ -66,7 +66,7 @@ def load_and_preprocess_data():
     try:
         # 사용자 및 주류 데이터 가져오기
         user_data = supabase.table("user_preferences").select("*").execute()
-        drink_data = supabase.table("drinks").select("*").execute()
+        drink_data = supabase.table("drinks").select("id, name, description, type").execute()
 
         # DataFrame으로 변환
         usr_info_df = pd.DataFrame(user_data.data)
