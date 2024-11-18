@@ -119,10 +119,15 @@ input[type="search"] {
     white-space: nowrap;
 }
 
-.filters h2, .popular-searches h2{
+.popular-searches h2{
     font-size: 1.3rem;  
     margin-bottom: 1rem;
     color: #555;
+}
+.filters_h2 {
+    font-size: 1.3rem;  
+    color: #555;
+    padding: 1rem 1rem 0rem 1rem;
 }
 
 .search-item {

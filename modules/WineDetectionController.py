@@ -335,7 +335,7 @@ def detect_vin():
                 try:
                     wine_info_json = json.loads(wine_info)
                 except json.JSONDecodeError as e:
-                    logging.error(f"Failed to parse Gemini API response as JSON: {str(e)}")
+                    logging.error(f"JSON 생성에 실패함: {str(e)}")
                     return jsonify({"error": "Google Gemini API 응답이 JSON 형식이 아닙니다."}), 500
 
                 # 필수 필드 체크 및 기본 값 할당
