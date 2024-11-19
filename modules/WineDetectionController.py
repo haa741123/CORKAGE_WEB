@@ -319,6 +319,7 @@ def detect_vin():
             cropped_img.save(cropped_img_bytes, format='JPEG')
 
             extracted_text = detect_text_easyocr(cropped_img_bytes.getvalue())
+            extracted_text = extracted_text.lower()
             log_message = f"OCR 결과 (Maker-Name): {extracted_text}"
             logging.info(log_message)
 
