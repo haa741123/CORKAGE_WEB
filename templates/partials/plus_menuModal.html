@@ -1,0 +1,46 @@
+<div id="menuModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="menuModalLabel">메뉴 관리</h5>
+                <!-- btn-close 클래스와 data-bs-dismiss 속성 추가 -->
+                <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="menuForm">
+                    <!-- 메뉴 이름 입력 -->
+                    <div class="form-group">
+                        <label for="menuName">메뉴 이름</label>
+                        <input type="text" class="form-control" id="menuName" placeholder="메뉴 이름을 입력하세요." required />
+                    </div>
+
+                    <!-- 메뉴 사진 업로드 및 미리보기 -->
+                    <div class="form-group">
+                        <label for="menuImage">메뉴 사진</label>
+                        <!-- <input type="file" class="form-control-file" id="menuImage" accept="image/*" onchange="previewImage(event)" required /> -->
+                        <input type="file" class="form-control-file" id="menuImage" accept="image/*" required />
+                        <!-- <img id="menuImagePreview" src="#" alt="" style="display:none;" /> -->
+                        <img id="menuImagePreview" src="" alt="미리보기 이미지" style="display:none; max-width: 100%; height: auto;" />
+                    </div>
+
+                    <!-- 메뉴 설명 입력 -->
+                    <div class="form-group">
+                        <label for="menuDescription">메뉴 설명</label>
+                        <textarea class="form-control" id="menuDescription" rows="3" placeholder="메뉴 설명을 입력하세요." required></textarea>
+                    </div>
+
+                    <!-- 가격 입력 -->
+                    <div class="form-group">
+                        <label for="menuPrice">가격</label>
+                        <input type="number" class="form-control" id="menuPrice" placeholder="가격을 입력하세요." required />
+                    </div>
+
+                    <!-- 저장 버튼 -->
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

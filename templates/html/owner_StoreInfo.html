@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="모두의 잔 사장님 페이지" />
+    <meta name="author" content="모두의 잔" />
+    <title>모두의 잔 사장님 페이지</title>
+
+    <!-- Font & Icon -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/jejumyeongjo.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+
+    <!-- Bootstrap CSS & Custom Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.0.7/css/sb-admin-2.min.css"/>
+    <link href="/static/css/owner_StoreInfo.css" rel="stylesheet">
+
+    <style>
+    </style>
+
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        {% include 'partials/owner_sidebar.html' %}
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                {% include 'partials/owner_top_navbar.html' %}
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <button id='addMenuButton'>메뉴 추가하기</button>
+
+                    <!-- 메뉴 관리 모달 시작 -->
+                    {% include 'partials/plus_menuModal.html' %}
+                    <!-- 메뉴 관리 모달 끝 -->
+
+                    <!-- 추가한 메뉴 사진과 이름 시작 -->
+                    <div id="menuList"></div>
+                    <!-- 추가한 메뉴 사진과 이름 끝 -->
+
+                </div>
+                <!-- End Page Content -->
+
+                <!-- 상단으로 스크롤 버튼 -->
+                <a class="scroll-to-top rounded" href="#page-top">
+                    <i class="fas fa-angle-up"></i>
+                </a>
+                <!-- 로그아웃 모달 -->
+                <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <!-- 모달 헤더 -->
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="logoutModalLabel">이 PC에서 로그아웃 하시겠습니까?</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+
+                            <!-- 모달 푸터 -->
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                                <a class="btn btn-primary" href="login.html">로그아웃</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript"src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
+        <script type="text/javascript"src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.0.7/js/sb-admin-2.min.js"></script>
+        <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+        <script type="module" src="/static/js/owner_stroe_info.js"></script>
+
+        <script>
+            
+        </script>
+  </body>
+</html>

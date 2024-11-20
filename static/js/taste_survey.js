@@ -109,6 +109,7 @@ nextButton.addEventListener('click', function () {
 
 // 주류 취향 업데이트
 async function set_User_Taste(fav_taste, ConnChar = '') {
+    console.log(fav_taste)
     try {
         const response = await fetch('/api/v1/set_user_taste', {
             method: 'POST',

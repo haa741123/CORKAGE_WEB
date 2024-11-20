@@ -1,9 +1,30 @@
 import os
 from dotenv import load_dotenv
 from supabase import create_client
-from flask import jsonify, Blueprint, request
-import hashlib
+from flask import jsonify, Blueprint, request, current_app
 import datetime
+from werkzeug.utils import secure_filename
+from PIL import Image
+
+#-------------------------------------------------------------------------------------
+# 허용된 확장자 목록 (설정 파일에서 관리하는 것이 좋음)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+# 확장자 확인 함수
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# 이미지 유효성 검사 함수 (MIME 타입 검사 포함)
+# 안되는 코드라 임시 주석... 
+# def is_image(file):
+#     try:
+#         img = Image.open(file)
+#         img.verify()  # 이미지가 손상되지 않았는지 확인
+#         return True
+#     except Exception as e:
+#         print(f"Image verification failed: {e}")  # 에러 메시지 출력
+#         return False
+#-------------------------------------------------------------------------------------
 
 # 블루프린트 생성
 supabaseController = Blueprint('supabaseController', __name__)
@@ -133,12 +154,7 @@ def update_memo():
 
 #--------------------------------------------------------------------------------------
 # 사장님 로그인 관련 API
-
-def hash_password(password):
-    """비밀번호 해싱 함수 (SHA-256 사용)"""
-    return hashlib.sha256(password.encode()).hexdigest()
-
-@supabaseController.route('/api/v1/owner_login', methods=['POST'])
+@supabaseController.route('/owner_login', methods=['POST'])
 def owner_login():
     data = request.get_json()
     login_id = data.get('login_id')
@@ -404,3 +420,88 @@ def set_user_taste():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+
+#--------------------------------------------------------------------------------------  
+# (사장님 화면) 가게 메뉴 정보 추가 insert, update
+@supabaseController.route('/set_menu', methods=['POST'])
+def add_menu():
+    # 이미지 파일이 제공되었는지 확인
+    if 'menuImage' not in request.files:
+        return jsonify({'error': '이미지 파일이 제공되지 않았습니다'}), 400
+
+    file = request.files['menuImage']
+
+    # 파일명 및 확장자 유효성 검사
+    if not allowed_file(file.filename):
+        return jsonify({'error': '유효한 이미지 형식이 아닙니다'}), 400
+
+    # 폼 데이터 가져오기
+    menu_name = request.form.get('menuName')
+    menu_description = request.form.get('menuDescription')
+    menu_price = request.form.get('menuPrice')
+    user_id = request.form.get('user_id')
+
+    # 필수 데이터 확인 및 유효성 검사
+    if not menu_name or not menu_price or not user_id:
+        return jsonify({'error': '필수 데이터가 누락되었습니다'}), 400
+
+    try:
+        menu_price = int(menu_price)  # 가격을 정수로 변환
+        user_id = int(user_id)        # 사용자 ID를 정수로 변환
+    except ValueError:
+        return jsonify({'error': '가격 또는 사용자 ID는 숫자여야 합니다'}), 400
+
+    # 파일 저장 경로 설정 및 저장
+    try:
+        # 파일명에서 확장자 추출
+        filename = f"{file.filename}"  # 메뉴 이름과 확장자를 결합
+        print(f"저장되는 파일 이름: {filename}") #테스트용
+
+        print(current_app.config['UPLOAD_FOLDER'])
+        file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)  # current_app 사용
+        print(f"Saving file to: {file_path}")  # 디버깅을 위한 출력
+        file.save(file_path)
+    except Exception as e:
+        print(f"File save error: {e}")  # 에러 메시지 출력
+        return jsonify({'error': f'파일 저장 중 오류가 발생했습니다: {str(e)}'}), 500
+
+    # Supabase에 메뉴 데이터 삽입 또는 업데이트
+    try:
+        new_menu_data = {
+            'name': menu_name,
+            'user_id': user_id,
+            'description': menu_description,
+            'price': menu_price,
+            'image_url': file_path,  # 저장된 이미지 경로 추가
+        }
+
+        # 메뉴 이름 중복 확인
+        existing_menu_response = supabase_client.table('menus').select('*').eq('name', menu_name).execute()
+
+        # 메뉴 데이터 저장 (삽입 또는 업데이트)
+        if existing_menu_response.data:  # 메뉴가 이미 존재하는 경우 업데이트
+            return save_menu('update', new_menu_data, menu_name)
+        else:  # 메뉴가 존재하지 않는 경우 새로 삽입
+            return save_menu('insert', new_menu_data)
+
+    except Exception as e:
+        print(f"Supabase request error: {e}")  # 에러 메시지 출력
+        return jsonify({'error': f'Supabase 요청 중 오류가 발생했습니다: {str(e)}'}), 500
+
+def save_menu(action, menu_data, menu_name=None):
+    try:
+        if action == 'update':
+            response = supabase_client.table('menus').update(menu_data).eq('name', menu_name).execute()
+        else:
+            response = supabase_client.table('menus').insert(menu_data).execute()
+
+        if not response:
+            return jsonify({"error": "저장에 실패했습니다."}), 400
+
+        return jsonify({"status": "success"}), 200
+
+    except Exception as e:
+        print(f"Supabase {action} error: {e}")  # 에러 메시지 출력
+        return jsonify({'error': f'Supabase에 메뉴 데이터를 {action}하는 중 오류가 발생했습니다: {str(e)}'}), 500

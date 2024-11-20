@@ -4,16 +4,25 @@ from routes.main_routes import main_routes
 import os
 from flask_cors import CORS
 
-# Flask CORS 설정 추가
-
-
 app = Flask(__name__)
 app.register_blueprint(main_routes)
 app.secret_key = os.urandom(24)
 
+# 업로드할 파일을 저장할 폴더 경로 설정
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
+
+# 예시: uploads 폴더가 없으면 생성
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+
+
+
+
+
 
 # LoginController 모듈 임포트 및 등록
 from modules.LoginController import LoginController

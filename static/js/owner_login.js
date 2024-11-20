@@ -1,10 +1,4 @@
-// 비밀번호 해싱 함수
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+
 
 // 로그인 시도 횟수와 제한 시간 설정
 let loginAttempts = 0;
@@ -23,20 +17,20 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const loginId = document.getElementById("exampleInputEmail").value;
   const password = document.getElementById("exampleInputPassword").value;
 
-  // 비밀번호 해싱
-  const hashedPassword = await hashPassword(password);
+  console.log(loginId)
+  console.log(password)
 
   try {
       // 로그인 요청 전송
-      const response = await fetch('/api/v1/login', {
+      const response = await fetch('/api/v1/owner_login', {
           method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ login_id: loginId, login_passwd: hashedPassword })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ login_id: loginId, login_passwd: password })
       });
 
       const data = await response.json();
+
+      console.log(data)
 
       // 서버에서 에러가 반환된 경우
       if (data.error) {
@@ -45,7 +39,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
       // 로그인 성공 시 사용자 정보를 sessionStorage에 저장
       sessionStorage.setItem("user", JSON.stringify(data.ownerData));
-      window.location.href = "reservation_owner";
+      window.location.href = "/reservation_owner";
   } catch (error) {
       console.error("로그인 에러:", error.message);
       alert(`로그인 실패: ${error.message}`);
