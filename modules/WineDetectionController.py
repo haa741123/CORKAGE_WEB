@@ -190,8 +190,36 @@ def detect_text_easyocr(image_bytes):
     logging.info("Starting OCR process with EasyOCR")
     results = reader.readtext(image_bytes)
     logging.info(f"EasyOCR results: {results}")
-    extracted_text = ' '.join([result[1] for result in results])
-    logging.info(f"Extracted text: {extracted_text}")
+    
+    # 각 텍스트의 y좌표를 기준으로 정렬
+    sorted_results = sorted(results, key=lambda x: x[0][0][1])  # y좌표로 정렬
+    
+    # 각 줄을 따로 처리
+    lines = []
+    current_y = None
+    current_line = []
+    
+    for result in sorted_results:
+        y_coord = result[0][0][1]  # 텍스트의 y좌표
+        
+        # 새로운 줄인지 확인 (y좌표 차이가 일정 값 이상이면 새로운 줄로 간주)
+        if current_y is None or abs(y_coord - current_y) > 10:
+            if current_line:
+                lines.append(' '.join([text[1] for text in current_line]))
+            current_line = [result]
+            current_y = y_coord
+        else:
+            current_line.append(result)
+    
+    # 마지막 줄 처리
+    if current_line:
+        lines.append(' '.join([text[1] for text in current_line]))
+    
+    # 줄별로 합치기
+    extracted_text = ' '.join(lines)
+    logging.info(f"Extracted text by lines: {lines}")
+    logging.info(f"Final extracted text: {extracted_text}")
+    
     return extracted_text if extracted_text else "텍스트가 감지되지 않았습니다."
 
 
@@ -319,6 +347,7 @@ def detect_vin():
             cropped_img.save(cropped_img_bytes, format='JPEG')
 
             extracted_text = detect_text_easyocr(cropped_img_bytes.getvalue())
+            extracted_text = extracted_text.lower()
             log_message = f"OCR 결과 (Maker-Name): {extracted_text}"
             logging.info(log_message)
 
