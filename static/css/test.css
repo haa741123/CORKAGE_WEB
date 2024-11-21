@@ -404,12 +404,11 @@ body {
 .drag-handle {
   width: 100%;
   height: 20px;
-  cursor: grab;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f1f1f1; 
-  border-radius: 10px 10px 0 0;
+  background-color: #9c9898;
+  border-radius: 10px 10px 0 0; /* 둥글기 정도를 더 크게 설정 */
 }
 
 .drag-handle::before {

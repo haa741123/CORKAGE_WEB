@@ -5,6 +5,7 @@ import { specialChar } from '/static/js/data/specialChar.js';
 $(document).ready(function() {
     // 권한 체크 
     checkAuthentication();
+    updateMenuList();
 
 
     // 추가 버튼과 모달 요소
@@ -27,6 +28,23 @@ $(document).ready(function() {
         const menuImage = $('#menuImage')[0].files[0]; // 파일 선택
         const menuDescription = $('#menuDescription').val();
         const menuPrice = $('#menuPrice').val();
+
+        // 입력 유효성 검사
+        if (!menuName) {
+            alert('메뉴 이름을 입력해 주세요.');
+            $('#menuName').focus();
+            return; // 메뉴 이름이 비어있으면 제출 중단
+        }
+        if (!menuDescription) {
+            alert('메뉴 설명을 입력해 주세요.');
+            $('#menuDescription').focus();
+            return; // 메뉴 설명이 비어있으면 제출 중단
+        }
+        if (!menuPrice || isNaN(menuPrice)) {
+            alert('유효한 메뉴 가격을 입력해 주세요.');
+            $('#menuPrice').focus();
+            return; // 메뉴 가격이 비어있거나 숫자가 아니면 제출 중단
+        }
 
         // 이미지 형식 검사
         const validImageTypes = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -88,9 +106,12 @@ $(document).ready(function() {
             contentType: false, // multipart/form-data로 전송
             processData: false, // jQuery가 데이터를 처리하지 않도록 설정
             success: (response) => {
-                alert('메뉴가 성공적으로 저장되었습니다!');
                 console.log(response);
                 menuModal.hide();  // 모달을 닫는 코드
+
+                // 메뉴 리스트 업데이트
+                updateMenuList();
+                alert('메뉴가 성공적으로 저장되었습니다!');
             },
             error: (jqXHR, textStatus, errorThrown) => {
                 alert('메뉴 저장에 실패했습니다. 다시 시도해 주세요.');
@@ -140,3 +161,48 @@ function previewImage(event) {
     }
 }
 
+// 메뉴 리스트를 업데이트하는 함수
+const updateMenuList = () => {
+
+    // 세션 스토리지에서 사용자 정보 가져오기
+    const userData = sessionStorage.getItem('user');
+    const user_id = userData ? JSON.parse(userData).login_id : '';
+
+    if (!user_id) {
+        console.error('세션 스토리지에 사용자 정보가 없습니다.');
+        alert('로그인 정보가 없습니다. 다시 로그인 해 주세요.');
+        return; // 유저 정보가 없다면 더 이상 진행하지 않음
+    }
+
+    // 요청할 때 같이 보낼 값
+    const requestData = { user_id };
+
+    $.ajax({
+        url: '/api/v1/get_menu',
+        type: 'POST',
+        data: JSON.stringify(requestData), // JSON 문자열로 변환하여 전송
+        success: (data) => {
+            // 데이터가 정상적으로 받아지면 menuList에 표시
+            const menuList = $('#menuList');
+            menuList.empty(); // 기존 메뉴 리스트 비우기
+
+            data.forEach(menu => {
+                const menuItem = `
+                    <div class="menu-item">
+                        <img src="${menu.imageURL}" alt="${menu.name}" class="menu-image" />
+                        <div class="menu-name">${menu.name}</div>
+                        <div class="menu-description">${menu.description}</div>
+                        <div class="menu-price">${menu.price} 원</div>
+                    </div>
+                `;
+                menuList.append(menuItem);
+            });
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            alert('메뉴 정보를 가져오는 데 실패했습니다. 다시 시도해 주세요.');
+            console.error("Status:", textStatus);
+            console.error("Error Thrown:", errorThrown);
+            console.error("Response Text:", jqXHR.responseText);
+        }
+    });
+};

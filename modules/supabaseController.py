@@ -457,6 +457,31 @@ def set_UserFavDrink():
 
 
 #--------------------------------------------------------------------------------------  
+# (사장님 화면) 가게 메뉴 정보 불러오기
+@supabaseController.route('/get_menu', methods=['POST'])
+def get_menu():
+    # 유저 아이디 값이 넘어왔는지 확인
+    user_id = request.json.get('user_id')
+    
+    if not user_id:
+        return jsonify({'error': 'user_id is required'}), 400
+
+    # Supabase에서 유저 아이디에 해당하는 메뉴 데이터 가져오기
+    response = supabase_client.table('menus').select('*').eq('user_id', user_id).execute()
+
+    # 결과에서 메뉴 데이터 추출
+    data = response.data
+
+    # 이미지 경로 포함
+    if data:
+        for item in data:
+            filename = item['image_url']  
+            item['image_url'] = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+
+    # 가져온 값 리턴
+    return jsonify(data), 200
+
+
 # (사장님 화면) 가게 메뉴 정보 추가 insert, update
 @supabaseController.route('/set_menu', methods=['POST'])
 def add_menu():
