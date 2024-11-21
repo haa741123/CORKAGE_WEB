@@ -388,7 +388,7 @@ def update_bookmark_status():
     
 
 #--------------------------------------------------------------------------------------  
-# (취향 조사 화면) 사용자 주류 취향 insert, update
+# (취향 조사 화면) 사용자 개인 취향 insert, update
 @supabaseController.route('/set_user_taste', methods=['POST'])
 def set_user_taste():
     user_id = request.cookies.get('user_id')  
@@ -421,6 +421,39 @@ def set_user_taste():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+
+
+# (취향 조사 화면) 사용자 주류 취향 insert, update
+@supabaseController.route('/set_UserFavDrink', methods=['POST'])
+def set_UserFavDrink():
+    user_id = request.cookies.get('user_id')  
+    try:
+        data = request.get_json()
+
+        if not user_id:
+            return jsonify({"error": "유저 아이디 값이 존재하지 않습니다."}), 400
+        if not data or 'fav_DrinkName' not in data:
+            return jsonify({"error": "데이터가 존재하지 않습니다."}), 400
+
+        # 사용자가 좋아하는 맛
+        fav_DrinkName = data.get("fav_DrinkName")
+
+        response = supabase_client.from_('user_preferences').upsert({
+            'user_id': user_id,
+            'favorite_drink_name': fav_DrinkName
+        }).execute()
+
+        if not response:
+            return jsonify({"error": "저장에 실패했습니다."}), 400
+
+        if response:
+            # 로그인 성공 시 토큰과 유저 아이디를 함께 응답
+            return jsonify({
+                "status": "success"
+            }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 #--------------------------------------------------------------------------------------  

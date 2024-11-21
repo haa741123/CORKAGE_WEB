@@ -95,7 +95,7 @@ nextButton.addEventListener('click', function () {
         set_User_Taste(selectedOptions[1], ConnChar);
 
         if (selectedOptions[0] && selectedOptions[0].length > 0) {
-            // window.location.href = `/drink_survey/${encodeURIComponent(selectedOptions[0])}`;
+            window.location.href = `/drink_survey/${encodeURIComponent(selectedOptions[0])}`;
         } else {
             showAlert('warning', '선호하는\n 주류를 선택해주세요', '');
             $("html, body").removeClass("swal2-shown swal2-height-auto");   // 다른 디자인까지 영향을 미치는 현상이 있어 이건 그대로 둬야됨...

@@ -129,15 +129,26 @@ const colorMap={
     런던드라이진:"#5F9EA0", 올드톰진:"#5F9EA0", 네이비스트렝스진:"#5F9EA0"
 };
 
-// 노드에 원형 추가 및 클릭 이벤트 설정
+
 node.append("circle")
-    .attr("r", 8) // 기본 반지름 설정
-    .attr("fill", d => colorMap[d.id] || "#1f77b4") // 색상 설정
-    .on("click", (event, d) => { // 클릭 시 실행될 함수
-        d3.select("#selected-drink").text(`선택한 주류: ${d.id}`);  // 선택된 주류 표시
-        svgGroup.selectAll(".node").classed("selected", false);    // 이전 선택 해제
-        d3.select(event.currentTarget.parentNode).classed("selected", true); // 현재 선택 표시
+    .attr("r", 8)
+    .attr("fill", d => colorMap[d.id] || "#1f77b4")
+    .on("click", (event, d) => {
+        // 선택을 막고 싶은 노드 ID 목록
+        const nonClickableNodes = ["맥주", "와인", "진", "위스키", "칵테일", "보드카"];
+        
+        if (nonClickableNodes.includes(d.id)) {
+            event.stopPropagation(); // 클릭 이벤트 전파 차단
+            return; // 아무 작업도 하지 않음
+        }
+
+        // 선택 가능한 노드의 동작
+        d3.select("#selected-drink").text(`선택한 주류: ${d.id}`);   // 선택된 주류 표시
+        svgGroup.selectAll(".node").classed("selected", false);     // 이전 선택 해제
+        d3.select(event.currentTarget.parentNode).classed("selected", true);    // 현재 선택 표시
     });
+
+
 
 // 노드에 텍스트 추가
 node.append("text")
@@ -160,4 +171,51 @@ simulation.on("tick", () => {
 
     node
         .attr("transform", d => `translate(${d.x},${d.y})`);
+});
+
+
+
+
+// "저장하기" 버튼 클릭 이벤트 리스너 추가
+document.getElementById("next-btn").addEventListener("click", () => {
+    // 선택된 주류 가져오기
+    const selectedDrinkText = document.getElementById("selected-drink").textContent;
+    const favDrinkName = selectedDrinkText.replace("선택한 주류: ", "").trim();
+
+    // 선택된 주류가 없을 경우 처리
+    if (!favDrinkName || favDrinkName === "없음") {
+        alert("주류를 선택해주세요.");
+        return;
+    }
+
+    // POST 요청 데이터 구성
+    const postData = {
+        fav_DrinkName: favDrinkName
+    };
+
+    // Fetch API로 POST 요청 보내기
+    fetch("/api/v1/set_UserFavDrink", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(postData) // 데이터를 JSON 형식으로 변환
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                alert("저장되었습니다!");
+            } else {
+                alert(`저장 실패: ${data.error || "알 수 없는 오류"}`);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("요청 중 오류가 발생했습니다.");
+        });
 });
