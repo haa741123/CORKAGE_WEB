@@ -21,60 +21,74 @@
       </header>
 
       <main>
+        
         <section class="user-info">
-          <h2>이정현님</h2>
+          <div class="profile-wrapper">
+            <h2>이정현님</h2>
+            <button class="edit-profile-btn"><img src="/static/img/pan.png">프로필 수정</button>
+          </div>
         </section>
-
+        <section class="incomming">
+        <h3>다가오는 예약</h3><p>3</p>
+        </section>
         <section class="card">
-          <div class="card-header">
-            <h3>나의 예약</h3>
-            <img
-              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'/%3E%3C/svg%3E"
-              alt="더보기"
-              class="icon"
-            />
+          <div class="reservation-date-header">
+            <img src="/static/img/Date_today.png" alt="달력" class="date-icon" />
+            2024.09.13 (금) 오후 12:00
+            <img src="/static/img/Profile.svg" alt="인원" class="person-icon" />
+            2명
           </div>
-          <div class="reservation-details">
-            <img
-              src="/static/img/restaurent.png"
-              alt="스시쥬고야"
-              class="restaurant-image"
-            />
-            <div class="reservation-info">
-              <h4>스시쥬고야</h4>
-              <p>2024.09.13 (금) 오후 12:00 2명</p>
-              <button>상세 정보 보기</button>
+          
+          <div class="restaurant-info">
+            <div class="restaurant-header">
+              <img src="/static/img/cutlet_sashimi.png" alt="스시쥬고야" class="restaurant-logo" />
+              <div class="restaurant-details">
+                <h4>스시쥬고야</h4>
+                <button class="edit-profile-btn"><img src="/static/img/phone.png">매장 전화하기</button>
+              </div>
+            </div>
+            
+            <p class="description">"十五夜, 달이 가장 밝은 날의 명랑하고 즐거운 밤 한토리출신 두 셰프의 히로아키에 이은 두번째 스시야"</p>
+            
+            <div class="button-group">
+              <button class="share-button">예약 공유</button>
+              <button class="cancel-button">예약 취소</button>
             </div>
           </div>
         </section>
-
-        <section class="card saved-list" onclick="location.href='/bookmark'">
-          <div class="card-header">
-            <h3>저장목록</h3>
-            <img
-              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'/%3E%3C/svg%3E"
-              alt="더보기"
-              class="icon"
-            />
+        <section class="scrap-section">
+          <div class="scrap-header">
+            <h3>나의 스크랩 <span>5</span></h3>
           </div>
-          <p>이정현님의 컬렉션을 확인해보세요</p>
-        </section>        
-
-        <section class="card advertisement">
-          광고
+          <div class="scrap-images">
+            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
+            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
+            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
+            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
+            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
+          </div>
         </section>
 
-        <section class="footer-content">
-          <hr class="line" />
-          <div class="footer-container">
-            <div class="footer-column">
-              <h3>문의 요청</h3>
-              <ul>
-                <li style="margin-bottom: 10px; cursor: pointer; margin-left: 3px;" onclick="location.href='/chatbot'">고객센터</li>
-              </ul>
+        <section class="advertisement">
+        </section>
+
+        <section class="footer-menu">
+          <div class="menu-grid">
+            <div class="menu-group">
+              <h3>해택 정보</h3>
+              <div class="menu-row">
+                <a href="/coupon">쿠폰함</a>
+                <a href="/events">진행 중인 이벤트</a>
+              </div>
+            </div>
+            <div class="menu-group">
+              <h3>문의 및 알림</h3>
+              <div class="menu-row">
+                <a href="/support">고객센터</a>
+                <a href="/policy">약관 및 정책</a>
+              </div>
             </div>
           </div>
-          <p class="version-info">현재 버전 1.0.0</p>
         </section>
 
       </main>

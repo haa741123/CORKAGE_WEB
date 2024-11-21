@@ -1,213 +1,285 @@
 * {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 *::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 body {
-    font-family: 'Pretendard Variable', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
-}
-
-.container {
-    max-width: 480px;
-    margin: auto;
-    background-color: #fff;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #e0e0e0;
-    background-color: #f5f5f5;
-}
-
-h1 {
-    font-size: 18px;
-    margin: 0;
-    font-weight: bold;
-}
-
-.icon {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-}
-
-.user-info {
-    padding: 20px 15px 5px 15px;
-    background-color: #fff;
-}
-
-.user-info h2 {
-    font-size: 20px;
-    margin: 0;
-    color: #333;
-}
-
-.card {
-    background-color: #fff;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    margin: 15px;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.card-header h3 {
-    font-size: 16px;
-    margin: 0;
-    font-weight: bold;
-}
-
-.card.saved-list {
-    cursor: pointer;
-}
-
-.card.saved-list p {
-    font-size: 14px;
-    color: #666;
-}
-
-.card:active,
-button:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.1s ease-out;
-}
-button:active {
-  background-color: #b21f30;
-}
-
-.card.saved-list:active {
+  font-family: "Pretendard Variable", sans-serif;
+  margin: 0;
+  padding: 0;
   background-color: #f9f9f9;
 }
 
-.reservation-details {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
+.container {
+  max-width: 480px;
+  margin: auto;
+  background-color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.restaurant-image {
-    width: 50px;
-    height: 10svh;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.reservation-info {
-    flex: 1;
-}
-
-.reservation-info h4 {
-    font-size: 16px;
-    margin: 0 0 5px;
-    font-weight: bold;
-}
-
-.reservation-info p {
-    font-size: 12px;
-    color: #d0273b;
-    margin: 0 0 10px;
-}
-
-button {
-    background-color: #d0273b;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-}
-
-button:hover {
-    background-color: #b21f30;
-}
-
-.advertisement {
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-    background-color: #f0f0f0;
-}
-
-
-.footer-content {
-  padding: 20px;
-  font-size: 14px;
-}
-
-.footer-content h3 {
-  font-size: 16px;
-  color: #444;
-  margin-bottom: 10px;
-}
-
-.footer-container {
+header {
   display: flex;
   justify-content: space-between;
-  gap: 40px;
-  flex-wrap: wrap;
+  align-items: center;
+  padding: 15px;
 }
 
-.footer-column {
-  flex: 1;
-  min-width: 200px;
+h1 {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
 }
 
-.footer-column ul {
-  list-style: none;
-  padding: 0;
+.icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  padding: 20px 15px 5px 15px;
+  background-color: #fff;
+}
+
+.profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-info::before {
+  content: "";
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: #ddd;
+  background-image: url("/static/img/profile.JPEG");
+  background-size: cover;
+  background-position: center;
+  margin-right: 10px;
+}
+
+.user-info h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+  font-family: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI",
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.edit-profile-btn {
+  font-size: 9px;
+  border-radius: 20px;
+  background-color: #f8f5f7;
+  border: none;
+  color: #858284;
+  cursor: default;
+  pointer-events: none;
+  padding: 2px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.incomming {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  padding-top: 5px;
+}
+
+.incomming h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
   margin: 0;
 }
 
-.footer-row {
+.incomming p {
+  margin-left: 5px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #a6a5a4;
+  padding-bottom: 1px;
+}
+.edit-profile-btn img {
+  width: auto;
+  height: 9px; /* 글자 크기와 동일하게 설정 */
+  object-fit: contain;
+}
+.card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: -20px 15px 15px 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.reservation-date-header {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.footer-row li {
-  flex: 1;
-  text-align: left;
+  align-items: center;
+  gap: 8px;
+  color: #e75b5b;
   font-size: 14px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.date-icon,
+.person-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.restaurant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.restaurant-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.restaurant-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.restaurant-details {
+  flex: 1;
+}
+
+.restaurant-details h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #222;
+}
+
+.call-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
   color: #666;
+  font-size: 13px;
+  padding: 0;
   cursor: pointer;
-  margin-left: 3px;
 }
 
-.footer-row li:hover {
-  color: #d0273b;
+.description {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #666;
+  margin: 0;
 }
 
-.footer-row li:active {
-  transform: scale(0.97);
-  background-color: #f0f0f0;
-  color: #d0273b;
-  transition: transform 0.1s ease-out, background-color 0.1s ease-out;
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.share-button,
+.cancel-button {
+  flex: 1;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.share-button {
+  background-color: #fff;
+  padding: 12px 40px 12px 40px;
+  color: #e75b5b;
+  border: 1.5px solid;
+  border-color: #e75b5b;
+  margin-right: 10px;
+}
+
+.cancel-button {
+  background-color: white;
+  color: #e75b5b;
+  border: 1.5px solid;
+  border-color: #e75b5b;
+  margin-right: 10px;
+}
+.advertisement {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  background-image: url("/static/img/banner.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+}
+
+.footer-menu {
+  padding: 20px 15px;
+  background-color: #fff;
+}
+
+.menu-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.menu-group h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #a6a4a5;
+  margin-bottom: 12px;
+}
+
+.menu-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.menu-row a {
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 0;
+}
+
+.menu-row a:active {
+  opacity: 0.7;
+}
+
+.version-info {
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+  margin-top: 30px;
 }
 
 hr.line {
@@ -223,6 +295,60 @@ hr.line {
 }
 
 .line {
-    border-top: 1px solid rgba(0, 0, 0, 0.2);
-    margin: 20px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  margin: 20px 0;
+}
+.scrap-section {
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.scrap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scrap-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.scrap-header span {
+  color: #666;
+  font-weight: normal;
+}
+
+.chevron-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.scrap-images {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 5px;
+}
+
+.scrap-images::-webkit-scrollbar {
+  display: none;
+}
+
+.scrap-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  margin-left: -20px; /* 이미지를 반만큼 겹치게 설정 */
+}
+
+.scrap-img:first-child {
+  margin-left: 0; /* 첫 번째 이미지는 마진 제거 */
 }
