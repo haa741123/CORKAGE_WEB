@@ -129,6 +129,7 @@ const fetchRec = async (action, uid) => {
 // 추천된 와인 정보를 업데이트하는 함수
 const updateWineInfo = (data) => {
   const r = data.response;
+  console.log(r)
   $('#drink_name').text(r.drink_name);
   $('#drink_desc').text(r.drink_desc);
   $('#wine-image').attr('src', r.image_url);
