@@ -1,10 +1,11 @@
 import os
 from dotenv import load_dotenv
 from supabase import create_client
-from flask import jsonify, Blueprint, request, current_app
+from flask import jsonify, Blueprint, request, current_app, url_for
 import datetime
 from werkzeug.utils import secure_filename
 from PIL import Image
+import urllib.parse
 
 #-------------------------------------------------------------------------------------
 # 허용된 확장자 목록 (설정 파일에서 관리하는 것이 좋음)
@@ -460,26 +461,37 @@ def set_UserFavDrink():
 # (사장님 화면) 가게 메뉴 정보 불러오기
 @supabaseController.route('/get_menu', methods=['POST'])
 def get_menu():
-    # 유저 아이디 값이 넘어왔는지 확인
-    user_id = request.json.get('user_id')
-    
-    if not user_id:
-        return jsonify({'error': 'user_id is required'}), 400
+    try:
+        # 유저 아이디 값이 넘어왔는지 확인
+        user_id = request.json.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': '유저 정보가 전달되지 않았음'}), 400
 
-    # Supabase에서 유저 아이디에 해당하는 메뉴 데이터 가져오기
-    response = supabase_client.table('menus').select('*').eq('user_id', user_id).execute()
+        # Supabase에서 유저 아이디에 해당하는 메뉴 데이터 가져오기
+        response = supabase_client.table('menus').select('*').eq('user_id', user_id).execute()
 
-    # 결과에서 메뉴 데이터 추출
-    data = response.data
+        # 결과에서 메뉴 데이터 추출
+        data = response.data
 
-    # 이미지 경로 포함
-    if data:
-        for item in data:
-            filename = item['image_url']  
-            item['image_url'] = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        print(data)
 
-    # 가져온 값 리턴
-    return jsonify(data), 200
+        # 이미지 경로 포함
+        if data:
+            for item in data:
+                filename = item.get('image_url')
+                if filename:
+                    # item['image_url'] = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                    item['imageURL'] = os.path.join('/uploads', os.path.basename(filename))
+                else:
+                    item['image_url'] = None  # 이미지 URL이 없을 경우 None으로 설정
+
+        # 가져온 값 리턴
+        return jsonify(data), 200
+
+    except Exception as e:
+        # 일반적인 예외 처리
+        return jsonify({'error': str(e)}), 500
 
 
 # (사장님 화면) 가게 메뉴 정보 추가 insert, update

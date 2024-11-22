@@ -1,4 +1,4 @@
-
+// 특수문자 모음집
 import { specialChar } from '/static/js/data/specialChar.js';
 
 // 페이지 로드 시 인증 체크
@@ -174,19 +174,25 @@ const updateMenuList = () => {
         return; // 유저 정보가 없다면 더 이상 진행하지 않음
     }
 
+    console.log(user_id)
+
     // 요청할 때 같이 보낼 값
     const requestData = { user_id };
 
     $.ajax({
         url: '/api/v1/get_menu',
         type: 'POST',
-        data: JSON.stringify(requestData), // JSON 문자열로 변환하여 전송
+        contentType: 'application/json',
+        data: JSON.stringify(requestData),
         success: (data) => {
+            console.log(data[0].image_url); // D:\PROJECT\WEB\CORKAGE_Web\CORKAGE_Web\uploads\연어초밥.jpg 값이 적혀있음
+
             // 데이터가 정상적으로 받아지면 menuList에 표시
             const menuList = $('#menuList');
             menuList.empty(); // 기존 메뉴 리스트 비우기
-
+            
             data.forEach(menu => {
+                console.log(menu.imageURL)
                 const menuItem = `
                     <div class="menu-item">
                         <img src="${menu.imageURL}" alt="${menu.name}" class="menu-image" />
@@ -205,4 +211,6 @@ const updateMenuList = () => {
             console.error("Response Text:", jqXHR.responseText);
         }
     });
+
+    
 };
