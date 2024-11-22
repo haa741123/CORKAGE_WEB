@@ -179,23 +179,25 @@ const updateMenuList = () => {
     // 요청할 때 같이 보낼 값
     const requestData = { user_id };
 
+    
     $.ajax({
         url: '/api/v1/get_menu',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(requestData),
         success: (data) => {
-            console.log(data[0].image_url); // D:\PROJECT\WEB\CORKAGE_Web\CORKAGE_Web\uploads\연어초밥.jpg 값이 적혀있음
-
             // 데이터가 정상적으로 받아지면 menuList에 표시
             const menuList = $('#menuList');
             menuList.empty(); // 기존 메뉴 리스트 비우기
-            
+    
             data.forEach(menu => {
-                console.log(menu.imageURL)
+                // Windows 경로 구분자를 슬래시로 변경
+                menu.image_url = menu.image_url ? menu.image_url.replace(/\\/g, '/') : '';
+    
+                console.log(menu.image_url);
                 const menuItem = `
                     <div class="menu-item">
-                        <img src="${menu.imageURL}" alt="${menu.name}" class="menu-image" />
+                        <img src="${menu.image_url}" alt="${menu.name}" class="menu-image" />
                         <div class="menu-name">${menu.name}</div>
                         <div class="menu-description">${menu.description}</div>
                         <div class="menu-price">${menu.price} 원</div>
@@ -211,6 +213,5 @@ const updateMenuList = () => {
             console.error("Response Text:", jqXHR.responseText);
         }
     });
-
     
 };

@@ -476,15 +476,13 @@ def get_menu():
         # 결과에서 메뉴 데이터 추출
         data = response.data
 
-        print(data)
-
         # 이미지 경로 포함
         if data:
             for item in data:
                 filename = item.get('image_url')
                 if filename:
-                    # item['image_url'] = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-                    item['imageURL'] = os.path.join('/uploads', os.path.basename(filename))
+                    # 이미지 URL 업데이트
+                    item['image_url'] = os.path.join('/uploads', os.path.basename(filename))
                 else:
                     item['image_url'] = None  # 이미지 URL이 없을 경우 None으로 설정
 
@@ -494,6 +492,9 @@ def get_menu():
     except Exception as e:
         # 일반적인 예외 처리
         return jsonify({'error': str(e)}), 500
+
+
+
 
 
 # (사장님 화면) 가게 메뉴 정보 추가 insert, update
@@ -529,14 +530,10 @@ def add_menu():
     try:
         # 파일명에서 확장자 추출
         filename = f"{file.filename}"  # 메뉴 이름과 확장자를 결합
-        print(f"저장되는 파일 이름: {filename}") #테스트용
-
-        print(current_app.config['UPLOAD_FOLDER'])
+        
         file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)  # current_app 사용
-        print(f"Saving file to: {file_path}")  # 디버깅을 위한 출력
         file.save(file_path)
     except Exception as e:
-        print(f"File save error: {e}")  # 에러 메시지 출력
         return jsonify({'error': f'파일 저장 중 오류가 발생했습니다: {str(e)}'}), 500
 
     # Supabase에 메뉴 데이터 삽입 또는 업데이트
