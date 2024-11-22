@@ -290,6 +290,7 @@ def insert_reservation():
         reservation_date = data.get("reservation_date")
         reservation_time = data.get("reservation_time")
         people_count = data.get("people_count")
+        user_id = data.get("user_id")
 
         # 필수 필드가 누락되었는지 확인
         if not (reservation_date and reservation_time and people_count):
@@ -300,7 +301,8 @@ def insert_reservation():
             {
                 "reservation_date": reservation_date,
                 "reservation_time": reservation_time,
-                "people_count": people_count
+                "people_count": people_count,
+                "user_id" : user_id,
             }
         ]).execute()
 

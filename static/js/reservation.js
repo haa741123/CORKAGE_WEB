@@ -430,14 +430,27 @@ $(document).ready(function () {
     const selectedDateElement = $(".calendar .selected");
     const selectedTimeElement = $(".time-picker .selected");
     const selectedPeople = $("#people").val();
-
-    if (
-      !selectedDateElement.length ||
-      !selectedTimeElement.length ||
-      selectedPeople <= 0
-    ) {
-      console.error("날짜, 시간, 인원수를 모두 선택해주세요.");
-      return;
+    
+    // 쿠키에서 특정 이름의 값을 가져오는 함수
+    function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [cookieName, cookieValue] = cookie.trim().split('=');
+            if (cookieName === name) {
+                return decodeURIComponent(cookieValue);
+            }
+        }
+        return null;
+    }
+    
+    // user_id를 쿠키에서 가져와 userid 변수에 할당
+    const user_id = getCookie('user_id');
+    
+    // userid 값 확인 (옵션)
+    if (user_id) {
+        console.log('User ID:', user_id);
+    } else {
+        console.log('User ID not found in cookies');
     }
 
     const selectedDateText = selectedDateElement.text();
@@ -459,17 +472,17 @@ $(document).ready(function () {
     }
 
     console.log(
-      `예약 정보 - 날짜: ${formattedDate}, 시간: ${formattedTime}, 인원수: ${selectedPeople}`
+      `예약 정보 - 날짜: ${formattedDate}, 시간: ${formattedTime}, 인원수: ${selectedPeople} 유저명: ${user_id}`
     );
 
     // 테이블에 insert
-    insertReservation(formattedDate, formattedTime, selectedPeople);
+    insertReservation(formattedDate, formattedTime, selectedPeople, user_id);
     
   });
 });
 
 // 예약 insert
-async function insertReservation(formattedDate, formattedTime, selectedPeople) {
+async function insertReservation(formattedDate, formattedTime, selectedPeople, user_id) {
   try {
     const response = await fetch('/api/v1/insert_Reservation', {
       method: 'POST',
@@ -479,7 +492,8 @@ async function insertReservation(formattedDate, formattedTime, selectedPeople) {
       body: JSON.stringify({
         reservation_date: formattedDate,
         reservation_time: formattedTime,
-        people_count: selectedPeople
+        people_count: selectedPeople,
+        user_id: user_id
       })
     });
 
@@ -536,6 +550,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const nextMonthButton = document.querySelector(".next-month");
   const timeButtons = document.querySelectorAll(".time-picker button");
   const peopleInput = document.getElementById("people");
+  
   let currentDate = new Date();
   let selectedDate = null;
   let selectedTime = null;
