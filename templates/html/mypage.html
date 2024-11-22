@@ -21,77 +21,78 @@
       </header>
 
       <main>
-        
+        <!-- 사용자 정보 섹션 -->
         <section class="user-info">
-          <div class="profile-wrapper">
-            <h2>이정현님</h2>
+          <div class="profile-wrapper" onclick="location.href='/ch_name';">
+            <h2></h2> <!-- 사용자 이름이 동적으로 채워질 부분 -->
             <button class="edit-profile-btn"><img src="/static/img/pan.png">프로필 수정</button>
           </div>
         </section>
+
+        <!-- 다가오는 예약 섹션 -->
         <section class="incomming">
-        <h3>다가오는 예약</h3><p>3</p>
+          <h3>다가오는 예약</h3><p></p> <!-- 다가오는 예약 수가 동적으로 채워질 부분 -->
         </section>
+
+        <!-- 예약 카드 섹션 -->
         <section class="card">
           <div class="reservation-date-header">
-            <img src="/static/img/Date_today.png" alt="달력" class="date-icon" />
-            2024.09.13 (금) 오후 12:00
-            <img src="/static/img/Profile.svg" alt="인원" class="person-icon" />
-            2명
+            <!-- 예약 날짜 및 인원이 동적으로 채워질 부분 -->
           </div>
           
           <div class="restaurant-info">
             <div class="restaurant-header">
-              <img src="/static/img/cutlet_sashimi.png" alt="스시쥬고야" class="restaurant-logo" />
+              <img src="" alt="스시쥬고야" class="restaurant-logo" /> <!-- 레스토랑 로고 -->
               <div class="restaurant-details">
-                <h4>스시쥬고야</h4>
+                <h4></h4> <!-- 레스토랑 이름 -->
                 <button class="edit-profile-btn"><img src="/static/img/phone.png">매장 전화하기</button>
               </div>
             </div>
             
-            <p class="description">"十五夜, 달이 가장 밝은 날의 명랑하고 즐거운 밤 한토리출신 두 셰프의 히로아키에 이은 두번째 스시야"</p>
+            <p class="description"></p> <!-- 레스토랑 설명 -->
             
             <div class="button-group">
-              <button class="share-button">예약 공유</button>
+              <!-- 예약 취소 버튼 -->
               <button class="cancel-button">예약 취소</button>
             </div>
           </div>
         </section>
+
+        <!-- 스크랩 섹션 -->
         <section class="scrap-section">
           <div class="scrap-header">
-            <h3>나의 스크랩 <span>5</span></h3>
+            <h3>나의 스크랩 <span></span></h3> <!-- 스크랩 개수가 동적으로 채워질 부분 -->
           </div>
-          <div class="scrap-images">
-            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
-            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
-            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
-            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
-            <img src="/static/img/profile.JPEG" alt="스크랩 이미지" class="scrap-img" />
+          <div class="scrap-images" onclick="location.href='/bookmark';">
+            <!-- 스크랩 이미지가 동적으로 추가될 부분 -->
           </div>
         </section>
 
-        <section class="advertisement">
-        </section>
+        <!-- 광고 섹션 (비어 있음) -->
+        <section class="advertisement"></section>
 
+        <!-- 푸터 메뉴 섹션 -->
         <section class="footer-menu">
           <div class="menu-grid">
+            <!-- 혜택 정보 메뉴 -->
             <div class="menu-group">
-              <h3>해택 정보</h3>
+              <h3>혜택 정보</h3>
               <div class="menu-row">
                 <a href="/coupon">쿠폰함</a>
-                <a href="/events">진행 중인 이벤트</a>
               </div>
             </div>
+
+            <!-- 문의 및 알림 메뉴 -->
             <div class="menu-group">
               <h3>문의 및 알림</h3>
               <div class="menu-row">
                 <a href="/support">고객센터</a>
-                <a href="/policy">약관 및 정책</a>
               </div>
             </div>
           </div>
         </section>
-
       </main>
     </div>
+    <script src="/static/js/mypage.js"></script>
   </body>
 </html>
