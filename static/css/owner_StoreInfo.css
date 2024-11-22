@@ -71,13 +71,44 @@
 
 
 
-
+/* 메뉴 리스트 스타일 */
 #menuList {
-    display: flex;
+    display: flex;  
     flex-wrap: wrap;
     gap: 20px;
 }
 
+/* 개별 메뉴 아이템 스타일 */
 .menu-item {
+    width: calc(25% - 20px);
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
+}
+
+.menu-item:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 메뉴 이미지 스타일 */
+.menu-image {
+    width: 100%;
+    height: auto;
+}
+
+/* 메뉴 이름 스타일 */
+.menu-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* 메뉴 가격 스타일 */
+.menu-price {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
 }

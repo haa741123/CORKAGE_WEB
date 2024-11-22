@@ -8,19 +8,21 @@ app = Flask(__name__)
 app.register_blueprint(main_routes)
 app.secret_key = os.urandom(24)
 
-# 업로드할 파일을 저장할 폴더 경로 설정
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
+# 수정된 코드
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'static', 'uploads')
 
-# 예시: uploads 폴더가 없으면 생성
+# 수정된 코드 (이미 폴더가 있으면 아무 작업도 하지 않음)
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
+    try:
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+    except OSError as e:
+        logging.error(f"폴더 생성 중 오류 발생: {e}")
+
+
 
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
-
-
-
 
 
 

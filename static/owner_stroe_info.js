@@ -134,7 +134,7 @@ function checkAuthentication() {
 }
 
 
-// 업로드한 이미지 미리보기 용 함수
+
 function previewImage(event) {
     const fileInput = event.target;
 
@@ -161,12 +161,9 @@ function previewImage(event) {
     }
 }
 
-
-
-
-
 // 메뉴 리스트를 업데이트하는 함수
 const updateMenuList = () => {
+
     // 세션 스토리지에서 사용자 정보 가져오기
     const userData = sessionStorage.getItem('user');
     const user_id = userData ? JSON.parse(userData).login_id : '';
@@ -177,10 +174,11 @@ const updateMenuList = () => {
         return; // 유저 정보가 없다면 더 이상 진행하지 않음
     }
 
-    console.log(user_id);
+    console.log(user_id)
 
     // 요청할 때 같이 보낼 값
     const requestData = { user_id };
+
 
     $.ajax({
         url: '/api/v1/get_menu',
@@ -191,29 +189,18 @@ const updateMenuList = () => {
             // 데이터가 정상적으로 받아지면 menuList에 표시
             const menuList = $('#menuList');
             menuList.empty(); // 기존 메뉴 리스트 비우기
-
+    
             data.forEach(menu => {
-                // 이미지 URL 처리: Windows 경로 구분자를 슬래시로 변경
+                // Windows 경로 구분자를 슬래시로 변경
                 menu.image_url = menu.image_url ? menu.image_url.replace(/\\/g, '/') : '';
-
-                // 가격 포맷팅: 숫자인지 확인 후 쉼표 추가
-                let formattedPrice;
-                try {
-                    if (isNaN(menu.price)) {
-                        throw new Error('Invalid price');
-                    }
-                    formattedPrice = parseInt(menu.price, 10).toLocaleString(); // 쉼표 추가
-                } catch (error) {
-                    console.error(`가격 포맷팅 오류: ${error.message}`);
-                    formattedPrice = '가격 정보 없음'; // 예외 처리
-                }
-
-                // HTML 생성 및 추가
+    
+                console.log(menu.image_url);
                 const menuItem = `
                     <div class="menu-item">
-                        <img src="${menu.image_url}" alt="${menu.name}" class="menu-image" />
+                        <img src="/static/uploads/연어초밥.jpg" alt="${menu.name}" class="menu-image" />
                         <div class="menu-name">${menu.name}</div>
-                        <div class="menu-price">${formattedPrice} 원</div>
+                        <div class="menu-description">${menu.description}</div>
+                        <div class="menu-price">${menu.price} 원</div>
                     </div>
                 `;
                 menuList.append(menuItem);
@@ -226,4 +213,5 @@ const updateMenuList = () => {
             console.error("Response Text:", jqXHR.responseText);
         }
     });
+    
 };

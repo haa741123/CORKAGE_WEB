@@ -482,7 +482,7 @@ def get_menu():
                 filename = item.get('image_url')
                 if filename:
                     # 이미지 URL 업데이트
-                    item['image_url'] = os.path.join('/uploads', os.path.basename(filename))
+                    item['image_url'] = os.path.join('/static/uploads', os.path.basename(filename))
                 else:
                     item['image_url'] = None  # 이미지 URL이 없을 경우 None으로 설정
 
@@ -532,6 +532,7 @@ def add_menu():
         filename = f"{file.filename}"  # 메뉴 이름과 확장자를 결합
         
         file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)  # current_app 사용
+        os.path.join('/static/uploads', os.path.basename(filename))
         file.save(file_path)
     except Exception as e:
         return jsonify({'error': f'파일 저장 중 오류가 발생했습니다: {str(e)}'}), 500
