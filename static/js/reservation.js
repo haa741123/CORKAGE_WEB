@@ -28,32 +28,25 @@ async function fetchRestaurantInfo(id) {
 const restaurantData = {
   menu: [
     {
-      name: "스시",
+      name: "(시그니처) 불꽃숙성등심 (150g)",
       description:
-        "정통 일본식 스시 세트. 신선한 재료로 만든 최고급 스시를 즐겨보세요.",
-      price: "₩30,000",
-      image: "/static/img/sushi.jpg",
+        "화려한 불쇼와 부드럽고 풍부한 육즙까지 모든 것을 투뿔 정신으로 제대로 선보이겠습니다!",
+      price: "₩40,000",
+      image: "/static/img/suyu_inoch_dak.png",
     },
     {
-      name: "사시미",
+      name: "(당일도축) 뭉티기 (200g)",
       description:
-        "신선한 회 세트. 최고의 품질로 신선함을 유지한 사시미를 제공합니다.",
-      price: "₩35,000",
-      image: "/static/img/sashimi.jpg",
+        "",
+      price: "₩42,000",
+      image: "/static/img/suyu_inoch_salmon.png",
     },
     {
-      name: "롤",
+      name: "토시살 (150g)",
       description:
-        "다양한 재료로 만든 롤. 신선한 재료와 독특한 맛이 특징입니다.",
-      price: "₩25,000",
-      image: "/static/img/roll.jpg",
-    },
-    {
-      name: "튀김",
-      description:
-        "바삭한 일본식 튀김. 고소한 맛과 바삭한 식감이 일품입니다.",
-      price: "₩20,000",
-      image: "/static/img/tempura.jpg",
+        "",
+      price: "₩55,000",
+      image: "/static/img/suyu_inoch_naga.png",
     },
   ],
   photos: [

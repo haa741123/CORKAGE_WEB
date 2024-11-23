@@ -414,42 +414,46 @@ let generatePlaceInfo = function (place, index) {
 
   let categoryImageSrc = getImageSrc(place.category_name);
 
-  let displayName = place.place_name.length > 10 
-                      ? place.place_name.slice(0, 10) + "…" 
+  let displayName = place.place_name.length > 6 
+                      ? place.place_name.slice(0, 8) + "…" 
                       : place.place_name;
 
+  place.rating
+
   return `
-    <div id="res_info_${index}" class="res_info" data-id="${place.id}"
-        data-place_name="${place.place_name}"
-        data-address_name="${place.address_name}"
-        data-phone="${place.phone}"
-        data-distance="${distance.toFixed(2)}"
-        data-walking_time="${walkingTime}"
-        data-driving_time="${drivingTime}"
-        data-category_name="${place.category_name}">
-        <div class="row">
-            <div class="col-4" style="padding-right: 1px;">
-                <div class="image-container">
-                    <img src="${place.image_url}" alt="${ place.place_name}" class="cover-image">
-                </div>
-            </div>
-            <div class="col-8 info-container">
-                <p class="place-name">
-                    ${displayName}
-                    <img src="${categoryImageSrc}" alt="${ place.category_name }" class="category-icon"> 
-                    <span class="bookmark-icon">
-                      <img src="/static/img/UnBookmark.png" alt="즐겨찾기 아이콘">
-                    </span>
-                </p>
-                <div class="tag-container">
-                    <span class="tag red">${place.tags}</span>
-                </div>
-                <p class="description">${place.description}</p>
-                <p class="rating">평점: ${place.rating}</p>
-            </div>
-        </div>
-    </div>
-  `;
+  <div id="res_info_${index}" class="res_info" data-id="${place.id}"
+      data-place_name="${place.place_name}"
+      data-address_name="${place.address_name}"
+      data-phone="${place.phone}"
+      data-distance="${distance.toFixed(2)}"
+      data-walking_time="${walkingTime}"
+      data-driving_time="${drivingTime}"
+      data-category_name="${place.category_name}">
+      <div class="row">
+          <div class="col-4" style="padding-right: 1px;">
+              <div class="image-container">
+                  <img src="${place.image_url}" alt="${place.place_name}" class="cover-image">
+              </div>
+          </div>
+          <div class="col-8 info-container">
+              <p class="place-name">
+                  <img src="${categoryImageSrc}" alt="${place.category_name}" class="category-icon"> 
+                  ${displayName}
+                  <span class="bookmark-icon">
+                    <img src="/static/img/UnBookmark.png" alt="즐겨찾기 아이콘">
+                  </span>
+              </p>
+              <div class="tag-container">
+                  <span class="tag red">${place.tags}</span>
+              </div>
+              <p class="description">${place.description}</p>
+              <p class="rating">평점: ${place.rating !== undefined ? place.rating : ' 집계된 값이 없음'}</p>
+          </div>
+      </div>
+  </div>
+`;
+
+
 };
 
 /**

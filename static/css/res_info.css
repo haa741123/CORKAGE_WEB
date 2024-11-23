@@ -417,9 +417,10 @@ body {
 }
 
 .menu-item-card img {
-    width: 100%;
+    width: 110%;
     height: 180px;
     object-fit: cover;
+    
 }
 
 .menu-item-card .card-body {
@@ -481,7 +482,7 @@ body {
 
 /* Style selected date */
 .calendar .selected {
-    background-color: #FF4500;
+    background-color: #D0273B;
     color: white;
 }
 
@@ -514,7 +515,7 @@ body {
     margin: 5px;
     border-radius: 5px;
     border: none;
-    background-color: #FF4500;
+    background-color: #D0273B;
     color: white;
     cursor: pointer;
     white-space: nowrap;
