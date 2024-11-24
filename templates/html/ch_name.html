@@ -9,6 +9,13 @@
     <title>추가 정보 입력</title>
     <link href="/static/css/signup.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      .char-counter {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 5px;
+      }
+    </style>
   </head>
   <body>
     <div class="signup-container">
@@ -22,11 +29,14 @@
           class="input-field"
           required
         />
+        <!-- 글자 수 표시 영역 -->
+        <p id="charCount" class="char-counter">0/12</p>
       </div>
 
       <button id="changeNicknameBtn" class="signup-button">변경하기</button>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="module">
       import { limit_BadWords as bannedWords } from "/static/js/data/limit_BadWord.js";
 
@@ -40,6 +50,26 @@
 
       const badWord = (nickname) =>
         bannedWords.some((word) => nickname.includes(word));
+
+      // 글자 수 업데이트 함수
+      const updateCharCount = () => {
+        const nicknameInput = document.getElementById("nickname");
+        const charCountElement = document.getElementById("charCount");
+        const currentLength = nicknameInput.value.length;
+
+        // 글자 수 업데이트
+        charCountElement.textContent = `${currentLength}/12`;
+
+        // 글자 수 초과 시 경고 색상 적용
+        if (currentLength > 12) {
+          charCountElement.style.color = "red";
+        } else {
+          charCountElement.style.color = "#666";
+        }
+      };
+
+      // 닉네임 입력 이벤트 리스너 추가
+      document.getElementById("nickname").addEventListener("input", updateCharCount);
 
       document
         .getElementById("changeNicknameBtn")
@@ -66,27 +96,30 @@
               },
               body: JSON.stringify({ nickname: nickname }),
             })
-              .then((response) => response.json())
+              .then((response) => {
+                // HTTP 상태 코드 확인
+                if (!response.ok) {
+                  // 에러 상태 처리
+                  return response.json().then((errorData) => {
+                    throw new Error(errorData.message || "요청 실패");
+                  });
+                }
+                return response.json();
+              })
               .then((data) => {
                 if (data.success) {
-                    showAlert("success", "변경 완료", data.message);
-                    const response = {
-                      status: "success",
-                      message: "로그인 성공",
-                      nickname: nickname
-                    };
-                    console.log(JSON.stringify(response)); // 콘솔에 JSON 문자열 출력
-                    // 또는 필요한 경우 이 JSON 문자열을 서버로 다시 보낼 수 있습니다.
-                    return;
-                  }
+                  showAlert("success", "변경 완료", data.message);
+                  console.log(JSON.stringify({ status: "success", nickname }));
+                }
               })
               .catch((error) => {
-                console.error("Error:", error);
+                
                 showAlert(
                   "error",
                   "오류 발생",
-                  "닉네임 변경 중 오류가 발생했습니다."
+                  error.message || "닉네임 변경 중 오류가 발생했습니다."
                 );
+                $("html, body").removeClass("swal2-shown swal2-height-auto");   // 다른 디자인까지 영향을 미치는 현상이 있어 이건 그대로 둬야됨...
               });
           }
         });

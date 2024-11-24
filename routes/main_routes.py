@@ -22,9 +22,9 @@ def sch_screen():
 def sch_results(search_term):
     return render_template('html/search_results.html', search_term=search_term) # 검색 결과 페이지
 
-@main_routes.route('/ch_name/<string:user_name>')      
-def ch_name(user_name):
-    return render_template('html/ch_name.html', user_name=user_name)  # 닉네임 변경 페이지
+@main_routes.route('/ch_name')      
+def ch_name():
+    return render_template('html/ch_name.html')  # 닉네임 변경 페이지
 
 @main_routes.route("/sch_filter")
 def sch_filter():
