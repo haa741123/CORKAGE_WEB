@@ -3,10 +3,10 @@
 // }
 
 
-// 사용자 데이터를 JSON 형태로 정의
+// 샘플 JSON
 const userData = {
-    name: "이정현",
-    upcomingReservations: 3,
+    name: "이하민",
+    upcomingReservations: 1,
     reservations: [
       {
         date: "2024.09.13 (금) 오후 12:00",
@@ -20,11 +20,11 @@ const userData = {
       }
     ],
     scraps: [
-      "/static/img/profile.JPEG",
-      "/static/img/profile.JPEG",
-      "/static/img/profile.JPEG",
-      "/static/img/profile.JPEG",
-      "/static/img/profile.JPEG"
+      "/static/img/sample_img_1.png",
+      "/static/img/sample_img_2.png",
+      "/static/img/sample_img_3.png",
+      "/static/img/sample_img_4.png",
+      "/static/img/sample_img_5.png"
     ]
   };
   
